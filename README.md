@@ -430,13 +430,13 @@ Authorization / WWW-Authenticate
 Carregam credenciais e desafios de autenticação.
 
 - Exemplos:
--- Authorization: Bearer <JWT> (OAuth 2.0);
--- Authorization: Basic <base64> (evite sem TLS);
--- Responder **401** com WWW-Authenticate: Bearer (ou o esquema adotado).
--- Boas práticas:
--- **Não** coloque tokens em URL (vira log/referrer); use **header**.
--- Defina **expiração** curta + *refresh tokens*; *rotate* chaves.
--- Em APIs públicas, padronize respostas (401/403) e evite **leaks** em mensagens de erro.
+ - Authorization: Bearer <JWT> (OAuth 2.0);
+ - Authorization: Basic <base64> (evite sem TLS);
+ - Responder **401** com WWW-Authenticate: Bearer (ou o esquema adotado).
+ - Boas práticas:
+ - **Não** coloque tokens em URL (vira log/referrer); use **header**.
+ - Defina **expiração** curta + *refresh tokens*; *rotate* chaves.
+ - Em APIs públicas, padronize respostas (401/403) e evite **leaks** em mensagens de erro.
 
 #### CRLF Injection & Header Injection — quando o atacante “quebra a linha”
 
