@@ -380,7 +380,7 @@ Projetar bem **métodos** e **idempotência** não é detalhe acadêmico: é um 
 - OWASP Cheat Sheet Series — CSRF Prevention, REST Security
 - MDN Web Docs — documentação operativa de métodos, cabeçalhos e códigos
 
-# 🛡 Headers e Security Headers — a “camada de meta-informação” que protege (e acelera) sua aplicação
+# 🛡 Headers e Security Headers
 
 No HTTP, **headers** são pares Nome: Valor enviados em **requisições** e **respostas**. Eles não carregam o “conteúdo em si”, mas **instruções e sinais** que influenciam como clientes, servidores, proxies, CDNs e navegadores devem tratar aquele conteúdo: formato, cache, políticas de segurança, autenticação, CORS etc. Em segurança, são decisivos porque **ativam controles no próprio user-agent** (ex.: bloquear *inline scripts*, proibir *framing*) e **fecham brechas em camadas intermediárias** (ex.: cache, redirecionamentos, sniffing de tipo).
 
@@ -440,8 +440,8 @@ Access-Control-Allow-Credentials: true
 Carregam credenciais e desafios de autenticação.
 
 - Exemplos:
-  - Authorization: Bearer <JWT> (OAuth 2.0);
-  - Authorization: Basic <base64> (evite sem TLS);
+  - `Authorization: Bearer <JWT>` (OAuth 2.0);
+  - `Authorization: Basic <base64>` (evite sem TLS);
   - Responder **401** com WWW-Authenticate: Bearer (ou o esquema adotado).
 - Boas práticas:
   - **Não** coloque tokens em URL (vira log/referrer); use **header**.
@@ -451,30 +451,25 @@ Carregam credenciais e desafios de autenticação.
 ### CRLF Injection & Header Injection — quando o atacante “quebra a linha”
 
 **CRLF Injection** ocorre quando valores controlados por usuário entram em headers **sem sanitização**, permitindo inserir caracteres **Carriage Return + Line Feed** (\r\n).
-
 - Impacto: **HTTP Response Splitting**, *web cache poisoning*, *XSS* indireto, **corrupção de resposta**.
 - Exemplos clássicos: refletir um parâmetro em Location: (redirect) sem validar, ou concatenar um nome de arquivo em Content-Disposition contendo \r\n.
 - Mitigações:
-- **Nunca** concatenar entrada do usuário em nomes/linhas de header;
-- Rejeitar/escapar \r e \n;
-- Usar **APIs do framework** que montam headers e **lançam erro** se houver CR/LF;
-- Validar *whitelists* de destinos em redirecionamentos;
-- Ativar **CSP/HSTS** e boas políticas de cache para reduzir impacto colateral.
+  - **Nunca** concatenar entrada do usuário em nomes/linhas de header;
+  - Rejeitar/escapar `\r` e `\n`;
+  - Usar **APIs do framework** que montam headers e **lançam erro** se houver CR/LF;
+  - Validar *whitelists* de destinos em redirecionamentos;
+  - Ativar **CSP/HSTS** e boas políticas de cache para reduzir impacto colateral.
 **Header Injection** (mais amplo) é qualquer manipulação de cabeçalho via entrada do usuário: além de CRLF, há **injeção de prefixos/sufixos** em Set-Cookie, Location, Host dependentes de upstream etc. A defesa é **não confiar** em valores externos, **normalizar** e **validar estritamente**.
 
 ### Casos Reais
 
-- **sslstrip e o nascimento do HSTS**
-Ataques de *downgrade*/redirecionamento para HTTP levavam usuários a sessões sem TLS. **HSTS** com *preload* tornou isso muito mais difícil, exigindo HTTPS desde o primeiro pedido “conhecido”.
+- **Sslstrip e o nascimento do HSTS:** Ataques de *downgrade*/redirecionamento para HTTP levavam usuários a sessões sem TLS. **HSTS** com *preload* tornou isso muito mais difícil, exigindo HTTPS desde o primeiro pedido “conhecido”.
 
-- **Grandes portais com ***clickjacking***
-Sem X-Frame-Options/frame-ancestors, botões sensíveis eram “sobrepostos” em iframes invisíveis. A *mitigação universal* virou política: **XFO + CSP (frame-ancestors)**.
+- **Grandes portais com clickjacking:** Sem `X-Frame-Options/frame-ancestors`, botões sensíveis eram “sobrepostos” em iframes invisíveis. A *mitigação universal* virou política: **XFO + CSP (frame-ancestors)**.
 
-- **Web Cache Poisoning por Response Splitting**
-Pesquisa da comunidade (ex.: PortSwigger) mostrou exploração de CRLF para envenenar caches e servir payloads maliciosos a outras vítimas. **Sanitização rigorosa** + **políticas de cache corretas** reduzem o estrago.
+- **Web Cache Poisoning por Response Splitting:**: Pesquisa da comunidade (ex.: PortSwigger) mostrou exploração de CRLF para envenenar caches e servir payloads maliciosos a outras vítimas. **Sanitização rigorosa** + **políticas de cache corretas** reduzem o estrago.
 
-- **XSS via bibliotecas terceira**
-Cadeias de *supply chain* em JS comprometeram páginas de pagamento. **CSP com nonces/hashes** e inventário mínimo de origens confiáveis (sem curingas) teria bloqueado a execução maliciosa.
+- **XSS via bibliotecas terceira:** Cadeias de *supply chain* em JS comprometeram páginas de pagamento. **CSP com nonces/hashes** e inventário mínimo de origens confiáveis (sem curingas) teria bloqueado a execução maliciosa.
 
 ### Conclusão
 
