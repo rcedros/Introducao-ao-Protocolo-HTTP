@@ -1,4 +1,4 @@
-# 📖 Introdução ao Protocolo HTTP – Estrutura de Slides  
+# 📖 Introdução ao Protocolo HTTP – Estrutura de Slides
 
 ---
 
