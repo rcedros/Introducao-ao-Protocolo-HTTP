@@ -1,4 +1,4 @@
-# 📘 Introdução ao Curso HTTP em Profundidade
+# 📘 Introdução ao Protocolo HTTP
 
 O **HTTP (Hypertext Transfer Protocol)** é o protocolo de comunicação que sustenta a Web como a conhecemos. Ele define como mensagens são formatadas e transmitidas entre clientes (normalmente navegadores, aplicações móveis ou scripts automatizados) e servidores, determinando como estes devem responder a diferentes tipos de requisições.
 
@@ -24,7 +24,7 @@ Do ponto de vista de segurança cibernética, cada detalhe mal compreendido pode
 
 Para um analista de segurança, estudar o HTTP/HTTPS em profundidade é mais do que conhecer um protocolo: é compreender **onde falhas arquiteturais podem virar brechas exploráveis**. Assim, o profissional deixa de ser apenas um executor de tarefas e passa a atuar como um **guarda de fronteira**, capaz de identificar pontos frágeis e sugerir melhorias antes que incidentes aconteçam.
 
-## 🌐 HTTP em Profundidade
+# 🌐 HTTP em Profundidade
 
 O protocolo HTTP, apesar de parecer simples, passou por grandes transformações ao longo das últimas décadas. Cada nova versão foi criada para resolver limitações das anteriores e para acompanhar o crescimento da Web em termos de **desempenho, escalabilidade e segurança**. Entender essas diferenças é essencial para um analista de segurança, pois cada recurso introduzido pode trazer tanto benefícios quanto novas superfícies de ataque.
 
@@ -101,7 +101,7 @@ Em todos os casos, **má configuração de cache pode expor dados confidenciais*
 - Cloudflare. *The Benefits of HTTP/3*.
 - OWASP Foundation. *Web Security Testing Guide*.
 
-## Métodos HTTP em contexto — da intenção à segurança
+# Métodos HTTP em contexto — da intenção à segurança
 
 Quando um cliente “fala” com um servidor pela Web, ele não envia apenas dados: ele comunica **intenção**. Essa intenção é expressa pelos **métodos HTTP** (também chamados de “verbos”). Saber o que cada método *pretende* fazer — ler, criar, substituir, alterar parcialmente, apagar, negociar capacidades — é vital para projetar APIs confiáveis e, sobretudo, **seguras**.
 
@@ -109,19 +109,17 @@ Quando um cliente “fala” com um servidor pela Web, ele não envia apenas dad
 
 A seguir, apresento os métodos padronizados, com explicação e **um exemplo simples e intuitivo** de uso. Depois entramos em **idempotência** (o tema que amarra confiabilidade, retries e mitigação de fraudes/replays) e continuamos com as demais partes operacionais: **redirecionamentos corretos, códigos de status, condicionais, cache** e implicações de segurança.
 
-### O que são os métodos HTTP?
+## O que são os métodos HTTP?
 
 São rótulos semânticos que informam ao servidor **qual operação** o cliente deseja realizar sobre um recurso (por exemplo, /usuarios/42 ou /pedidos). Eles não tratam do “como” (isso é implementado pela aplicação), mas **guiam expectativas** de clientes, proxies, caches, navegadores e ferramentas de segurança.
 
-### Um sumário útil para o dia a dia da segurança:
+Um sumário útil para o dia a dia da segurança:
 
 - **GET / HEAD**: *safe* e idempotentes. **Jamais** faça ações mutáveis com GET; se fizer, trate como risco CSRF.
 - **PUT**: substitui representação; idempotente. Use com **If-Match** para evitar *lost update*.
 - **DELETE**: idempotente (deletar “de novo” não muda o resultado)
 - **POST**: não idempotente; desenhe salvaguardas (ver “Idempotência prática”, abaixo).
 - **PATCH**: semântica parcial; **não é** idempotente por padrão (pode ser, se você definir assim). Baseie-se em pré-condições (ETag) se a atualização for concorrida.
-
----
 
 #### GET — “Quero ler”
 
@@ -134,7 +132,8 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 curl https://api.loja.com/produtos?categoria=monitores
 ```
 
-- **Observação de segurança:** **não use GET para ações que mudam estado** (ex.: reset de senha). Isso viola a semântica e abre risco de CSRF e vazamento de dados via URL/logs.
+- **Observação de segurança:** não use **GET** para ações que mudam estado (ex.: reset de senha). Isso viola a semântica e abre risco de CSRF e vazamento de dados via URL/logs.
+
 #### HEAD — “Quero ver apenas os metadados”
 
 - **Intenção:** igual ao GET, mas **sem** o corpo da resposta (só cabeçalhos).
@@ -215,7 +214,7 @@ curl -X DELETE https://api.loja.com/usuarios/42
 - **Intenção:** usado por proxies para criar um túnel TCP (ex.: HTTPS via proxy).
 - **Exemplo intuitivo:** “pedir ao porteiro para abrir um canal direto com a sala segura”.
 
-## Idempotência — a cola entre confiabilidade e segurança
+### Idempotência — a cola entre confiabilidade e segurança
 
 Uma operação é considerada **idempotente** quando repeti-la, usando os mesmos parâmetros, não altera o resultado além do primeiro efeito. No contexto de HTTP, os métodos **GET, HEAD, PUT e DELETE** são idempotentes por padrão, enquanto **POST** não é e o **PATCH** depende da implementação.
 
@@ -267,12 +266,13 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 
 ---
 
-### 🚀 Cache, Idempotência e Boas Práticas HTTP
+## Cache, Idempotência e Boas Práticas HTTP
 
 Ao projetar APIs e aplicações web, não basta apenas responder rápido: é preciso **equilibrar desempenho, consistência e segurança**.  
 O uso adequado de **cache** garante eficiência sem comprometer dados sensíveis; a aplicação correta de **idempotência** evita duplicidades em operações críticas; e seguir **boas práticas HTTP** ajuda a manter previsibilidade e resiliência em escala.  
 
-#### ⚡ Cache: desempenho sem vazar informação
+### Cache: desempenho sem vazar informação
+
 - **Recursos públicos/estáticos**
   - Use `Cache-Control: public, max-age=...` + `ETag`.  
   - Se a resposta variar por cabeçalho (ex.: `Accept-Encoding`), configure `Vary`.  
@@ -286,30 +286,29 @@ O uso adequado de **cache** garante eficiência sem comprometer dados sensíveis
   - `POST` normalmente **não** é armazenado por caches.  
   - `GET` pode ser → **não retorne dados sensíveis via GET** sem diretivas adequadas.
 
-### 📚 Casos Reais
+## Casos Reais
 
 - **Pagamentos e idempotência (Stripe)**  
-  Retries de `POST` por perda de resposta causavam **cobranças duplicadas**.  
-  Solução: `Idempotency-Key` → o primeiro resultado fica “fixado” e retries devolvem a mesma resposta (inclusive `5xx`), tipicamente por 24h.
+  - Retries de `POST` por perda de resposta causavam **cobranças duplicadas**.  
+  - Solução: `Idempotency-Key` → o primeiro resultado fica “fixado” e retries devolvem a mesma resposta (inclusive `5xx`), tipicamente por 24h.
 
 - **Redirecionar POST como GET**  
-  Usar `302` após um `POST` pode fazer o cliente trocar o método (`POST → GET`).  
-  ✅ Padrão seguro: **PRG (Post/Redirect/Get)** com `303 See Other`.  
-  ✅ Use `307/308` quando quiser preservar o método.
+  - Usar `302` após um `POST` pode fazer o cliente trocar o método (`POST → GET`).  
+  - Padrão seguro: **PRG (Post/Redirect/Get)** com `303 See Other`.  
+  - Use `307/308` quando quiser preservar o método.
 
 - **Rate limiting em APIs públicas**  
-  Plataformas como GitHub expõem headers de quota (`X-RateLimit-Remaining`, `X-RateLimit-Reset`)  
-  e usam `429 Too Many Requests` com `Retry-After`.  
-  👉 Clients devem respeitar esses sinais e aplicar **backoff**.
+  - Plataformas como GitHub expõem headers de quota (`X-RateLimit-Remaining`, `X-RateLimit-Reset`) e usam `429 Too Many Requests` com `Retry-After`.  
+  - Clients devem respeitar esses sinais e aplicar **backoff**.
 
 - **451 Unavailable For Legal Reasons**  
-  Usado em bloqueios por geografia/ordens judiciais → mais transparente que `403`/`404`.
+  - Usado em bloqueios por geografia/ordens judiciais → mais transparente que `403`/`404`.
 
 - **TLS 1.3 Early Data e 425 Too Early**  
-  Requisições com `Early-Data: 1` podem ser **replayadas** em CDNs/reverse proxies.  
-  Solução: responder `425 Too Early` para forçar o cliente a reenviar após o handshake.
+  - Requisições com `Early-Data: 1` podem ser **replayadas** em CDNs/reverse proxies.  
+  - Solução: responder `425 Too Early` para forçar o cliente a reenviar após o handshake.
 
-### 🛡 Boas práticas acionáveis (segurança + confiabilidade)
+## 🛡 Boas práticas acionáveis (segurança + confiabilidade)
 
 - **Aderência semântica**  
   - `GET/HEAD` apenas leitura  
@@ -339,8 +338,6 @@ O uso adequado de **cache** garante eficiência sem comprometer dados sensíveis
 - **Cache consciente**  
   - Use `ETag`/`Last-Modified` + `304 Not Modified` para eficiência  
   - Invalide após mutações (`no-store`, `must-revalidate` quando necessário)
-
----
 
 ### Vamos Refletir?
 
@@ -383,11 +380,11 @@ Projetar bem **métodos** e **idempotência** não é detalhe acadêmico: é um 
 - OWASP Cheat Sheet Series — CSRF Prevention, REST Security
 - MDN Web Docs — documentação operativa de métodos, cabeçalhos e códigos
 
-## 🛡 Headers e Security Headers — a “camada de meta-informação” que protege (e acelera) sua aplicação
+# 🛡 Headers e Security Headers — a “camada de meta-informação” que protege (e acelera) sua aplicação
 
 No HTTP, **headers** são pares Nome: Valor enviados em **requisições** e **respostas**. Eles não carregam o “conteúdo em si”, mas **instruções e sinais** que influenciam como clientes, servidores, proxies, CDNs e navegadores devem tratar aquele conteúdo: formato, cache, políticas de segurança, autenticação, CORS etc. Em segurança, são decisivos porque **ativam controles no próprio user-agent** (ex.: bloquear *inline scripts*, proibir *framing*) e **fecham brechas em camadas intermediárias** (ex.: cache, redirecionamentos, sniffing de tipo).
 
-### Headers comuns (com uso prático de segurança)
+## Headers comuns (com uso prático de segurança)
 
 Os headers HTTP são metadados enviados junto às requisições e respostas que orientam como cliente e servidor devem se comunicar. Embora muitos sejam voltados para funcionalidade e compatibilidade (como User-Agent, Accept ou Content-Type), vários deles têm impacto direto na segurança das aplicações.
 
@@ -402,8 +399,7 @@ Compreender e aplicar corretamente esses headers é essencial para reforçar a p
 | **Content-Type** | Declara o **tipo do corpo** enviado ou recebido. | `Content-Type: application/json` | **Valide sempre** no servidor o `Content-Type` esperado. Rejeite uploads incoerentes. Combine com `X-Content-Type-Options: nosniff` para evitar que navegadores tentem “adivinhar” o tipo. |
 | **Cache-Control / Expires / ETag / Last-Modified** | Controlam cache e validação condicional. | `Cache-Control: no-store` <br>`ETag: "abc123"` <br>`Last-Modified: Tue, 12 Dec 2024 10:00:00 GMT` | Para conteúdo **sensível/autenticado**, use `no-store`. Para estáticos públicos, configure `ETag` e revalidação condicional para eficiência sem inconsistências. |
 
-### Security headers (os “cintos de segurança” do navegador)
-
+## Security headers (os “cintos de segurança” do navegador)
 
 | Header | Função | Exemplo | Benefício / Observação |
 |--------|--------|---------|-------------------------|
@@ -414,10 +410,6 @@ Compreender e aplicar corretamente esses headers é essencial para reforçar a p
 | **Referrer-Policy** | Controla quanto do *referer* (URL de origem) é enviado em navegações e requisições. | `Referrer-Policy: strict-origin-when-cross-origin` | Reduz **vazamento de dados sensíveis** em query strings para terceiros, mantendo equilíbrio entre privacidade e depuração. |
 | **Permissions-Policy** (ex-Feature-Policy) | Habilita ou desabilita **capacidades do navegador** (câmera, microfone, geolocalização, autoplay). | `Permissions-Policy: camera=(), microphone=(), geolocation=()` | Aplica o princípio do **menor privilégio** no front-end. |
 
-#### Dica prática  
-Comece configurando um **CSP em modo `report-only`** para medir impacto e corrigir violações antes de aplicar a política em produção.  
-Evite ao máximo o uso de `unsafe-inline`, `unsafe-eval` e curingas (`*`), pois eles **anulam a proteção** oferecida pelo CSP.  
-
 ### CORS e Authorization headers — fronteira e identidade
 
 Quando falamos em segurança na web, dois conceitos fundamentais emergem: fronteira e identidade. A fronteira define até onde uma aplicação pode interagir com outra, evitando que conteúdos de diferentes origens acessem recursos de forma indevida. A identidade, por sua vez, garante que apenas quem possui credenciais válidas consiga atravessar essa fronteira e consumir os recursos protegidos.
@@ -426,7 +418,7 @@ Quando falamos em segurança na web, dois conceitos fundamentais emergem: fronte
 
 Combinados, esses mecanismos são peças essenciais para manter a comunicação segura entre clientes e servidores em um cenário cada vez mais distribuído e interconectado.
 
-#### CORS (Cross-Origin Resource Sharing)
+### CORS (Cross-Origin Resource Sharing)
 
 Conjunto de headers que regula se um **site A** pode chamar a API do **site B** no navegador. Resposta típica segura:
 
@@ -443,7 +435,7 @@ Access-Control-Allow-Credentials: true
   - Evite refletir o Origin arbitrariamente; **liste explicitamente** origens confiáveis.
  - *Preflights* (OPTIONS) fazem parte do fluxo; trate-os corretamente.
 
-#### Authorization / WWW-Authenticate
+### Authorization / WWW-Authenticate
 
 Carregam credenciais e desafios de autenticação.
 
@@ -456,7 +448,7 @@ Carregam credenciais e desafios de autenticação.
   - Defina **expiração** curta + *refresh tokens*; *rotate* chaves.
   - Em APIs públicas, padronize respostas (401/403) e evite **leaks** em mensagens de erro.
 
-#### CRLF Injection & Header Injection — quando o atacante “quebra a linha”
+### CRLF Injection & Header Injection — quando o atacante “quebra a linha”
 
 **CRLF Injection** ocorre quando valores controlados por usuário entram em headers **sem sanitização**, permitindo inserir caracteres **Carriage Return + Line Feed** (\r\n).
 
@@ -501,11 +493,11 @@ Headers são **o contrato** que orienta como cada salto de rede e o próprio nav
 - MDN Web Docs — guias práticos de cada header
 - securityheaders.com — scanner público de headers de segurança
 
-## 🍪 Gerenciamento de Cookies — controle de estado com segurança.
+# 🍪 Gerenciamento de Cookies — controle de estado com segurança.
 
 Cookies são pequenos pares nome=valor que o servidor instrui o navegador a armazenar e **reenviar automaticamente** em requisições futuras para o mesmo site. Eles existem para **manter estado em um protocolo sem estado**: autenticação de sessões, preferências de usuário, carrinho de compras, *anti-CSRF tokens*, limites de taxa por usuário, entre outros. Justamente por viajarem “sozinhos” (o navegador os envia sem o usuário perceber), são também um ponto sensível: um cookie mal configurado pode entregar sua sessão a um atacante.
 
-### O que são e para que servem (na prática)
+## O que são e para que servem (na prática)
 
 Quando o servidor responde com Set-Cookie, o navegador grava aquele dado respeitando **escopo** (domínio e caminho), **atributos** (segurança, expiração, política *same-site*) e **persistência** (sessão ou longo prazo). A cada nova requisição cujo **host** e **path** combinem com o cookie, o navegador adiciona um cabeçalho:
 
@@ -515,38 +507,36 @@ Cookie: sessionid=abc123; theme=dark
 
 Isso permite que o backend reconheça quem é o usuário e aplique lógica de autorização, personalização ou mitigação de abuso.
 
+## Tipos de cookies e Atributos de segurança essenciais
+
+Cookies são pequenos arquivos de estado que o navegador armazena e envia a cada requisição.  
+Eles podem ser usados para **autenticação, preferências do usuário ou rastreamento**, mas também representam pontos críticos de segurança.  
+
+Por isso, é fundamental entender os **principais tipos de cookies** e aplicar corretamente os **atributos de segurança**, que ajudam a proteger contra ataques como **XSS** e **CSRF**.
+
 ### Tipos de cookies
 
-- **De sessão**: duram até o fechamento do navegador (não especificam Expires/Max-Age). Úteis para *login* sem persistir por longos períodos.
-- **Persistentes**: têm Expires ou Max-Age; sobrevivem a reinícios do navegador (ex.: “manter conectado por 30 dias”).
-- **De terceiros (third-party)**: definidos por um **domínio diferente** do que você está visitando (ex.: um *widget* ou um *ad server* embutido). São amplamente **restringidos** pelos navegadores modernos e tendem a ser desencorajados para autenticação.
+| Tipo | Descrição | Observações |
+|------|-----------|-------------|
+| **De sessão** | Duram até o fechamento do navegador (não especificam `Expires`/`Max-Age`). | Úteis para *login* sem persistência longa. |
+| **Persistentes** | Definem `Expires` ou `Max-Age` e sobrevivem a reinícios do navegador. | Ex.: “manter conectado por 30 dias”. |
+| **De terceiros** | Criados por um domínio diferente do site acessado. | Ampliamente **restringidos** em navegadores modernos; desencorajados para autenticação. |
 
-### Atributos de segurança essenciais
+### Atributos de segurança
 
-<img width="1889" height="886" alt="image" src="https://github.com/user-attachments/assets/43f111cf-859d-4a61-bfa5-d328312b8909" />
+| Atributo | Função | Benefício / Recomendação |
+|----------|--------|---------------------------|
+| **Secure** | Envia o cookie **somente em HTTPS**. | Evita captura em redes inseguras (ex.: Wi-Fi público). <br> **Recomendação:** todo cookie de sessão/autenticação deve ser Secure. |
+| **HttpOnly** | Impede acesso via JavaScript (`document.cookie`). | Mitiga roubo de cookies por **XSS**. <br> **Recomendação:** marque **sempre** cookies de autenticação como HttpOnly. |
+| **SameSite** | Controla envio do cookie em contextos **cross-site**. | - **Strict**: mais protetivo contra **CSRF**, mas pode quebrar fluxos entre domínios.<br>- **Lax**: envia em navegação de topo (GET), bom equilíbrio entre UX e segurança.<br>- **None**: envia em todos os contextos, mas exige `Secure`. <br> **Observação:** navegadores modernos tratam como **Lax** por padrão; sempre declare explicitamente. |
 
-#### Secure
-
-Garante que o cookie **só** será enviado em conexões **HTTPS**. (“Como criar e manipular cookies em JavaScript”) Sem Secure, um atacante na mesma rede pode capturá-lo (ex.: Wi-Fi público).
-
-Recomendações: todo cookie de sessão/autenticação deve ser Secure.
-
-#### HttpOnly
-
-Impede acesso via JavaScript (document.cookie). Isso **mitiga roubo por XSS** (o ataque até pode injetar script, mas não consegue “ler” o cookie marcado).
-
-Recomendação: marque **sempre** os cookies de autenticação como HttpOnly.
-
-#### SameSite
-
-Controla se o cookie **viaja em navegação entre sites** (cross-site).
-
-- **Strict**: **não** envia o cookie em nenhum contexto cross-site. É o mais protetivo contra **CSRF**, mas pode quebrar fluxos que dependam de redirecionar o usuário entre domínios.
+- **Strict**: não envia o cookie em nenhum contexto cross-site. É o mais protetivo contra **CSRF**, mas pode quebrar fluxos que dependam de redirecionar o usuário entre domínios.
 - **Lax**: envia o cookie **apenas** em **navegações de nível superior** (ex.: clicar em link) e **apenas para métodos “seguros”** (GET). Bom equilíbrio entre UX e mitigação de CSRF.
 - **None**: permite envio em **todos** os contextos cross-site, **mas exige ***Secure***. Use apenas quando estritamente necessário (ex.: integração real entre domínios controlados).
+
 **Padrão moderno**: na ausência de SameSite, navegadores costumam tratar como **Lax**. Ainda assim, **declare explicitamente**.
 
-Exemplo robusto de cookie de sessão:
+### Exemplo robusto de cookie de sessão:
 
 ```bash
 Set-Cookie: sessionid=abc123; Path=/; Secure; HttpOnly; SameSite=Strict
@@ -558,7 +548,7 @@ Bônus de hardening: o **prefixo ***__Host-** obriga requisitos fortes (cookie *
 Set-Cookie: __Host-sessionid=abc123; Path=/; Secure; HttpOnly; SameSite=Strict
 ```
 
-Escopo: Domain e Path
+### Escopo: Domain e Path
 
 O **escopo decide onde o cookie “aparece”**.
 
@@ -567,30 +557,46 @@ O **escopo decide onde o cookie “aparece”**.
 - **Path** delimita o **caminho** (ex.: Path=/conta limita às rotas que começam com /conta). Use para evitar que áreas não relacionadas recebam o cookie.
 **Armadilha comum**: cookies amplos (Domain muito permissivo) combinados a **subdomain takeover** expõem sessões para um host comprometido.
 
-Persistência: cookie vs token (e onde guardar)
+## Persistência: cookie vs token (e onde guardar)
 
-**Cookie de sessão tradicional (stateful):***
- O servidor guarda o estado (ex.: sessão na base ou cache) e envia um identificador curto no cookie.
+### Cookie de sessão tradicional (stateful)
+O servidor guarda o estado (ex.: sessão em base ou cache) e envia um **ID curto** no cookie.
 
-- **Prós:** simples de invalidar/rotacionar; pode ser HttpOnly + SameSite para blindar XSS/CSRF; cabe a você controlar TTL no backend.
-- **Contras:** precisa de armazenamento de sessão (memória/cache/banco).
-**Token (stateless, ex.: JWT):***
- O token **contém** o estado/claims e pode ser validado sem consulta ao servidor.
+| Prós | Contras |
+|------|---------|
+| - Simples de invalidar/rotacionar.<br>- Pode usar `HttpOnly + SameSite` para proteger contra XSS/CSRF.<br>- TTL controlado pelo backend. | - Precisa de armazenamento de sessão (memória/cache/banco). |
 
-- **Onde armazenar?**
-- **HttpOnly cookie**: melhora contra **XSS** (token inalcançável a JS), mas você deve **tratar CSRF** (SameSite + *anti-CSRF token*).
-- **localStorage***/memória**: evita **CSRF** (o navegador não envia sozinho), mas **expõe a XSS**; é crucial reduzir superfícies de injeção e rotacionar tokens.
-- **Boas práticas com tokens:** expiração curta (**access token**) + **refresh token** em **HttpOnly + Secure + SameSite**; *rotation* e revogação; escopos mínimos.
-**Resumo prático**
+### Token (stateless, ex.: JWT)
+O token **contém** claims/estado e pode ser validado sem consulta ao servidor.
 
-- Se seu app é “tradicional” (páginas web) ou SPA com backend próprio: **cookie HttpOnly Secure + SameSite** é padrão ouro, com **token anti-CSRF**.
-- Se você **evita cookies** (ex.: cliente CLI, *mobile* nativo) e usa Authorization: Bearer, foque em **armazenamento seguro do token**, **expiração curta** e **requerer reautenticação** quando suspeito.
-Riscos e ataques típicos
+#### Onde armazenar?
 
-- **Cookie stealing (captura de cookies)**: por rede (sem Secure), por **XSS** (sem HttpOnly), por **subdomínio malicioso** (escopo Domain amplo), por **exfiltração** via document.cookie ou *beacons*.
-- **XSS**: além de roubar cookies, pode **agir como o usuário logado** mesmo sem lê-los (efetua ações na página). CSP, validação/escaping e HttpOnly reduzem impacto.
-- **CSRF**: como o navegador envia cookies automaticamente, um site malicioso pode induzir o usuário a **acionar requisições válidas** contra seu domínio. SameSite ajuda, mas **mantenha sempre token anti-CSRF** (sincronizado, *double submit* ou cabeçalho custom com verificação de origem).
-- **Session fixation**: o atacante força a vítima a usar um **ID de sessão já conhecido**; ao logar, a sessão “vira” do atacante. **Rotacione a sessão no login** e rejeite IDs não emitidos pelo servidor.
+| Local | Vantagens | Riscos |
+|-------|-----------|--------|
+| **HttpOnly cookie** | Token inacessível ao JS → proteção contra XSS. | Precisa de proteção contra CSRF (`SameSite` + *anti-CSRF token*). |
+| **localStorage / memória** | Não é enviado automaticamente → reduz CSRF. | Exposição a XSS → qualquer injeção pode roubar o token. |
+
+#### Boas práticas
+- Tokens curtos (**access tokens**) + expiração rápida.  
+- **Refresh tokens** em `HttpOnly + Secure + SameSite`.  
+- Rotação e revogação de refresh tokens.  
+- Escopos mínimos de autorização.  
+
+### Resumo prático
+- **Apps web tradicionais ou SPAs com backend próprio** → `Cookie HttpOnly + Secure + SameSite` + **token anti-CSRF** (padrão ouro).  
+- **APIs para CLI ou mobile nativo** → evite cookies; use `Authorization: Bearer` + **armazenamento seguro**, expiração curta e **reautenticação quando suspeito**.  
+
+
+### Riscos e ataques típicos
+
+| Risco | Descrição | Mitigações |
+|-------|-----------|------------|
+| **Cookie stealing** | Captura via rede (sem `Secure`), via **XSS** (sem `HttpOnly`), via subdomínio malicioso (`Domain` amplo) ou exfiltração (`document.cookie`). | `Secure`, `HttpOnly`, `SameSite`, restringir escopo de domínio, CSP. |
+| **XSS** | Além de roubar cookies/tokens, pode executar ações em nome do usuário. | Validação/escaping de entradas, CSP restritivo, cookies `HttpOnly`. |
+| **CSRF** | Cookies são enviados automaticamente → outro site pode acionar requisições válidas. | `SameSite`, token anti-CSRF (sincronizado, *double submit*, cabeçalho custom). |
+| **Session fixation** | Atacante força uso de ID de sessão conhecido. | Rotacionar sessão no login, rejeitar IDs não emitidos pelo servidor. |
+| **Exposição por cache** | Respostas autenticadas expostas em caches compartilhados. | `Cache-Control: no-store`. |
+otacione a sessão no login** e rejeite IDs não emitidos pelo servidor.
 - **Exposição por cache**: nunca permita que respostas autenticadas sejam **cacheadas** publicamente; use Cache-Control: no-store.
 
 ### Vamos Refletir?
@@ -618,7 +624,7 @@ Depende da **ameaça dominante**. Cookies HttpOnly protegem melhor contra **XSS 
 
 ### Conclusão
 
-**C**ookies são uma ferramenta poderosa — e perigosa — quando mal configurados. Use **Secure** + ***HttpOnly** + ***SameSite**, **escopo mínimo** e **rotinas de rotação/invalidade**. O resultado é um *login* que continua simples para o usuário, mas **muito mais caro** para o atacante.
+Cookies são uma ferramenta poderosa — e perigosa — quando mal configurados. Use `Secure + `HttpOnly` + `SameSite`, **escopo mínimo** e **rotinas de rotação/invalidade**. O resultado é um *login* que continua simples para o usuário, mas **muito mais caro** para o atacante.
 
 ### Referências
 
@@ -628,11 +634,11 @@ Depende da **ameaça dominante**. Cookies HttpOnly protegem melhor contra **XSS 
 - Google Web.dev — *SameSite cookies explained*
 - PortSwigger Web Security Academy — *Cross-site request forgery (CSRF)*, *Cross-site scripting (XSS)*
 
-## Criptografia e TLS
+# 🔒 Criptografia e TLS
 
 A comunicação na web não pode ser considerada segura apenas pelo simples transporte de pacotes. É necessário garantir que os dados não sejam interceptados, modificados ou forjados. Nesse contexto, a criptografia e o protocolo TLS (Transport Layer Security) são a base da segurança do HTTP moderno, dando origem ao HTTPS.
 
-### Criptografia simétrica e assimétrica
+## Criptografia simétrica e assimétrica
 
 "A criptografia simétrica utiliza a **mesma chave** para cifrar e decifrar informações." (“A evolução digital tem levado à necessidade de garantir que as ...”) É extremamente rápida e eficiente, razão pela qual algoritmos como o **AES (Advanced Encryption Standard)** são amplamente utilizados em sessões TLS para proteger o tráfego contínuo entre cliente e servidor. O desafio está na distribuição inicial dessa chave: se alguém a intercepta, toda a comunicação pode ser comprometida.
 
@@ -640,19 +646,19 @@ Já a criptografia assimétrica usa um **par de chaves**: uma pública e uma pri
 
 Um navegador ao acessar um site não inicia a conexão trocando dados já cifrados com AES. Antes disso, é necessário estabelecer uma chave de sessão de forma segura, e é aqui que entram os algoritmos assimétricos: eles servem como “método de entrega” para que a chave simétrica seja trocada sem que terceiros consigam interceptá-la.
 
-### Hashing: integridade dos dados
+## Hashing: integridade dos dados
 
 Outro pilar fundamental é o **hashing**. Funções como **SHA-2** ou **SHA-3** geram um resumo fixo (digest) a partir de qualquer entrada de dados. Se um único byte é alterado, o hash resultante muda completamente, permitindo verificar integridade.
 
 Quando associado a **salting**, o hash é fortalecido contra-ataques de pré-computação, como tabelas arco-íris. Isso é muito usado no armazenamento seguro de senhas, mas também aparece em TLS, onde hashes asseguram que a mensagem recebida seja exatamente a que foi enviada.
 
-### Assinaturas digitais
+## Assinaturas digitais
 
 As assinaturas digitais unem criptografia assimétrica e hashing. Primeiro, o emissor calcula o hash da mensagem. Em seguida, esse hash é cifrado com sua chave privada (RSA ou ECDSA, no caso de curvas elípticas). Quem recebe, utiliza a chave pública para verificar a autenticidade.
 
 Na prática, quando você acessa um site HTTPS, o navegador valida a assinatura digital contida no certificado apresentado pelo servidor. Isso garante que o certificado foi emitido por uma Autoridade Certificadora confiável e que não foi alterado.
 
-### Infraestrutura de Chaves Públicas (PKI)
+## Infraestrutura de Chaves Públicas (PKI)
 
 Toda a confiança na web é sustentada pela **PKI (Public Key Infrastructure)**. Nesse modelo, existem **Autoridades Certificadoras (CAs)** responsáveis por emitir certificados digitais. Elas podem delegar a emissão para **CAs intermediárias**, formando uma **cadeia de confiança**.
 
@@ -660,7 +666,7 @@ Ao validar um certificado, o navegador percorre essa cadeia até chegar a uma ra
 
 Essa estrutura é essencial para evitar ataques de impersonação, nos quais um atacante tenta se passar por um site legítimo.
 
-### TLS Handshake: 1.2 vs 1.3
+## TLS Handshake: 1.2 vs 1.3
 
 O processo de handshake do TLS é o momento em que cliente e servidor negociam algoritmos, trocam chaves e estabelecem uma sessão segura.
 
@@ -668,7 +674,7 @@ O processo de handshake do TLS é o momento em que cliente e servidor negociam a
 - **TLS 1.3**: simplificou drasticamente o handshake, reduzindo a latência e exigindo apenas algoritmos modernos. Uma característica fundamental é a obrigatoriedade de **Perfect Forward Secrecy (PFS)**, geralmente implementada via **ECDHE (Elliptic Curve Diffie-Hellman Ephemeral)**. Isso significa que mesmo que a chave privada de um servidor seja comprometida futuramente, as sessões anteriores não poderão ser descriptografadas, já que cada sessão gera chaves efêmeras únicas.
 Na prática, TLS 1.3 melhora tanto a segurança quanto o desempenho, tornando-se padrão de fato para a web moderna.
 
-### Certificados Digitais
+## Certificados Digitais
 
 Certificados não são todos iguais; eles possuem diferentes níveis de validação:
 
@@ -714,63 +720,60 @@ O entendimento desses conceitos é crucial para analistas de segurança: não ba
 - Rescorla, E. "SSL and TLS: Designing and Building Secure Systems"
 - Mozilla Security Guidelines: Server Side TLS
 
-## HTTP, OWASP Top 10 e Controles de Segurança
+# 📋 HTTP, OWASP Top 10 e Controles de Segurança
 
 Quando falamos de segurança em aplicações web, o protocolo HTTP é o principal vetor a ser compreendido, já que é nele que transitam requisições, respostas e, muitas vezes, informações sensíveis. O **OWASP Top 10** atua como um guia das principais vulnerabilidades que exploram diretamente falhas nesse protocolo ou em sua implementação incorreta. Entender como essas falhas se conectam ao HTTP permite que analistas e engenheiros de segurança apliquem controles práticos para mitigação, construindo defesas mais sólidas.
 
 Mapeamento de Problemas HTTP para o OWASP Top 10
 
 - **Broken Authentication (A07:2021 – Identification and Authentication Failures)**
-Quando tokens de sessão são expostos em cookies sem atributos de segurança (Secure, HttpOnly, SameSite) ou armazenados em parâmetros de URL, o risco de sequestro de sessão se torna real. Um simples *session fixation* ou vazamento em logs pode comprometer a conta do usuário.
+  Quando tokens de sessão são expostos em cookies sem atributos de segurança (Secure, HttpOnly, SameSite) ou armazenados em parâmetros de URL, o risco de sequestro de sessão se torna real. Um simples *session fixation* ou vazamento em logs pode comprometer a conta do usuário.
 
 - **Cryptographic Failures (A02:2021)**
-Configurações inadequadas de TLS, uso de algoritmos obsoletos (MD5, SHA-1, RC4) ou a ausência de criptografia no transporte expõem dados sensíveis em trânsito. A negociação insegura em versões antigas como SSLv3 ou TLS 1.0 exemplifica falhas nesse ponto.
+
+  Configurações inadequadas de TLS, uso de algoritmos obsoletos (MD5, SHA-1, RC4) ou a ausência de criptografia no transporte expõem dados sensíveis em trânsito. A negociação insegura em versões antigas como SSLv3 ou TLS 1.0 exemplifica falhas nesse ponto.
 
 - **Security Misconfiguration (A05:2021)**
-Headers de segurança ausentes (CSP, HSTS, X-Frame-Options), mensagens de erro verbosas ou servidores expondo diretórios e banners de versão representam brechas que facilitam o trabalho do atacante. Muitas vezes, a negligência em configurar defaults seguros amplia a superfície de ataque.
+
+  Headers de segurança ausentes (CSP, HSTS, X-Frame-Options), mensagens de erro verbosas ou servidores expondo diretórios e banners de versão representam brechas que facilitam o trabalho do atacante. Muitas vezes, a negligência em configurar defaults seguros amplia a superfície de ataque.
 
 - **Injection (A03:2021)**
-A manipulação de parâmetros HTTP, query strings e headers sem validação permite ataques como *CRLF injection*, *host header injection* e *parameter pollution*. Essas falhas exploram diretamente o processamento inadequado de dados vindos da camada HTTP.
+
+  A manipulação de parâmetros HTTP, query strings e headers sem validação permite ataques como *CRLF injection*, *host header injection* e *parameter pollution*. Essas falhas exploram diretamente o processamento inadequado de dados vindos da camada HTTP.
 
 - **Insecure Design (A04:202)**
-APIs expostas sem rate-limiting ou com autenticação frágil permitem abusos como *credential stuffing* e ataques de força bruta. O problema não é apenas técnico, mas também arquitetural.
+
+  APIs expostas sem rate-limiting ou com autenticação frágil permitem abusos como *credential stuffing* e ataques de força bruta. O problema não é apenas técnico, mas também arquitetural.
 
 - **Vulnerable and Outdated Components (A06:2021)**
-Usar servidores HTTP com versões antigas (ex.: Apache com vulnerabilidade em mod_proxy ou Nginx sem patch) coloca a aplicação em risco antes mesmo do código ser analisado.
+
+  Usar servidores HTTP com versões antigas (ex.: Apache com vulnerabilidade em mod_proxy ou Nginx sem patch) coloca a aplicação em risco antes mesmo do código ser analisado.
 
 - **Identification and Authentication Failures (A07:2021)**
-JWTs sem expiração definida ou cookies de sessão não invalidados após logout são brechas comuns que exploram falhas de implementação do HTTP.
+
+  JWTs sem expiração definida ou cookies de sessão não invalidados após logout são brechas comuns que exploram falhas de implementação do HTTP.
 
 - **Software and Data Integrity Failures (A08:2021)**
-Download de scripts em aplicações sem uso de Subresource Integrity (SRI) em headers CSP é um ponto que conecta falhas HTTP com comprometimento da integridade de dados.
+
+  Download de scripts em aplicações sem uso de Subresource Integrity (SRI) em headers CSP é um ponto que conecta falhas HTTP com comprometimento da integridade de dados.
 
 - **Security Logging and Monitoring Failures (A09:2021)**
-Logs HTTP sem mascaramento de tokens, senhas ou dados pessoais expõem informações sensíveis e podem violar regulamentações como LGPD/GDPR.
+
+  Logs HTTP sem mascaramento de tokens, senhas ou dados pessoais expõem informações sensíveis e podem violar regulamentações como LGPD/GDPR.
 
 - **Server-Side Request Forgery (SSRF) (A10:2021)**
-Exploração de endpoints que recebem URLs via parâmetros HTTP, permitindo que o atacante faça o servidor requisitar recursos internos ou privados.
+
+  Exploração de endpoints que recebem URLs via parâmetros HTTP, permitindo que o atacante faça o servidor requisitar recursos internos ou privados.
 
 ### Checklists de Mitigação
 
-- **Transporte e Criptografia**
-- Habilitar TLS 1.2+ (preferencialmente TLS 1.3).
-- Desabilitar protocolos e cifras obsoletas.
-- Usar HSTS (Strict-Transport-Security).
-- **Autenticação e Sessões**
-- Cookies com Secure, HttpOnly e SameSite.
-- Sessões expiram após inatividade.
-- Rotação de sessão no login/logout.
-- **Headers de Segurança**
-- Content-Security-Policy (CSP).X-Content-Type-Options: nosniff.
-- X-Frame-Options: DENY/SAMEORIGIN.
-- Referrer-Policy configurada.
-- **Validação e Sanitização**
-- Validar entradas no *server-side*.Rejeitar valores fora de padrão esperado.
-- Escapar/encodar saídas para HTML, JSON, SQL.
-- **Controles Arquiteturais**
-- Rate-limiting e *throttling* em endpoints sensíveis.Autorização em múltiplas camadas (RBAC/ABAC).
-- Uso de *secure defaults* em frameworks e bibliotecas.
-Controles Práticos em HTTP
+| Categoria | Controles |
+|-----------|-----------|
+| **Transporte e Criptografia** | - Habilitar **TLS 1.2+** (preferencialmente TLS 1.3)<br>- Desabilitar protocolos e cifras obsoletas<br>- Usar **HSTS (Strict-Transport-Security)** |
+| **Autenticação e Sessões** | - Cookies com `Secure`, `HttpOnly` e `SameSite`<br>- Sessões expiram após inatividade<br>- Rotação de sessão no login/logout |
+| **Headers de Segurança** | - `Content-Security-Policy (CSP)`<br>- `X-Content-Type-Options: nosniff`<br>- `X-Frame-Options: DENY/SAMEORIGIN`<br>- `Referrer-Policy` configurada |
+| **Validação e Sanitização** | - Validar entradas no *server-side*<br>- Rejeitar valores fora do padrão esperado<br>- Escapar/encodar saídas para HTML, JSON, SQL |
+| **Controles Arquiteturais** | - **Rate limiting** e *throttling* em endpoints sensíveis<br>- Autorização em múltiplas camadas (**RBAC/ABAC**)<br>- Uso de *secure defaults* em frameworks e bibliotecas |
 
 - **Rate-Limiting**: bloquear tentativas de login após X falhas, limitar chamadas por IP em APIs públicas, mitigando força bruta e DoS.
 - **Input Validation**: validar dados ainda na borda da aplicação, rejeitando caracteres ou formatos inesperados.
@@ -781,23 +784,23 @@ Controles Práticos em HTTP
 
 - **Se um cookie de sessão não estiver marcado como ***HttpOnly***, que tipo de ataque pode explorá-lo?**
 
-Ele pode ser roubado via JavaScript injetado em um ataque XSS, permitindo que o invasor assuma a sessão do usuário.
+  Ele pode ser roubado via JavaScript injetado em um ataque XSS, permitindo que o invasor assuma a sessão do usuário.
 
 - **Qual a relação entre ***rate-limiting*** e ataques de força bruta em HTTP?**
 
-O rate-limiting limita requisições por IP/usuário, dificultando ataques automáticos de força bruta contra endpoints de login.
+  O rate-limiting limita requisições por IP/usuário, dificultando ataques automáticos de força bruta contra endpoints de login.
 
 - **Por que o uso de TLS 1.0 representa risco mesmo em aplicações internas?**
 
-Porque algoritmos antigos possuem vulnerabilidades conhecidas que permitem descriptografar tráfego, e redes internas não são ambientes totalmente confiáveis.
+  Porque algoritmos antigos possuem vulnerabilidades conhecidas que permitem descriptografar tráfego, e redes internas não são ambientes totalmente confiáveis.
 
 - **O que pode acontecer se o cabeçalho ***Content-Security-Policy*** não for configurado?**
 
-O navegador não terá instruções para restringir a origem de scripts, o que facilita exploração de XSS e injeções de conteúdo.
+  O navegador não terá instruções para restringir a origem de scripts, o que facilita exploração de XSS e injeções de conteúdo.
 
 - **Como as falhas de logging podem se transformar em violações de privacidade?**
 
-Quando dados pessoais ou tokens sensíveis são armazenados em logs sem mascaramento, há risco de vazamento em auditorias, suporte técnico ou incidentes de exposição.
+  Quando dados pessoais ou tokens sensíveis são armazenados em logs sem mascaramento, há risco de vazamento em auditorias, suporte técnico ou incidentes de exposição.
 
 ### Casos Reais
 
@@ -811,9 +814,9 @@ A análise da relação entre HTTP e o **OWASP Top 10** evidência como falhas a
 
 ### Referências
 
-- OWASP Top 10 – 2021: https://owasp.org/Top10/
-- Mozilla Security Guidelines: https://infosec.mozilla.org/guidelines/web_securityNIST SP 800-53 – Security and Privacy Controls for Information Systems
-RFC 9110 – HTTP Semantics
+- OWASP Top 10 – 2021
+- Mozilla Security Guidelines: Security and Privacy Controls for Information Systems
+- RFC 9110 – HTTP Semantics
 - RFC 8446 – TLS 1.3
 
 ### Conclusão
