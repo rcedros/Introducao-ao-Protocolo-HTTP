@@ -7,7 +7,6 @@
 - Relevância em **segurança, arquitetura e confiabilidade**  
 
 **Visual:** 🌐 Rede + 🔒 Cadeado  
-**Lab:** —  
 
 ## 🔹 Slide 2 – Panorama HTTP/HTTPS  
 **Conteúdo:**  
