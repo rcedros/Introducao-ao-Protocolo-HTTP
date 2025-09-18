@@ -215,26 +215,21 @@ curl -X DELETE https://api.loja.com/usuarios/42
 
 ### Idempotência — a cola entre confiabilidade e segurança
 
-**Definição curta:** uma operação é **idempotente** quando **repeti-la** (com os mesmos parâmetros) **não muda o resultado** além do primeiro efeito. Em HTTP: **GET**, **HEAD**, **PUT** e **DELETE** são idempotentes por padrão; **POST** **não é**; **PATCH** depende.
+Uma operação é considerada **idempotente** quando repeti-la, usando os mesmos parâmetros, não altera o resultado além do primeiro efeito. No contexto de HTTP, os métodos **GET, HEAD, PUT e DELETE** são idempotentes por padrão, enquanto **POST** não é e o **PATCH** depende da implementação.
 
-**Por que isso importa?**
+Essa característica importa tanto para **confiabilidade** quanto para **segurança**. Em cenários de rede, falhas são comuns e clientes podem realizar retries. Em métodos idempotentes, repetir a requisição não gera problemas; já em um POST, isso pode duplicar efeitos indesejados, como processar dois pagamentos.
 
-- **Confiabilidade:** redes falham; clientes fazem **retries**. Em métodos idempotentes, repetir é seguro; em **POST**, pode duplicar efeitos (ex.: dois pagamentos).
-- **Segurança:** idempotência e **pré-condições** (If-Match + ETag) evitam *race conditions* e **atenuam replays acidentais**. Para **POST**, use **Idempotency-Key** (um identificador único por operação) para que *retries* devolvam **o mesmo resultado** do primeiro processamento — **sem duplicar**.
-**Três padrões práticos:**
+Na dimensão de segurança, idempotência combinada com **pré-condições** (como `If-Match` com ETag) ajuda a evitar race conditions e mitigar replays acidentais. Para operações de criação ou pagamento via POST, é recomendável usar o cabeçalho **Idempotency-Key**, um identificador único que garante que tentativas repetidas retornem o mesmo resultado do primeiro processamento, sem duplicar efeitos.
 
-- **Pré-condições** em escrita (PUT/PATCH/DELETE): Envie 
-If-Match: <ETag> e retorne **412 Precondition Failed** se a versão mudou.
-- **Idempotency-Key** em **POST** (criação/pagamento): O servidor guarda o 
-**resultado** do primeiro processamento por uma janela (ex.: 24h) e responde igual em *retries* com a mesma chave.
-- **Registro contra replay**: Para endpoints sensíveis, rejeite 
-**Early-Data (0-RTT)** com **425 Too Early** ou desabilite 0-RTT, obrigando handshake completo antes de processar.
-Redirecionamentos sem armadilhas (303 vs 307/308)
+Alguns padrões práticos reforçam essa abordagem:
 
-- **Após um POST**, evite 301/302 (alguns clientes podem trocar o método para GET).
-- Use o padrão **PRG — Post/Redirect/Get** com **303 See Other**: processa o POST e redireciona para uma URL de leitura (GET).
-- Quando **precisar preservar método e corpo**, use **307 Temporary Redirect** ou **308 Permanent Redirect**.
-**Benefícios:** previne reenvio acidental em “refresh/back”, reduz risco de vazamento pela URL e mantém a semântica do método onde for necessário.
+- **Pré-condições em escrita (PUT/PATCH/DELETE):** o cliente envia `If-Match`; se a versão tiver mudado, o servidor responde com `412 Precondition Failed`.
+
+- **Idempotency-Key em POST:** o servidor armazena o resultado inicial por uma janela de tempo (ex.: 24h) e repete a mesma resposta em retries com a mesma chave.
+
+- **Proteção contra replay em early data:** para endpoints sensíveis, recomenda-se rejeitar requisições em 0-RTT (425 Too Early) ou simplesmente desabilitar 0-RTT, exigindo o handshake completo do TLS.
+
+Também é importante tratar redirecionamentos após um POST. Evite 301 ou 302, pois alguns clientes podem alterar o método para GET, causando inconsistências. O padrão mais seguro é o PRG (Post/Redirect/Get) com **303 See Other**, que processa o POST e redireciona para uma URL de leitura. Quando for necessário preservar método e corpo, utilize 307 Temporary Redirect ou 308 Permanent Redirect. Essa prática previne reenvios acidentais em “refresh/back”, reduz riscos de vazamento de dados em URLs e mantém a semântica correta do método.
 
 ### 📬 Códigos de status — leitura tática para segurança
 
