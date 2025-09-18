@@ -153,6 +153,7 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 -d '{"cliente_id": 42, "itens": [{"sku":"ABC","qtd":2}]}'
 
 - **Segurança:** por ser não idempotente, **retries** podem duplicar operações (cobranças, pedidos). Veremos como mitigar com **Idempotency-Key**.
+
 #### PUT — “Quero substituir”
 
 - **Intenção:** **substituir por completo** a representação de um recurso existente (ou criar se a rota permitir “upsert”).
@@ -273,7 +274,8 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 - **Recursos públicos/estáticos:** Cache-Control: public, max-age=... + **ETag**; use Vary quando a resposta muda por cabeçalho (ex.: Accept-Encoding, Authorization não deve ser armazenado em caches compartilhados).
 - **Dados sensíveis/autenticados:** Cache-Control: no-store para evitar persistência em disco/memória de intermediários; preferir **revalidação** controlada para equilibrar performance e sigilo.
 - **POST** normalmente **não** é armazenado por caches; **GET** pode ser. Logo, **jamais** retorne dados sensíveis em GET sem as devidas diretivas.
-Casos reais & lições rápidas
+
+### Casos reais
 
 - **Pagamentos e idempotência (Stripe).** Repetições de POST por perda de resposta geram **cobranças duplicadas**. A solução foi **Idempotency-Key** em todos os POSTs: o primeiro resultado fica “fixado” pela chave e *retries* devolvem a mesma resposta (inclusive erros 5xx), tipicamente por 24h.[ ](https://docs.stripe.com/api/idempotent_requests)
 - **Redirecionar POST como GET.** Usar **302** após um POST pode levar *user agents* a **trocar o método** (POST→GET). O padrão **PRG** com **303 See Other** remove esse risco; **307/308** preservam o método quando é isso que se deseja.
@@ -452,7 +454,7 @@ Carregam credenciais e desafios de autenticação.
 - Ativar **CSP/HSTS** e boas políticas de cache para reduzir impacto colateral.
 **Header Injection** (mais amplo) é qualquer manipulação de cabeçalho via entrada do usuário: além de CRLF, há **injeção de prefixos/sufixos** em Set-Cookie, Location, Host dependentes de upstream etc. A defesa é **não confiar** em valores externos, **normalizar** e **validar estritamente**.
 
-### Casos reais (e o que aprendemos)
+### Casos reais
 
 - **sslstrip e o nascimento do HSTS**
 Ataques de *downgrade*/redirecionamento para HTTP levavam usuários a sessões sem TLS. **HSTS** com *preload* tornou isso muito mais difícil, exigindo HTTPS desde o primeiro pedido “conhecido”.
@@ -582,16 +584,17 @@ Depende da **ameaça dominante**. Cookies HttpOnly protegem melhor contra **XSS 
 - **Como mitigar session fixation?**
 **Gere um novo ID de sessão ao logar** (e ao elevar privilégios), invalide o ID antigo no servidor e recuse IDs não emitidos por você. *Set-Cookie* com Secure/HttpOnly/SameSite completa a defesa.
 
-**Casos reais**
+### Casos reais
 
 - **Firesheep (Wi-Fi aberto):** milhares de sessões de redes sociais eram sequestradas porque os sites serviam partes do tráfego em HTTP, e cookies sem Secure “vazavam”. A reação da indústria consolidou **HTTPS por padrão** + Secure.
 - **Subdomínio tomado, sessão perdida:** empresas com DNS amplo viram **subdomain takeover** permitir que invasores **capturassem cookies** de Domain=exemplo.com. Solução: **host-only cookies**, higiene de DNS e *asset inventory*.
 - **CSRF persistente em backoffice:** um painel administrativo aceitava POST sem token e com SameSite=None. Um site externo induzia cliques/auto-submits, causando **alterações indesejadas**. Correção: SameSite=Lax/Strict + **anti-CSRF token** e validação de origem.
-Conclusão
+
+### Conclusão
 
 **C**ookies são uma ferramenta poderosa — e perigosa — quando mal configurados. Use **Secure**** + ****HttpOnly**** + ****SameSite**, **escopo mínimo** e **rotinas de rotação/invalidade**. O resultado é um *login* que continua simples para o usuário, mas **muito mais caro** para o atacante.
 
-**Referências**
+### Referências
 
 - IETF RFC 6265 — HTTP State Management Mechanism
 - OWASP Cheat Sheets — *Session Management*, *Cross-Site Scripting Prevention*, *CSRF Prevention*
@@ -665,18 +668,19 @@ Se a chave privada for comprometida, todos os subdomínios estarão igualmente e
 - **Por que o uso de SHA-1 foi abandonado em certificados digitais?**
 Porque colisões foram demonstradas na prática, permitindo que dois documentos diferentes tivessem o mesmo hash. Isso comprometia a segurança das assinaturas digitais.
 
-**Casos Reais**
+### Casos reais
 
 - Em 2011, a CA holandesa **DigiNotar** foi comprometida, permitindo a emissão fraudulenta de certificados para domínios do Google. O impacto foi enorme: atacantes podiam realizar ataques MITM contra usuários iranianos. Esse caso reforçou a importância de mecanismos de revogação e auditoria em CAs.
 - Em 2017, o **ataque ROCA** mostrou que milhões de chaves RSA geradas por smartcards tinham fraquezas matemáticas, permitindo sua quebra. Isso acelerou a adoção de ECC e algoritmos mais modernos.
 - Em 2020, o navegador Chrome anunciou que certificados TLS não poderiam ter validade superior a 398 dias, reduzindo o risco de certificados comprometidos permanecerem ativos por muito tempo.
-**Conclusão**
+  
+### Conclusão
 
 Neste capítulo vimos como a segurança do HTTP depende de uma combinação entre criptografia simétrica, assimétrica, funções de hash e assinaturas digitais, todas orquestradas dentro do protocolo TLS. Exploramos como a PKI garante a confiança na web e como as versões mais recentes do TLS priorizam tanto desempenho quanto sigilo futuro. Também analisamos os diferentes tipos de certificados digitais e seus impactos práticos na segurança organizacional.
 
 O entendimento desses conceitos é crucial para analistas de segurança: não basta saber que “HTTPS é seguro”. É necessário compreender as camadas internas, os riscos associados a escolhas incorretas (como certificados wildcard mal gerenciados) e a evolução dos algoritmos ao longo do tempo. Esse olhar crítico permitirá identificar falhas, avaliar riscos e aplicar medidas preventivas que mantêm a comunicação na web verdadeiramente segura.
 
-**Referências**
+### Referências
 
 - RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3
 - NIST Special Publication 800-57: Recommendation for Key Management
@@ -763,23 +767,24 @@ O navegador não terá instruções para restringir a origem de scripts, o que f
 - **Como as falhas de logging podem se transformar em violações de privacidade?**
 Quando dados pessoais ou tokens sensíveis são armazenados em logs sem mascaramento, há risco de vazamento em auditorias, suporte técnico ou incidentes de exposição.
 
-Casos Reais
+### Casos reais
 
 - **Equifax (2017)**: falha em componente desatualizado (Apache Struts) explorado via requisições HTTP maliciosas, expondo dados de milhões de usuários.
 - **Yahoo (2013–2014)**: tokens de sessão roubados sem expiração adequada, permitindo acesso persistente a contas de usuários.
 - **Capital One (2019)**: configuração incorreta de firewall de aplicação e exploração de SSRF em requisições HTTP levou ao vazamento de dados de clientes.
-Conclusão
+
+### Conclusão
 
 A análise da relação entre HTTP e o **OWASP Top 10** evidência como falhas aparentemente simples, como a ausência de um header de segurança ou a configuração incorreta de cookies, podem ser a porta de entrada para ataques graves. Cada camada do protocolo precisa ser tratada com rigor, garantindo **defesa em profundidade**: desde criptografia de transporte até validações, controles de sessão e logging seguro. Compreender esse mapeamento não é apenas uma questão de conformidade, mas de maturidade em segurança cibernética. Afinal, o HTTP é o fio condutor de toda comunicação web — e nele podem residir as maiores vulnerabilidades ou as melhores defesas.
 
-Referências
+### Referências
 
 - OWASP Top 10 – 2021: https://owasp.org/Top10/
 - Mozilla Security Guidelines: https://infosec.mozilla.org/guidelines/web_securityNIST SP 800-53 – Security and Privacy Controls for Information Systems
 RFC 9110 – HTTP Semantics
 - RFC 8446 – TLS 1.3
 
-## Conclusão
+### Conclusão
 
 Ao longo dos capítulos, exploramos o protocolo HTTP em profundidade, analisando não apenas sua estrutura de funcionamento, mas também sua importância para a segurança cibernética e para o desenho de arquiteturas confiáveis. O HTTP, muitas vezes visto apenas como um meio de transporte de informações entre cliente e servidor, revelou-se um elemento estratégico para a proteção de sistemas modernos.
 
