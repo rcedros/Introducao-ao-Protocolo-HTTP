@@ -1,6 +1,4 @@
-# Introdução ao Curso HTTP em Profundidade
-
-## Introdução
+# 📘 Introdução ao Curso HTTP em Profundidade
 
 O **HTTP (Hypertext Transfer Protocol)** é o protocolo de comunicação que sustenta a Web como a conhecemos. Ele define como mensagens são formatadas e transmitidas entre clientes (normalmente navegadores, aplicações móveis ou scripts automatizados) e servidores, determinando como estes devem responder a diferentes tipos de requisições.
 
@@ -20,13 +18,13 @@ O design de aplicações modernas depende fortemente de recursos do HTTP/HTTPS: 
 - **Confiança**
 O HTTPS é o pilar que sustenta a confiança dos usuários na Internet. Ao ver o cadeado no navegador, o usuário entende que há uma garantia mínima de segurança na comunicação. Se a configuração do protocolo for falha (ex.: certificados expirados, versões antigas do TLS, ausência de HSTS), essa confiança pode ser quebrada e abrir portas para ataques como *Man-in-the-Middle* (MITM).
 - **Risco**
-Do ponto de vista de segurança cibernética, cada detalhe mal compreendido pode se transformar em vetor de ataque. Casos Reais incluem **injeção em cabeçalhos HTTP (CRLF Injection)**, **cookies sem flags de segurança**, **má gestão de sessões** ou **implementação incorreta de CORS**, todos explorados por atacantes para roubo de dados e comprometimento de sistemas.
+Do ponto de vista de segurança cibernética, cada detalhe mal compreendido pode se transformar em vetor de ataque. Casos reais incluem **injeção em cabeçalhos HTTP (CRLF Injection)**, **cookies sem flags de segurança**, **má gestão de sessões** ou **implementação incorreta de CORS**, todos explorados por atacantes para roubo de dados e comprometimento de sistemas.
 
-### Vamos Refletir?
+### 🧠 Vamos Refletir?
 
 Para um analista de segurança, estudar o HTTP/HTTPS em profundidade é mais do que conhecer um protocolo: é compreender **onde falhas arquiteturais podem virar brechas exploráveis**. Assim, o profissional deixa de ser apenas um executor de tarefas e passa a atuar como um **guarda de fronteira**, capaz de identificar pontos frágeis e sugerir melhorias antes que incidentes aconteçam.
 
-## HTTP em Profundidade
+## 🌐 HTTP em Profundidade
 
 O protocolo HTTP, apesar de parecer simples, passou por grandes transformações ao longo das últimas décadas. Cada nova versão foi criada para resolver limitações das anteriores e para acompanhar o crescimento da Web em termos de **desempenho, escalabilidade e segurança**. Entender essas diferenças é essencial para um analista de segurança, pois cada recurso introduzido pode trazer tanto benefícios quanto novas superfícies de ataque.
 
@@ -65,11 +63,12 @@ A versão mais recente, padronizada em 2022, utiliza o protocolo **QUIC**, desen
 - **HTTP/1.1**: dependia fortemente do cache para compensar múltiplas conexões.
 - **HTTP/2**: reduziu a necessidade de *hacks* como *domain sharding* e *sprite sheets*, mas exige atenção em ambientes corporativos que fazem *deep packet inspection*.
 - **HTTP/3**: aumenta a velocidade em redes instáveis (móveis), mas sua adoção ainda é desigual, criando cenários híbridos que os analistas precisam entender.
-Caso Real
+
+### Casos Reais
 
 Um estudo do **Cloudflare** mostrou que a adoção do HTTP/3 reduziu em até **27% a latência de carregamento** em dispositivos móveis. Por outro lado, em empresas que dependiam de proxies intermediários, a migração trouxe falhas de compatibilidade, revelando como a segurança e a performance estão intimamente ligadas às escolhas arquiteturais.
 
-### Vamos Refletir?
+### 🧠 Vamos Refletir?
 
 **Por que o HTTP/1.1 ainda é tão utilizado mesmo com a existência do HTTP/2 e do HTTP/3?**
 
@@ -94,7 +93,7 @@ No HTTP/3, o **TLS 1.3 está embutido no próprio protocolo**, garantindo que co
 - No **HTTP/3**, embora o cache continue relevante, o tráfego criptografado e o uso de QUIC tornam mais difícil para intermediários aplicarem políticas, exigindo atenção redobrada ao configurar os servidores.
 Em todos os casos, **má configuração de cache pode expor dados confidenciais**, como páginas autenticadas sendo armazenadas e reutilizadas indevidamente por outros usuários.
 
-### Referências
+### 📚 Referências
 
 - Fielding, R. T., & Reschke, J. (2014). *Hypertext Transfer Protocol (HTTP/1.1)* – IETF RFC 7230.
 - Belshe, M., Peon, R., & Thomson, M. (2015). *Hypertext Transfer Protocol Version 2 (HTTP/2)* – IETF RFC 7540.
@@ -237,7 +236,7 @@ Redirecionamentos sem armadilhas (303 vs 307/308)
 - Quando **precisar preservar método e corpo**, use **307 Temporary Redirect** ou **308 Permanent Redirect**.
 **Benefícios:** previne reenvio acidental em “refresh/back”, reduz risco de vazamento pela URL e mantém a semântica do método onde for necessário.
 
-### Códigos de status — leitura tática para segurança
+### 📬 Códigos de status — leitura tática para segurança
 
 Um **Status Code HTTP** (código de estado) é um número de três dígitos que o servidor retorna ao cliente — como um navegador ou aplicação — em resposta a uma requisição. Esse código resume o resultado da solicitação, indicando se ela foi concluída com sucesso, se exige uma ação adicional ou se ocorreu algum erro no lado do cliente ou do servidor.
 
@@ -302,7 +301,7 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 - **0-RTT**: evite processar operações sensíveis recebidas como *early data*; responda **425** ou desabilite 0-RTT nesses endpoints.
 - **Cache consciente**: use ETag/Last-Modified e **304** para eficiência; invalide corretamente após mutações (e.g., no-store/must-revalidate quando preciso).
 
-### Vamos Refletir?
+### 🧠 Vamos Refletir?
 
 1. **Por que ***retry*** automático de POST pode ser perigoso e como mitigá-lo?**
 
@@ -328,7 +327,7 @@ Quando a requisição chegou como **Early Data (0-RTT)** e **pode ser replayada*
 
 Projetar bem **métodos** e **idempotência** não é detalhe acadêmico: é um **controle de segurança** que conversa com redirecionamentos, códigos de status, condicionais e cache. Quando esses elementos trabalham em harmonia, sua API fica **performática, previsível e resiliente a falhas e abusos** — exatamente o que buscamos em um ambiente de segurança cibernética moderno.
 
-### Referências
+### 📚 Referências
 
 - RFC 9111 — HTTP Caching
 - RFC 8470 — Using Early Data in HTTP
@@ -343,7 +342,7 @@ Projetar bem **métodos** e **idempotência** não é detalhe acadêmico: é um 
 - OWASP Cheat Sheet Series — CSRF Prevention, REST Security
 - MDN Web Docs — documentação operativa de métodos, cabeçalhos e códigos
 
-## Headers e Security Headers — a “camada de meta-informação” que protege (e acelera) sua aplicação
+## 🛡 Headers e Security Headers — a “camada de meta-informação” que protege (e acelera) sua aplicação
 
 No HTTP, **headers** são pares Nome: Valor enviados em **requisições** e **respostas**. Eles não carregam o “conteúdo em si”, mas **instruções e sinais** que influenciam como clientes, servidores, proxies, CDNs e navegadores devem tratar aquele conteúdo: formato, cache, políticas de segurança, autenticação, CORS etc. Em segurança, são decisivos porque **ativam controles no próprio user-agent** (ex.: bloquear *inline scripts*, proibir *framing*) e **fecham brechas em camadas intermediárias** (ex.: cache, redirecionamentos, sniffing de tipo).
 
@@ -389,10 +388,7 @@ Força o navegador a **usar sempre HTTPS** para o domínio (e subdomínios, se c
 Content-Security-Policy (CSP) Define de onde conteúdos podem ser carregados (
 *scripts, styles, images, frames…*) e que comportamentos são permitidos.
 
-Ex.:
- 
-#### Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-R4nd0m'; object-src 'none'; frame-ancestors 'none'
-
+Ex.: Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-R4nd0m'; object-src 'none'; frame-ancestors 'none'
 - Benefício: **mitiga XSS** ao bloquear *inline scripts* sem nonce/hash, proíbe objetos perigosos e **substitui** o antigo controle de *framing* (veja frame-ancestors).
 X-Frame-Options (legado, ainda útil) Controle de framing antigo: 
 DENY ou SAMEORIGIN.
@@ -487,7 +483,7 @@ Cadeias de *supply chain* em JS comprometeram páginas de pagamento. **CSP com n
 
 Headers são **o contrato** que orienta como cada salto de rede e o próprio navegador devem tratar sua aplicação. Quando você domina **Security Headers + CORS + Authorization** — e evita **CRLF/Header Injection** — o front-end passa a **colaborar** ativamente com sua defesa, reduzindo XSS, clickjacking, vazamentos e abusos. E o melhor: muitos desses controles são **baratos de implementar** e **altamente efetivos**.
 
-### Referências
+### 📚 Referências
 
 - RFC 9110 — HTTP Semantics (headers, autenticação, status)
 - RFC 6797 — HTTP Strict Transport Security (HSTS)
@@ -500,11 +496,11 @@ Headers são **o contrato** que orienta como cada salto de rede e o próprio nav
 - MDN Web Docs — guias práticos de cada header
 - securityheaders.com — scanner público de headers de segurança
 
-## Gerenciamento de Cookies — controle de estado com segurança.
+## 🍪 Gerenciamento de Cookies — controle de estado com segurança.
 
 Cookies são pequenos pares nome=valor que o servidor instrui o navegador a armazenar e **reenviar automaticamente** em requisições futuras para o mesmo site. Eles existem para **manter estado em um protocolo sem estado**: autenticação de sessões, preferências de usuário, carrinho de compras, *anti-CSRF tokens*, limites de taxa por usuário, entre outros. Justamente por viajarem “sozinhos” (o navegador os envia sem o usuário perceber), são também um ponto sensível: um cookie mal configurado pode entregar sua sessão a um atacante.
 
-O que são e para que servem (na prática)
+### O que são e para que servem (na prática)
 
 Quando o servidor responde com Set-Cookie, o navegador grava aquele dado respeitando **escopo** (domínio e caminho), **atributos** (segurança, expiração, política *same-site*) e **persistência** (sessão ou longo prazo). A cada nova requisição cujo **host** e **path** combinem com o cookie, o navegador adiciona um cabeçalho:
 
@@ -520,7 +516,9 @@ Isso permite que o backend reconheça quem é o usuário e aplique lógica de au
 - **Persistentes**: têm Expires ou Max-Age; sobrevivem a reinícios do navegador (ex.: “manter conectado por 30 dias”).
 - **De terceiros (third-party)**: definidos por um **domínio diferente** do que você está visitando (ex.: um *widget* ou um *ad server* embutido). São amplamente **restringidos** pelos navegadores modernos e tendem a ser desencorajados para autenticação.
 
-Atributos de segurança essenciais
+### Atributos de segurança essenciais
+
+<img width="1889" height="886" alt="image" src="https://github.com/user-attachments/assets/43f111cf-859d-4a61-bfa5-d328312b8909" />
 
 #### Secure
 
@@ -590,7 +588,7 @@ Riscos e ataques típicos
 - **Session fixation**: o atacante força a vítima a usar um **ID de sessão já conhecido**; ao logar, a sessão “vira” do atacante. **Rotacione a sessão no login** e rejeite IDs não emitidos pelo servidor.
 - **Exposição por cache**: nunca permita que respostas autenticadas sejam **cacheadas** publicamente; use Cache-Control: no-store.
 
-### Vamos Refletir?
+### 🧠 Vamos Refletir?
 
 1. **Por que ***HttpOnly** não “resolve” XSS completamente?**
 Porque XSS pode **executar ações** em nome do usuário sem necessariamente **ler** o cookie. HttpOnly protege o **segredo** do cookie, mas você ainda precisa de **CSP**, validação de entrada e *output encoding*.
@@ -617,7 +615,7 @@ Depende da **ameaça dominante**. Cookies HttpOnly protegem melhor contra **XSS 
 
 **C**ookies são uma ferramenta poderosa — e perigosa — quando mal configurados. Use **Secure** + ***HttpOnly** + ***SameSite**, **escopo mínimo** e **rotinas de rotação/invalidade**. O resultado é um *login* que continua simples para o usuário, mas **muito mais caro** para o atacante.
 
-### Referências
+### 📚 Referências
 
 - IETF RFC 6265 — HTTP State Management Mechanism
 - OWASP Cheat Sheets — *Session Management*, *Cross-Site Scripting Prevention*, *CSRF Prevention*
@@ -674,7 +672,7 @@ Certificados não são todos iguais; eles possuem diferentes níveis de validaç
 - **EV (Extended Validation)**: exige validações legais e corporativas mais rigorosas. Antigamente, navegadores exibiam a barra verde para EV, mas hoje essa diferenciação visual quase desapareceu.
 - **Wildcard**: cobre múltiplos subdomínios de um mesmo domínio (ex.: *.empresa.com). É prático, mas aumenta o risco: se a chave privada vaza, todos os subdomínios ficam comprometidos.
 
-### Vamos Refletir?
+### 🧠 Vamos Refletir?
 
 - **Por que não se utiliza apenas criptografia assimétrica em uma conexão HTTPS?**
 Porque ela é computacionalmente pesada e inviável para grandes volumes de dados. Por isso, usa-se assimétrica apenas no início da sessão para trocar a chave simétrica, que será responsável por proteger a comunicação contínua.
@@ -703,7 +701,7 @@ Neste capítulo vimos como a segurança do HTTP depende de uma combinação entr
 
 O entendimento desses conceitos é crucial para analistas de segurança: não basta saber que “HTTPS é seguro”. É necessário compreender as camadas internas, os riscos associados a escolhas incorretas (como certificados wildcard mal gerenciados) e a evolução dos algoritmos ao longo do tempo. Esse olhar crítico permitirá identificar falhas, avaliar riscos e aplicar medidas preventivas que mantêm a comunicação na web verdadeiramente segura.
 
-### Referências
+### 📚 Referências
 
 - RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3
 - NIST Special Publication 800-57: Recommendation for Key Management
@@ -774,7 +772,7 @@ Controles Práticos em HTTP
 - **Output Encoding**: escapar respostas em HTML/JSON para evitar XSS refletido.
 - **Secure Defaults**: configurar servidores (Nginx, Apache, IIS) para não exporem informações de versão, ativar headers de segurança por padrão e aplicar *deny-all* em firewalls de aplicação, liberando apenas o necessário.
 
-### Vamos Refletir?
+### 🧠 Vamos Refletir?
 
 - **Se um cookie de sessão não estiver marcado como ***HttpOnly***, que tipo de ataque pode explorá-lo?**
 
@@ -806,7 +804,7 @@ Quando dados pessoais ou tokens sensíveis são armazenados em logs sem mascaram
 
 A análise da relação entre HTTP e o **OWASP Top 10** evidência como falhas aparentemente simples, como a ausência de um header de segurança ou a configuração incorreta de cookies, podem ser a porta de entrada para ataques graves. Cada camada do protocolo precisa ser tratada com rigor, garantindo **defesa em profundidade**: desde criptografia de transporte até validações, controles de sessão e logging seguro. Compreender esse mapeamento não é apenas uma questão de conformidade, mas de maturidade em segurança cibernética. Afinal, o HTTP é o fio condutor de toda comunicação web — e nele podem residir as maiores vulnerabilidades ou as melhores defesas.
 
-### Referências
+### 📚 Referências
 
 - OWASP Top 10 – 2021: https://owasp.org/Top10/
 - Mozilla Security Guidelines: https://infosec.mozilla.org/guidelines/web_securityNIST SP 800-53 – Security and Privacy Controls for Information Systems
@@ -821,7 +819,7 @@ Revisitamos seus **principais conceitos**: os métodos e sua semântica (GET, PO
 
 A **conexão entre protocolo, segurança e arquitetura** fica clara quando compreendemos que falhas em qualquer ponto — seja na definição incorreta de headers, na ausência de criptografia forte, ou na má gestão de sessões — podem abrir brechas exploráveis por atacantes. Arquiteturas seguras são aquelas que não apenas implementam o protocolo de forma correta, mas que incorporam a segurança desde o design: políticas de rate limiting para evitar abuso, input validation para conter injeções, rotação de sessões para reduzir sequestros de identidade e security headers bem configurados para aumentar a resiliência contra-ataques comuns.
 
-Como **próximos passos**, o leitor é incentivado a:
+## 🚀 próximos passos, o leitor é incentivado a:
 
 - Realizar **laboratórios avançados**, como montar um proxy reverso com Nginx/Apache e configurar headers de segurança, simular ataques de request smuggling em ambientes controlados ou analisar tráfego TLS 1.3 com Wireshark para entender a negociação de chaves.
 - Aprofundar-se em **cursos especializados**, como treinamentos de OWASP, SANS ou módulos de segurança de APIs, que ampliam a compreensão prática de riscos e defesas.
