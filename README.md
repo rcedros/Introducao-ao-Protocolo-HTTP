@@ -116,9 +116,9 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 ### Um sumário útil para o dia a dia da segurança:
 
 - **GET / HEAD**: *safe* e idempotentes. **Jamais** faça ações mutáveis com GET; se fizer, trate como risco CSRF.
-- **PUT**: substitui representação; idempotente. Use com **If-Match** para evitar *lost update*.[ ](https://datatracker.ietf.org/doc/html/rfc9110)
-- **DELETE**: idempotente (deletar “de novo” não muda o resultado)[
-](https://datatracker.ietf.org/doc/html/rfc9110)**POST**: não idempotente; desenhe salvaguardas (ver “Idempotência prática”, abaixo).[ ](https://datatracker.ietf.org/doc/html/rfc9110)
+- **PUT**: substitui representação; idempotente. Use com **If-Match** para evitar *lost update*.
+- **DELETE**: idempotente (deletar “de novo” não muda o resultado)
+- **POST**: não idempotente; desenhe salvaguardas (ver “Idempotência prática”, abaixo).
 - **PATCH**: semântica parcial; **não é** idempotente por padrão (pode ser, se você definir assim). Baseie-se em pré-condições (ETag) se a atualização for concorrida.
 
 #### GET — “Quero ler”
@@ -127,7 +127,10 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 - **Propriedade:** *safe* (não deve mudar estado) e **idempotente**.
 - **Exemplo intuitivo:** “abrir um catálogo para ver os produtos”.
 **Exemplo prático (cURL):****
- curl https://api.loja.com/produtos?categoria=monitores
+
+```bash
+curl https://api.loja.com/produtos?categoria=monitores
+```
 
 - **Observação de segurança:** **não use GET para ações que mudam estado** (ex.: reset de senha). Isso viola a semântica e abre risco de CSRF e vazamento de dados via URL/logs.
 #### HEAD — “Quero ver apenas os metadados”
@@ -246,7 +249,7 @@ Um **Status Code HTTP** (código de estado) é um número de três dígitos que 
 
 #### 2xx — sucesso
 
-- **200 OK**, **201 Created**, **204 No Content**. Em *conditional requests* bem sucedidas, **304 Not Modified** evita retransmitir dados e **não é** um erro; é economia de banda com ETag/Last-Modified.[ ](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/304?utm_source=chatgpt.com)[MDN Web Docs+1](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/304?utm_source=chatgpt.com)
+- **200 OK**, **201 Created**, **204 No Content**. Em *conditional requests* bem sucedidas, **304 Not Modified** evita retransmitir dados e **não é** um erro; é economia de banda com ETag/Last-Modified.
 3xx — redirecionamento
 
 - **303 See Other** (PRG) e **307/308** (mantêm método). Ver seção anterior.
@@ -256,19 +259,20 @@ Um **Status Code HTTP** (código de estado) é um número de três dígitos que 
 - **401 Unauthorized**: faltam **credenciais válidas**; **MUST** incluir **WWW-Authenticate** com o(s) *challenge(s)*. Diferencie de 403.
 - **403 Forbidden**: requisição entendida, **recusada**. Útil para autorização negada ou *hard block* pós-autenticação.
 - **405 Method Not Allowed**: método conhecido, mas **não suportado** no recurso; **MUST** enviar **Allow** com os métodos permitidos — valioso para *hardening* e detecção de *verb tampering*.
-- **409 Conflict** e **412 Precondition Failed**: choques de versão/estado; fundamentais com ETags.[ ](https://datatracker.ietf.org/doc/html/rfc9110)
+- **409 Conflict** e **412 Precondition Failed**: choques de versão/estado; fundamentais com ETags.
 - **415 Unsupported Media Type / 422 Unprocessable Content**: valide *Content-Type* e schema; 422 cobre conteúdo semanticamente inválido.
-- **421 Misdirected Request**: pedido foi para a origem errada (comuns em setups TLS/SNI/CDN); o cliente pode *retry* em conexão adequada.[ ](https://datatracker.ietf.org/doc/html/rfc9110)
+- **421 Misdirected Request**: pedido foi para a origem errada (comuns em setups TLS/SNI/CDN); o cliente pode *retry* em conexão adequada.
 - **425 Too Early**: **mitigação de replay** com **0-RTT (TLS 1.3 Early Data)**; o servidor recusa processar e o cliente deve reenviar após o handshake. Em endpoints críticos, bloqueie early-data ou responda 425.
-- **429 Too Many Requests**: **rate limiting**; respostas **podem** trazer **Retry-After** (segundos/data) e cabeçalhos de *quota* (p. ex., X-RateLimit-* em vendors). Evita abuso e *noisy retries*.[
-](https://datatracker.ietf.org/doc/html/rfc6585?utm_source=chatgpt.com)**451 Unavailable For Legal Reasons**: bloqueio **por demanda legal** (censura, restrições regulatórias); mais explícito que 403/404 para esse caso.
+- **429 Too Many Requests**: **rate limiting**; respostas **podem** trazer **Retry-After** (segundos/data) e cabeçalhos de *quota* (p. ex., X-RateLimit-* em vendors). Evita abuso e *noisy retries*.
+- **451 Unavailable For Legal Reasons**: bloqueio **por demanda legal** (censura, restrições regulatórias); mais explícito que 403/404 para esse caso.
+
 #### 5xx — erro do servidor
 
 - **500/502/504**: falhas internas, *bad gateway*, *timeout*.
 - **503 Service Unavailable**: sobrecarga/manutenção; pode incluir **Retry-After**. Excelente ponto para política de *backoff* no cliente.
 Cache, condicionais e 304: desempenho com segurança
 
-HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modified, Vary, *revalidation*) — hoje consolidado no **RFC 9111**. Segurança se beneficia porque **revalidações condicionais** (**If-None-Match/If-Modified-Since**) reduzem a superfície de transferência e ajudam a **sincronizar o estado** sem regravar dados. **304 Not Modified** é sinal de *efeito esperado* de uma condicional; não um erro.[ ](https://datatracker.ietf.org/doc/html/rfc9111?utm_source=chatgpt.com)
+HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modified, Vary, *revalidation*) — hoje consolidado no **RFC 9111**. Segurança se beneficia porque **revalidações condicionais** (**If-None-Match/If-Modified-Since**) reduzem a superfície de transferência e ajudam a **sincronizar o estado** sem regravar dados. **304 Not Modified** é sinal de *efeito esperado* de uma condicional; não um erro.
 
 ### Cache: desempenho sem vazar informação
 
@@ -278,10 +282,10 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 
 ### Casos reais
 
-- **Pagamentos e idempotência (Stripe).** Repetições de POST por perda de resposta geram **cobranças duplicadas**. A solução foi **Idempotency-Key** em todos os POSTs: o primeiro resultado fica “fixado” pela chave e *retries* devolvem a mesma resposta (inclusive erros 5xx), tipicamente por 24h.[ ](https://docs.stripe.com/api/idempotent_requests)
+- **Pagamentos e idempotência (Stripe).** Repetições de POST por perda de resposta geram **cobranças duplicadas**. A solução foi **Idempotency-Key** em todos os POSTs: o primeiro resultado fica “fixado” pela chave e *retries* devolvem a mesma resposta (inclusive erros 5xx), tipicamente por 24h.
 - **Redirecionar POST como GET.** Usar **302** após um POST pode levar *user agents* a **trocar o método** (POST→GET). O padrão **PRG** com **303 See Other** remove esse risco; **307/308** preservam o método quando é isso que se deseja.
-- **Rate limiting em APIs públicas.** Plataformas como o GitHub expõem *headers* de quota (p.ex. X-RateLimit-Remaining/Reset) e usam **429** (com Retry-After) para orientar backoff e proteger disponibilidade. *Playbooks* devem respeitar esses sinais.[ ](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api?utm_source=chatgpt.com)
-- **451 por razões legais.** Bloqueios por geografia/ordens judiciais são comunicados com **451** para transparência regulatória, em vez de 403/404.[ ](https://datatracker.ietf.org/doc/html/rfc7725?utm_source=chatgpt.com)
+- **Rate limiting em APIs públicas.** Plataformas como o GitHub expõem *headers* de quota (p.ex. X-RateLimit-Remaining/Reset) e usam **429** (com Retry-After) para orientar backoff e proteger disponibilidade. *Playbooks* devem respeitar esses sinais.
+- **451 por razões legais.** Bloqueios por geografia/ordens judiciais são comunicados com **451** para transparência regulatória, em vez de 403/404.
 - **TLS 1.3 Early Data e 425.** Em CDNs e *reverse proxies* com **0-RTT**, requisições com Early-Data: 1 podem ser **replayadas**; responder **425 Too Early** força o cliente a reenviar **após** o handshake, evitando duplicidade em operações sensíveis.
 
 #### Boas práticas acionáveis (segurança + confiabilidade)
@@ -289,19 +293,19 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 - **Aderência semântica**: GET/HEAD só para leitura; operações mutáveis em POST/PUT/PATCH com **proteção CSRF** (tokens, SameSite, validação de origem).
 - **Idempotência consciente**:
 - Em **PUT/DELETE**, habilite *retries* do cliente.
-- Em **POST**, implemente **Idempotency-Key** e **detecção de duplicata** no servidor.[ ](https://docs.stripe.com/api/idempotent_requests)
-- **Pré-condições**: exija **If-Match** com **ETag** em updates; responda **412** em caso de versão inesperada.[ ](https://datatracker.ietf.org/doc/html/rfc9110?utm_source=chatgpt.com)
+- Em **POST**, implemente **Idempotency-Key** e **detecção de duplicata** no servidor.
+- **Pré-condições**: exija **If-Match** com **ETag** em updates; responda **412** em caso de versão inesperada.
 - **Redirecionamentos corretos**: use **303** (PRG) após POST; prefira **307/308** quando precisar preservar o método.
 - **Rate limiting**: padronize **429** com **Retry-After** e exponha *headers* de quota; recomende *exponential backoff + jitter* aos consumidores.
-- **0-RTT**: evite processar operações sensíveis recebidas como *early data*; responda **425** ou desabilite 0-RTT nesses endpoints.[ ](https://datatracker.ietf.org/doc/html/rfc8470?utm_source=chatgpt.com)
+- **0-RTT**: evite processar operações sensíveis recebidas como *early data*; responda **425** ou desabilite 0-RTT nesses endpoints.
 - **Cache consciente**: use ETag/Last-Modified e **304** para eficiência; invalide corretamente após mutações (e.g., no-store/must-revalidate quando preciso).
 
 ### Vamos Refletir?
 
 - **Por que ***retry*** automático de POST pode ser perigoso e como mitigá-lo?****
- Porque POST não é idempotente; repetir pode duplicar efeitos (ex.: cobrança). **Idempotency-Key** faz o servidor retornar a mesma resposta para a mesma operação, mesmo em *retries*.[ ](https://datatracker.ietf.org/doc/html/rfc9110)
+ Porque POST não é idempotente; repetir pode duplicar efeitos (ex.: cobrança). **Idempotency-Key** faz o servidor retornar a mesma resposta para a mesma operação, mesmo em *retries*.
 - **Qual a diferença operacional entre 401 e 403?****
- **401**: faltam **credenciais válidas** — envie **WWW-Authenticate** e oriente novo *challenge*. **403**: requisição entendida, **recusada** (tipicamente autorização negada). Logs e playbooks distintos ajudam triagem.[ ](https://datatracker.ietf.org/doc/html/rfc9110)
+ **401**: faltam **credenciais válidas** — envie **WWW-Authenticate** e oriente novo *challenge*. **403**: requisição entendida, **recusada** (tipicamente autorização negada). Logs e playbooks distintos ajudam triagem.
 - **Quando prefiro 303 vs 307/308 após processar um POST?****
  **303** na estratégia **PRG** (cliente refaz a leitura com GET *safe*). **307/308** quando o redirecionamento **deve manter** o método/body (ex.: reencaminhar um POST para outro host mantendo semântica).
 - **Como os cabeçalhos condicionais ajudam a segurança de dados?****
