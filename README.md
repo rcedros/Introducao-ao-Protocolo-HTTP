@@ -543,7 +543,7 @@ O servidor guarda o estado (ex.: sessão em base ou cache) e envia um **ID curto
 
 | Prós | Contras |
 |------|---------|
-| - Simples de invalidar/rotacionar.<br>- Pode usar `HttpOnly + SameSite` para proteger contra XSS/CSRF.<br>- TTL controlado pelo backend. | - Precisa de armazenamento de sessão (memória/cache/banco). |
+| - Simples de invalidar/rotacionar.<br>- Pode usar `HttpOnly` + `SameSite` para proteger contra XSS/CSRF.<br>- TTL controlado pelo backend. | - Precisa de armazenamento de sessão (memória/cache/banco). |
 
 ### Token (stateless, ex.: JWT)
 O token **contém** claims/estado e pode ser validado sem consulta ao servidor e onde armazenar?
@@ -555,7 +555,7 @@ O token **contém** claims/estado e pode ser validado sem consulta ao servidor e
 
 #### Boas práticas
 - Tokens curtos (**access tokens**) + expiração rápida.  
-- **Refresh tokens** em `HttpOnly + Secure + SameSite`.  
+- **Refresh tokens** em `HttpOnly + `Secure` + `SameSite`.  
 - Rotação e revogação de refresh tokens.  
 - Escopos mínimos de autorização.  
 
@@ -669,19 +669,20 @@ Certificados não são todos iguais; eles possuem diferentes níveis de validaç
 ### Vamos Refletir?
 
 1. **Por que não se utiliza apenas criptografia assimétrica em uma conexão HTTPS?**
-   Porque ela é computacionalmente pesada e inviável para grandes volumes de dados. Por isso, usa-se assimétrica apenas no início da sessão para trocar a chave simétrica, que será responsável por proteger a comunicação contínua.
+
+    Porque ela é computacionalmente pesada e inviável para grandes volumes de dados. Por isso, usa-se assimétrica apenas no início da sessão para trocar a chave simétrica, que será responsável por proteger a comunicação contínua.
 
 2. **Qual a importância do Perfect Forward Secrecy no TLS 1.3?**
-   Ele garante que a quebra de uma chave privada no futuro não comprometerá sessões passadas, pois cada sessão tem chaves efêmeras diferentes.
+    Ele garante que a quebra de uma chave privada no futuro não comprometerá sessões passadas, pois cada sessão tem chaves efêmeras diferentes.
 
 3. **Como um navegador sabe se pode confiar em um certificado digital?**
-   Ele valida a cadeia de confiança até chegar em uma CA raiz instalada localmente. Se essa cadeia for íntegra e o certificado não estiver revogado, a conexão é considerada confiável.
+    Ele valida a cadeia de confiança até chegar em uma CA raiz instalada localmente. Se essa cadeia for íntegra e o certificado não estiver revogado, a conexão é considerada confiável.
 
 4. **Qual o risco de usar um certificado wildcard em uma grande organização?**
-   Se a chave privada for comprometida, todos os subdomínios estarão igualmente expostos a ataques de impersonação.
+    Se a chave privada for comprometida, todos os subdomínios estarão igualmente expostos a ataques de impersonação.
 
 5. **Por que o uso de SHA-1 foi abandonado em certificados digitais?**
-   Porque colisões foram demonstradas na prática, permitindo que dois documentos diferentes tivessem o mesmo hash. Isso comprometia a segurança das assinaturas digitais.
+    Porque colisões foram demonstradas na prática, permitindo que dois documentos diferentes tivessem o mesmo hash. Isso comprometia a segurança das assinaturas digitais.
 
 ### Casos Reais
 
@@ -710,6 +711,7 @@ Quando falamos de segurança em aplicações web, o protocolo HTTP é o principa
 Mapeamento de Problemas HTTP para o OWASP Top 10
 
 - **Broken Authentication (A07:2021 – Identification and Authentication Failures)**
+
   Quando tokens de sessão são expostos em cookies sem atributos de segurança (Secure, HttpOnly, SameSite) ou armazenados em parâmetros de URL, o risco de sequestro de sessão se torna real. Um simples *session fixation* ou vazamento em logs pode comprometer a conta do usuário.
 
 - **Cryptographic Failures (A02:2021)**
