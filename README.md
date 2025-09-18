@@ -100,7 +100,7 @@ Referências
 - Cloudflare. *The Benefits of HTTP/3*.
 - OWASP Foundation. *Web Security Testing Guide*.
 
-Métodos HTTP em contexto — da intenção à segurança
+## Métodos HTTP em contexto — da intenção à segurança
 
 Quando um cliente “fala” com um servidor pela Web, ele não envia apenas dados: ele comunica **intenção**. Essa intenção é expressa pelos **métodos HTTP** (também chamados de “verbos”). Saber o que cada método *pretende* fazer — ler, criar, substituir, alterar parcialmente, apagar, negociar capacidades — é vital para projetar APIs confiáveis e, sobretudo, **seguras**.
 
@@ -203,7 +203,7 @@ CONNECT — “Abra um túnel”
 - **Intenção:** usado por proxies para criar um túnel TCP (ex.: HTTPS via proxy).
 - **Exemplo intuitivo:** “pedir ao porteiro para abrir um canal direto com a sala segura”.
 
-Idempotência — a cola entre confiabilidade e segurança
+### Idempotência — a cola entre confiabilidade e segurança
 
 **Definição curta:** uma operação é **idempotente** quando **repeti-la** (com os mesmos parâmetros) **não muda o resultado** além do primeiro efeito. Em HTTP: **GET**, **HEAD**, **PUT** e **DELETE** são idempotentes por padrão; **POST** **não é**; **PATCH** depende.
 
@@ -263,7 +263,7 @@ Cache, condicionais e 304: desempenho com segurança
 
 HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modified, Vary, *revalidation*) — hoje consolidado no **RFC 9111**. Segurança se beneficia porque **revalidações condicionais** (**If-None-Match/If-Modified-Since**) reduzem a superfície de transferência e ajudam a **sincronizar o estado** sem regravar dados. **304 Not Modified** é sinal de *efeito esperado* de uma condicional; não um erro.[ ](https://datatracker.ietf.org/doc/html/rfc9111?utm_source=chatgpt.com)
 
-Cache: desempenho sem vazar informação
+### Cache: desempenho sem vazar informação
 
 - **Recursos públicos/estáticos:** Cache-Control: public, max-age=... + **ETag**; use Vary quando a resposta muda por cabeçalho (ex.: Accept-Encoding, Authorization não deve ser armazenado em caches compartilhados).
 - **Dados sensíveis/autenticados:** Cache-Control: no-store para evitar persistência em disco/memória de intermediários; preferir **revalidação** controlada para equilibrar performance e sigilo.
@@ -317,11 +317,11 @@ Referências
 - OWASP Cheat Sheet Series — CSRF Prevention, REST Security
 - MDN Web Docs — documentação operativa de métodos, cabeçalhos e códigos
 
-Headers e Security Headers — a “camada de meta-informação” que protege (e acelera) sua aplicação
+## Headers e Security Headers — a “camada de meta-informação” que protege (e acelera) sua aplicação
 
 No HTTP, **headers** são pares Nome: Valor enviados em **requisições** e **respostas**. Eles não carregam o “conteúdo em si”, mas **instruções e sinais** que influenciam como clientes, servidores, proxies, CDNs e navegadores devem tratar aquele conteúdo: formato, cache, políticas de segurança, autenticação, CORS etc. Em segurança, são decisivos porque **ativam controles no próprio user-agent** (ex.: bloquear *inline scripts*, proibir *framing*) e **fecham brechas em camadas intermediárias** (ex.: cache, redirecionamentos, sniffing de tipo).
 
-Headers comuns (com uso prático de segurança)
+### Headers comuns (com uso prático de segurança)
 
 Os headers HTTP são metadados enviados junto às requisições e respostas que orientam como cliente e servidor devem se comunicar. Embora muitos sejam voltados para funcionalidade e compatibilidade (como User-Agent, Accept ou Content-Type), vários deles têm impacto direto na segurança das aplicações.
 
@@ -392,7 +392,7 @@ Liga/desliga **capacidades do navegador** por origem (câmera, microfone, geoloc
 - Benefício: princípio do **menor privilégio** no front-end.
 Dica prática: comece **com** um **CSP em modo report-only** para medir impacto, corrija violações, depois **aplique de fato**. Em produção, evite unsafe-inline/unsafe-eval e curingas amplos (*) — eles anulam os ganhos.
 
-CORS e Authorization headers — fronteira e identidade
+### CORS e Authorization headers — fronteira e identidade
 
 Quando falamos em segurança na web, dois conceitos fundamentais emergem: fronteira e identidade. A fronteira define até onde uma aplicação pode interagir com outra, evitando que conteúdos de diferentes origens acessem recursos de forma indevida. A identidade, por sua vez, garante que apenas quem possui credenciais válidas consiga atravessar essa fronteira e consumir os recursos protegidos.
 
@@ -445,7 +445,7 @@ CRLF Injection & Header Injection — quando o atacante “quebra a linha”
 - Ativar **CSP/HSTS** e boas políticas de cache para reduzir impacto colateral.
 **Header Injection** (mais amplo) é qualquer manipulação de cabeçalho via entrada do usuário: além de CRLF, há **injeção de prefixos/sufixos** em Set-Cookie, Location, Host dependentes de upstream etc. A defesa é **não confiar** em valores externos, **normalizar** e **validar estritamente**.
 
-Casos reais (e o que aprendemos)
+### Casos reais (e o que aprendemos)
 
 - **sslstrip e o nascimento do HSTS**
 Ataques de *downgrade*/redirecionamento para HTTP levavam usuários a sessões sem TLS. **HSTS** com *preload* tornou isso muito mais difícil, exigindo HTTPS desde o primeiro pedido “conhecido”.
@@ -459,11 +459,11 @@ Pesquisa da comunidade (ex.: PortSwigger) mostrou exploração de CRLF para enve
 - **XSS via bibliotecas terceira**
 Cadeias de *supply chain* em JS comprometeram páginas de pagamento. **CSP com nonces/hashes** e inventário mínimo de origens confiáveis (sem curingas) teria bloqueado a execução maliciosa.
 
-Conclusão
+### Conclusão
 
 Headers são **o contrato** que orienta como cada salto de rede e o próprio navegador devem tratar sua aplicação. Quando você domina **Security Headers + CORS + Authorization** — e evita **CRLF/Header Injection** — o front-end passa a **colaborar** ativamente com sua defesa, reduzindo XSS, clickjacking, vazamentos e abusos. E o melhor: muitos desses controles são **baratos de implementar** e **altamente efetivos**.
 
-Referências
+### Referências
 
 - RFC 9110 — HTTP Semantics (headers, autenticação, status)
 - RFC 6797 — HTTP Strict Transport Security (HSTS)
@@ -476,7 +476,7 @@ Referências
 - MDN Web Docs — guias práticos de cada header
 - securityheaders.com — scanner público de headers de segurança
 
-Gerenciamento de Cookies — controle de estado com segurança.
+## Gerenciamento de Cookies — controle de estado com segurança.
 
 Cookies são pequenos pares nome=valor que o servidor instrui o navegador a armazenar e **reenviar automaticamente** em requisições futuras para o mesmo site. Eles existem para **manter estado em um protocolo sem estado**: autenticação de sessões, preferências de usuário, carrinho de compras, *anti-CSRF tokens*, limites de taxa por usuário, entre outros. Justamente por viajarem “sozinhos” (o navegador os envia sem o usuário perceber), são também um ponto sensível: um cookie mal configurado pode entregar sua sessão a um atacante.
 
@@ -584,7 +584,7 @@ Conclusão
 
 **C**ookies são uma ferramenta poderosa — e perigosa — quando mal configurados. Use **Secure**** + ****HttpOnly**** + ****SameSite**, **escopo mínimo** e **rotinas de rotação/invalidade**. O resultado é um *login* que continua simples para o usuário, mas **muito mais caro** para o atacante.
 
-Referências
+**Referências**
 
 - IETF RFC 6265 — HTTP State Management Mechanism
 - OWASP Cheat Sheets — *Session Management*, *Cross-Site Scripting Prevention*, *CSRF Prevention*
@@ -592,11 +592,11 @@ Referências
 - Google Web.dev — *SameSite cookies explained*
 - PortSwigger Web Security Academy — *Cross-site request forgery (CSRF)*, *Cross-site scripting (XSS)*
 
-Criptografia e TLS
+## Criptografia e TLS
 
 A comunicação na web não pode ser considerada segura apenas pelo simples transporte de pacotes. É necessário garantir que os dados não sejam interceptados, modificados ou forjados. Nesse contexto, a criptografia e o protocolo TLS (Transport Layer Security) são a base da segurança do HTTP moderno, dando origem ao HTTPS.
 
-Criptografia simétrica e assimétrica
+### Criptografia simétrica e assimétrica
 
 "A criptografia simétrica utiliza a **mesma chave** para cifrar e decifrar informações." (“A evolução digital tem levado à necessidade de garantir que as ...”) É extremamente rápida e eficiente, razão pela qual algoritmos como o **AES (Advanced Encryption Standard)** são amplamente utilizados em sessões TLS para proteger o tráfego contínuo entre cliente e servidor. O desafio está na distribuição inicial dessa chave: se alguém a intercepta, toda a comunicação pode ser comprometida.
 
@@ -604,19 +604,19 @@ Já a criptografia assimétrica usa um **par de chaves**: uma pública e uma pri
 
 Um navegador ao acessar um site não inicia a conexão trocando dados já cifrados com AES. Antes disso, é necessário estabelecer uma chave de sessão de forma segura, e é aqui que entram os algoritmos assimétricos: eles servem como “método de entrega” para que a chave simétrica seja trocada sem que terceiros consigam interceptá-la.
 
-Hashing: integridade dos dados
+### Hashing: integridade dos dados
 
 Outro pilar fundamental é o **hashing**. Funções como **SHA-2** ou **SHA-3** geram um resumo fixo (digest) a partir de qualquer entrada de dados. Se um único byte é alterado, o hash resultante muda completamente, permitindo verificar integridade.
 
 Quando associado a **salting**, o hash é fortalecido contra-ataques de pré-computação, como tabelas arco-íris. Isso é muito usado no armazenamento seguro de senhas, mas também aparece em TLS, onde hashes asseguram que a mensagem recebida seja exatamente a que foi enviada.
 
-Assinaturas digitais
+### Assinaturas digitais
 
 As assinaturas digitais unem criptografia assimétrica e hashing. Primeiro, o emissor calcula o hash da mensagem. Em seguida, esse hash é cifrado com sua chave privada (RSA ou ECDSA, no caso de curvas elípticas). Quem recebe, utiliza a chave pública para verificar a autenticidade.
 
 Na prática, quando você acessa um site HTTPS, o navegador valida a assinatura digital contida no certificado apresentado pelo servidor. Isso garante que o certificado foi emitido por uma Autoridade Certificadora confiável e que não foi alterado.
 
-Infraestrutura de Chaves Públicas (PKI)
+### Infraestrutura de Chaves Públicas (PKI)
 
 Toda a confiança na web é sustentada pela **PKI (Public Key Infrastructure)**. Nesse modelo, existem **Autoridades Certificadoras (CAs)** responsáveis por emitir certificados digitais. Elas podem delegar a emissão para **CAs intermediárias**, formando uma **cadeia de confiança**.
 
@@ -624,7 +624,7 @@ Ao validar um certificado, o navegador percorre essa cadeia até chegar a uma ra
 
 Essa estrutura é essencial para evitar ataques de impersonação, nos quais um atacante tenta se passar por um site legítimo.
 
-TLS Handshake: 1.2 vs 1.3
+### TLS Handshake: 1.2 vs 1.3
 
 O processo de handshake do TLS é o momento em que cliente e servidor negociam algoritmos, trocam chaves e estabelecem uma sessão segura.
 
@@ -632,7 +632,7 @@ O processo de handshake do TLS é o momento em que cliente e servidor negociam a
 - **TLS 1.3**: simplificou drasticamente o handshake, reduzindo a latência e exigindo apenas algoritmos modernos. Uma característica fundamental é a obrigatoriedade de **Perfect Forward Secrecy (PFS)**, geralmente implementada via **ECDHE (Elliptic Curve Diffie-Hellman Ephemeral)**. Isso significa que mesmo que a chave privada de um servidor seja comprometida futuramente, as sessões anteriores não poderão ser descriptografadas, já que cada sessão gera chaves efêmeras únicas.
 Na prática, TLS 1.3 melhora tanto a segurança quanto o desempenho, tornando-se padrão de fato para a web moderna.
 
-Certificados Digitais
+### Certificados Digitais
 
 Certificados não são todos iguais; eles possuem diferentes níveis de validação:
 
@@ -677,7 +677,7 @@ O entendimento desses conceitos é crucial para analistas de segurança: não ba
 - Rescorla, E. "SSL and TLS: Designing and Building Secure Systems"
 - Mozilla Security Guidelines: Server Side TLS
 
-HTTP, OWASP Top 10 e Controles de Segurança
+## HTTP, OWASP Top 10 e Controles de Segurança
 
 Quando falamos de segurança em aplicações web, o protocolo HTTP é o principal vetor a ser compreendido, já que é nele que transitam requisições, respostas e, muitas vezes, informações sensíveis. O **OWASP Top 10** atua como um guia das principais vulnerabilidades que exploram diretamente falhas nesse protocolo ou em sua implementação incorreta. Entender como essas falhas se conectam ao HTTP permite que analistas e engenheiros de segurança apliquem controles práticos para mitigação, construindo defesas mais sólidas.
 
@@ -713,7 +713,7 @@ Logs HTTP sem mascaramento de tokens, senhas ou dados pessoais expõem informaç
 - **Server-Side Request Forgery (SSRF) (A10:2021)**
 Exploração de endpoints que recebem URLs via parâmetros HTTP, permitindo que o atacante faça o servidor requisitar recursos internos ou privados.
 
-Checklists de Mitigação
+### Checklists de Mitigação
 
 - **Transporte e Criptografia**
 - Habilitar TLS 1.2+ (preferencialmente TLS 1.3).
@@ -772,7 +772,7 @@ Referências
 RFC 9110 – HTTP Semantics
 - RFC 8446 – TLS 1.3
 
-Conclusão
+## Conclusão
 
 Ao longo dos capítulos, exploramos o protocolo HTTP em profundidade, analisando não apenas sua estrutura de funcionamento, mas também sua importância para a segurança cibernética e para o desenho de arquiteturas confiáveis. O HTTP, muitas vezes visto apenas como um meio de transporte de informações entre cliente e servidor, revelou-se um elemento estratégico para a proteção de sistemas modernos.
 
