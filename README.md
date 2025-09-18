@@ -9,6 +9,7 @@ Com a evolução da Internet e o crescimento do cibercrime, surgiu a necessidade
 - **Confidencialidade**: os dados são criptografados, impedindo que terceiros leiam o conteúdo em trânsito.
 - **Integridade**: é possível detectar alterações indevidas na mensagem entre o cliente e o servidor.
 - **Autenticidade**: certificados digitais permitem verificar se o servidor é realmente quem afirma ser.
+
 Para que serve e por que é essencial estudar além do que “funciona”
 
 Em teoria, basta que o HTTP "funcione" para que usuários consigam acessar páginas, APIs troquem dados e aplicações se comuniquem. Porém, limitar-se apenas ao aspecto funcional ignora dimensões críticas como **arquitetura, confiança e risco**:
