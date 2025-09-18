@@ -101,7 +101,7 @@ Em todos os casos, **má configuração de cache pode expor dados confidenciais*
 - Cloudflare. *The Benefits of HTTP/3*.
 - OWASP Foundation. *Web Security Testing Guide*.
 
-# Métodos HTTP em contexto — da intenção à segurança
+# 🧩 Métodos HTTP em contexto — da intenção à segurança
 
 Quando um cliente “fala” com um servidor pela Web, ele não envia apenas dados: ele comunica **intenção**. Essa intenção é expressa pelos **métodos HTTP** (também chamados de “verbos”). Saber o que cada método *pretende* fazer — ler, criar, substituir, alterar parcialmente, apagar, negociar capacidades — é vital para projetar APIs confiáveis e, sobretudo, **seguras**.
 
