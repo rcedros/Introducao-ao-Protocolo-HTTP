@@ -14,12 +14,9 @@ Para que serve e por que é essencial estudar além do que “funciona”?
 
 Em teoria, basta que o HTTP "funcione" para que usuários consigam acessar páginas, APIs troquem dados e aplicações se comuniquem. Porém, limitar-se apenas ao aspecto funcional ignora dimensões críticas como **arquitetura, confiança e risco**:
 
-- **Impacto na Arquitetura**
-O design de aplicações modernas depende fortemente de recursos do HTTP/HTTPS: caching, cabeçalhos de controle, compressão, multiplexação (em HTTP/2 e HTTP/3). Um entendimento raso pode levar a escolhas equivocadas, como uso inadequado de métodos (por exemplo, usar GET para enviar dados sensíveis) ou más práticas no controle de cache que expõem informações confidenciais.
-- **Confiança**
-O HTTPS é o pilar que sustenta a confiança dos usuários na Internet. Ao ver o cadeado no navegador, o usuário entende que há uma garantia mínima de segurança na comunicação. Se a configuração do protocolo for falha (ex.: certificados expirados, versões antigas do TLS, ausência de HSTS), essa confiança pode ser quebrada e abrir portas para ataques como *Man-in-the-Middle* (MITM).
-- **Risco**
-Do ponto de vista de segurança cibernética, cada detalhe mal compreendido pode se transformar em vetor de ataque. Casos reais incluem **injeção em cabeçalhos HTTP (CRLF Injection)**, **cookies sem flags de segurança**, **má gestão de sessões** ou **implementação incorreta de CORS**, todos explorados por atacantes para roubo de dados e comprometimento de sistemas.
+- **Impacto na Arquitetura:** O design de aplicações modernas depende fortemente de recursos do HTTP/HTTPS: caching, cabeçalhos de controle, compressão, multiplexação (em HTTP/2 e HTTP/3). Um entendimento raso pode levar a escolhas equivocadas, como uso inadequado de métodos (por exemplo, usar GET para enviar dados sensíveis) ou más práticas no controle de cache que expõem informações confidenciais.
+- **Confiança:** O HTTPS é o pilar que sustenta a confiança dos usuários na Internet. Ao ver o cadeado no navegador, o usuário entende que há uma garantia mínima de segurança na comunicação. Se a configuração do protocolo for falha (ex.: certificados expirados, versões antigas do TLS, ausência de HSTS), essa confiança pode ser quebrada e abrir portas para ataques como *Man-in-the-Middle* (MITM).
+- **Risco:** Do ponto de vista de segurança cibernética, cada detalhe mal compreendido pode se transformar em vetor de ataque. Casos reais incluem **injeção em cabeçalhos HTTP (CRLF Injection)**, **cookies sem flags de segurança**, **má gestão de sessões** ou **implementação incorreta de CORS**, todos explorados por atacantes para roubo de dados e comprometimento de sistemas.
 
 Para um analista de segurança, estudar o HTTP/HTTPS em profundidade é mais do que conhecer um protocolo: é compreender **onde falhas arquiteturais podem virar brechas exploráveis**. Assim, o profissional deixa de ser apenas um executor de tarefas e passa a atuar como um **guarda de fronteira**, capaz de identificar pontos frágeis e sugerir melhorias antes que incidentes aconteçam.
 
