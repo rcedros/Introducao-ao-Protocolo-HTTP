@@ -239,7 +239,7 @@ Um **Status Code HTTP** (código de estado) é um número de três dígitos que 
 HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modified, Vary, *revalidation*) — hoje consolidado no **RFC 9111**. Segurança se beneficia porque **revalidações condicionais** (**If-None-Match/If-Modified-Since**) reduzem a superfície de transferência e ajudam a **sincronizar o estado** sem regravar dados. **304 Not Modified** é sinal de *efeito esperado* de uma condicional; não um erro.
 
 | Código | Classe              | Descrição |
-|:------:|:-------------------:|:----------|
+|:------:|-------------------|:----------|
 | `100`  | ℹ️ Informational    | Continue |
 | `200`  | ✅ Sucesso          | Requisição bem sucedida |
 | `201`  | ✅ Sucesso          | Recurso criado |
@@ -273,16 +273,16 @@ Ao projetar APIs e aplicações web, não basta apenas responder rápido: é pre
 O uso adequado de **cache** garante eficiência sem comprometer dados sensíveis; a aplicação correta de **idempotência** evita duplicidades em operações críticas; e seguir **boas práticas HTTP** ajuda a manter previsibilidade e resiliência em escala.  
 
 #### ⚡ Cache: desempenho sem vazar informação
-- **Recursos públicos/estáticos** →  
-  Use `Cache-Control: public, max-age=...` + `ETag`.  
-  Se a resposta variar por cabeçalho (ex.: `Accept-Encoding`), configure `Vary`.  
-  Nunca permita que respostas com `Authorization` sejam armazenadas em caches compartilhados.
+- **Recursos públicos/estáticos**
+  - Use `Cache-Control: public, max-age=...` + `ETag`.  
+  - Se a resposta variar por cabeçalho (ex.: `Accept-Encoding`), configure `Vary`.  
+  - Nunca permita que respostas com `Authorization` sejam armazenadas em caches compartilhados.
 
-- **Dados sensíveis/autenticados** →  
-  Use `Cache-Control: no-store` para evitar persistência em disco/memória.  
-  Prefira **revalidação controlada** (`ETag`, `Last-Modified`) para equilibrar **performance** e **sigilo**.
+- **Dados sensíveis/autenticados**
+  - Use `Cache-Control: no-store` para evitar persistência em disco/memória.  
+  - Prefira **revalidação controlada** (`ETag`, `Last-Modified`) para equilibrar **performance** e **sigilo**.
 
-- **Método importa** →  
+- **Método importa**
   - `POST` normalmente **não** é armazenado por caches.  
   - `GET` pode ser → **não retorne dados sensíveis via GET** sem diretivas adequadas.
 
@@ -346,23 +346,23 @@ O uso adequado de **cache** garante eficiência sem comprometer dados sensíveis
 
 1. **Por que ***retry*** automático de POST pode ser perigoso e como mitigá-lo?**
 
-Porque POST não é idempotente; repetir pode duplicar efeitos (ex.: cobrança). **Idempotency-Key** faz o servidor retornar a mesma resposta para a mesma operação, mesmo em *retries*.
+   Porque POST não é idempotente; repetir pode duplicar efeitos (ex.: cobrança). `Idempotency-Key` faz o servidor retornar a mesma resposta para a mesma operação, mesmo em *retries*.
 
 2. **Qual a diferença operacional entre 401 e 403?**
 
-**401**: faltam **credenciais válidas** — envie **WWW-Authenticate** e oriente novo *challenge*. **403**: requisição entendida, **recusada** (tipicamente autorização negada). Logs e playbooks distintos ajudam triagem.
+   **401**: faltam **credenciais válidas** — envie `WWW-Authenticate` e oriente novo *challenge*. **403**: requisição entendida, **recusada** (tipicamente autorização negada). Logs e playbooks distintos ajudam triagem.
  
 3. **Quando prefiro 303 vs 307/308 após processar um POST?**
 
-**303** na estratégia **PRG** (cliente refaz a leitura com GET *safe*). **307/308** quando o redirecionamento **deve manter** o método/body (ex.: reencaminhar um POST para outro host mantendo semântica).
+   **303** na estratégia **PRG** (cliente refaz a leitura com GET *safe*). **307/308** quando o redirecionamento **deve manter** o método/body (ex.: reencaminhar um POST para outro host mantendo semântica).
  
 4. **Como os cabeçalhos condicionais ajudam a segurança de dados?**
 
-Com **ETag** + **If-Match/If-None-Match**, você evita *lost update* e sincroniza estado sem regravar conteúdo, respondendo **412** ou **304** conforme o caso.
+   Com `ETag` + `If-Match/If-None-Match`, você evita *lost update* e sincroniza estado sem regravar conteúdo, respondendo **412** ou **304** conforme o caso.
 
 5. **Em que cenário 425 “Too Early” é a melhor resposta?**
 
-Quando a requisição chegou como **Early Data (0-RTT)** e **pode ser replayada** (ex.: transação financeira). **425** obriga o cliente a reenviar após o handshake TLS, mitigando replay.
+   Quando a requisição chegou como `Early Data (0-RTT)` e **pode ser replayada** (ex.: transação financeira). **425** obriga o cliente a reenviar após o handshake TLS, mitigando replay.
 
 ### Conclusão
 
@@ -395,64 +395,28 @@ Por exemplo, headers de cache (Cache-Control) ajudam a evitar que informações 
 
 Compreender e aplicar corretamente esses headers é essencial para reforçar a postura defensiva das aplicações web, transformando elementos básicos do protocolo em controles práticos de segurança.
 
-#### User-Agent
-Identifica o cliente (navegador, *bot*, app).
-
-Segurança: útil para **observabilidade** e **detecção de anomalias** (ex.: *fingerprints* suspeitos). Evite lógicas de segurança baseadas apenas nele (fácil de falsificar).
-
-#### Accept / Accept-Language / Accept-Encoding
-
-Negociação de conteúdo (MIME), idioma e compressão.
-
-Segurança: negociar **formatos previsíveis** reduz superfície (ex.: responder somente application/json em APIs). Controle compressão para mitigar ataques de *side-channel* em cenários específicos (BREACH/CRIME).
-
-#### Content-Type
-
-Declara o **tipo do corpo** enviado/recebido (ex.: application/json).
-
-Segurança: **valide sempre** o Content-Type esperado no servidor; rejeite uploads sem tipo coerente. Combine com **X-Content-Type-Options: nosniff** para o navegador **não adivinhar** tipos.
-
-#### Cache-Control / Expires / ETag / Last-Modified
-
-Controlam cache e validação condicional.
-
-Segurança: em **conteúdo autenticado/sensível**, use Cache-Control: no-store; para estáticos públicos, ETag e *revalidation* bem configuradas evitam inconsistências e reduzem superfície em intermediários.
+| Header | Função | Exemplo | Benefício / Observação |
+|--------|--------|---------|-------------------------|
+| **User-Agent** | Identifica o cliente (navegador, *bot*, app). | *(automático pelo cliente, ex.: `Mozilla/5.0 ...`)* | Útil para **observabilidade** e detecção de anomalias (*fingerprints* suspeitos). ⚠️ Não deve ser usado como base exclusiva de segurança, pois é facilmente falsificável. |
+| **Accept / Accept-Language / Accept-Encoding** | Controlam a **negociação de conteúdo**: formato (MIME), idioma e compressão. | `Accept: application/json` <br>`Accept-Language: en-US` <br>`Accept-Encoding: gzip, deflate` | Negociar **formatos previsíveis** reduz superfície de ataque (ex.: APIs só responderem JSON). ⚠️ Controle compressão para mitigar ataques de *side-channel* como **BREACH/CRIME**. |
+| **Content-Type** | Declara o **tipo do corpo** enviado ou recebido. | `Content-Type: application/json` | **Valide sempre** no servidor o `Content-Type` esperado. Rejeite uploads incoerentes. Combine com `X-Content-Type-Options: nosniff` para evitar que navegadores tentem “adivinhar” o tipo. |
+| **Cache-Control / Expires / ETag / Last-Modified** | Controlam cache e validação condicional. | `Cache-Control: no-store` <br>`ETag: "abc123"` <br>`Last-Modified: Tue, 12 Dec 2024 10:00:00 GMT` | Para conteúdo **sensível/autenticado**, use `no-store`. Para estáticos públicos, configure `ETag` e revalidação condicional para eficiência sem inconsistências. |
 
 ### Security headers (os “cintos de segurança” do navegador)
 
-#### Strict-Transport-Security (HSTS)
 
-Força o navegador a **usar sempre HTTPS** para o domínio (e subdomínios, se configurado).
+| Header | Função | Exemplo | Benefício / Observação |
+|--------|--------|---------|-------------------------|
+| **Strict-Transport-Security (HSTS)** | Força o uso de **HTTPS** no domínio (e subdomínios). | `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload` | Dificulta *SSL stripping* e *downgrade*. Com **preload**, o domínio entra em lista embutida nos navegadores, mitigando o “primeiro acesso inseguro”. |
+| **Content-Security-Policy (CSP)** | Define origens permitidas para *scripts, styles, images, frames…* e quais comportamentos são aceitos. | `Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-R4nd0m'; object-src 'none'; frame-ancestors 'none'` | Mitiga **XSS** (bloqueia inline scripts sem nonce/hash), proíbe objetos perigosos e substitui o antigo controle de *framing* com `frame-ancestors`. |
+| **X-Frame-Options** (legado) | Controle de *framing* antigo (`DENY` ou `SAMEORIGIN`). | `X-Frame-Options: DENY` | Prefira CSP `frame-ancestors` (mais moderno e flexível). Ainda útil por compatibilidade com navegadores antigos. |
+| **X-Content-Type-Options** | Impede *MIME sniffing*. | `X-Content-Type-Options: nosniff` | Evita que navegadores “adivinhem” tipos incorretos (ex.: `.txt` não vira script). |
+| **Referrer-Policy** | Controla quanto do *referer* (URL de origem) é enviado em navegações e requisições. | `Referrer-Policy: strict-origin-when-cross-origin` | Reduz **vazamento de dados sensíveis** em query strings para terceiros, mantendo equilíbrio entre privacidade e depuração. |
+| **Permissions-Policy** (ex-Feature-Policy) | Habilita ou desabilita **capacidades do navegador** (câmera, microfone, geolocalização, autoplay). | `Permissions-Policy: camera=(), microphone=(), geolocation=()` | Aplica o princípio do **menor privilégio** no front-end. |
 
-- Ex.: Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-- Benefício: dificulta *SSL stripping* e ataques de *downgrade*. Com **preload**, o domínio entra numa lista embutida nos navegadores, mitigando o “primeiro acesso inseguro”.
-Content-Security-Policy (CSP) Define de onde conteúdos podem ser carregados (
-*scripts, styles, images, frames…*) e que comportamentos são permitidos.
-
-Ex.: Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-R4nd0m'; object-src 'none'; frame-ancestors 'none'
-- Benefício: **mitiga XSS** ao bloquear *inline scripts* sem nonce/hash, proíbe objetos perigosos e **substitui** o antigo controle de *framing* (veja frame-ancestors).
-X-Frame-Options (legado, ainda útil) Controle de framing antigo: 
-DENY ou SAMEORIGIN.
-
-- Ex.: X-Frame-Options: DENY
-- Observação: preferir CSP: frame-ancestors (mais moderno e flexível). Manter o XFO por compatibilidade.
-X-Content-Type-Options Evita 
-*MIME sniffing*.
-
-- Ex.: X-Content-Type-Options: nosniff
-- Benefício: impede o navegador de “adivinhar” tipos e executar conteúdo indevido (ex.: um .txt servido como tal não vira script).
-Referrer-Policy Controla quanto do 
-*referer* (URL de origem) é enviado em navegações/pedidos.
-
-- Ex.: Referrer-Policy: strict-origin-when-cross-origin (equilíbrio entre privacidade e depuração).
-- Benefício: reduz **vazamento de dados sensíveis** via query string para terceiros.
-Permissions-Policy (ex-Feature-Policy)
-
-Liga/desliga **capacidades do navegador** por origem (câmera, microfone, geoloc., autoplay etc.).
-
-- Ex.: Permissions-Policy: camera=(), microphone=(), geolocation=()
-- Benefício: princípio do **menor privilégio** no front-end.
-Dica prática: comece **com** um **CSP em modo report-only** para medir impacto, corrija violações, depois **aplique de fato**. Em produção, evite unsafe-inline/unsafe-eval e curingas amplos (*) — eles anulam os ganhos.
+#### Dica prática  
+Comece configurando um **CSP em modo `report-only`** para medir impacto e corrigir violações antes de aplicar a política em produção.  
+Evite ao máximo o uso de `unsafe-inline`, `unsafe-eval` e curingas (`*`), pois eles **anulam a proteção** oferecida pelo CSP.  
 
 ### CORS e Authorization headers — fronteira e identidade
 
@@ -475,22 +439,22 @@ Access-Control-Allow-Credentials: true
 ```
 
 - Pontos críticos:
-- **Nunca** use Access-Control-Allow-Origin: * **junto** com Allow-Credentials: true (os navegadores bloqueiam por segurança).
-- Evite refletir o Origin arbitrariamente; **liste explicitamente** origens confiáveis.
-- *Preflights* (OPTIONS) fazem parte do fluxo; trate-os corretamente.
+ - **Nunca** use Access-Control-Allow-Origin: * **junto** com Allow-Credentials: true (os navegadores bloqueiam por segurança).
+  - Evite refletir o Origin arbitrariamente; **liste explicitamente** origens confiáveis.
+ - *Preflights* (OPTIONS) fazem parte do fluxo; trate-os corretamente.
 
 #### Authorization / WWW-Authenticate
 
 Carregam credenciais e desafios de autenticação.
 
 - Exemplos:
- - Authorization: Bearer <JWT> (OAuth 2.0);
- - Authorization: Basic <base64> (evite sem TLS);
- - Responder **401** com WWW-Authenticate: Bearer (ou o esquema adotado).
- - Boas práticas:
- - **Não** coloque tokens em URL (vira log/referrer); use **header**.
- - Defina **expiração** curta + *refresh tokens*; *rotate* chaves.
- - Em APIs públicas, padronize respostas (401/403) e evite **leaks** em mensagens de erro.
+  - Authorization: Bearer <JWT> (OAuth 2.0);
+  - Authorization: Basic <base64> (evite sem TLS);
+  - Responder **401** com WWW-Authenticate: Bearer (ou o esquema adotado).
+- Boas práticas:
+  - **Não** coloque tokens em URL (vira log/referrer); use **header**.
+  - Defina **expiração** curta + *refresh tokens*; *rotate* chaves.
+  - Em APIs públicas, padronize respostas (401/403) e evite **leaks** em mensagens de erro.
 
 #### CRLF Injection & Header Injection — quando o atacante “quebra a linha”
 
