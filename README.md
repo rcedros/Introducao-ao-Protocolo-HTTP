@@ -531,8 +531,8 @@ Set-Cookie: __Host-sessionid=abc123; Path=/; Secure; HttpOnly; SameSite=Strict
 
 O **escopo decide onde o cookie “aparece”**.
 
-- Sem ***Domain**: o cookie é **host-only** (ex.: vale para app.exemplo.com, **não** para api.exemplo.com). É mais restritivo e preferível para segurança.
-- Com ***Domain=exemplo.com**: o cookie viaja para **todos os subdomínios** (app.exemplo.com, api.exemplo.com…), ampliando a superfície. Evite a menos que precise mesmo compartilhar sessão entre subdomínios.
+- Sem **Domain**: o cookie é **host-only** (ex.: vale para app.exemplo.com, **não** para api.exemplo.com). É mais restritivo e preferível para segurança.
+- Com **Domain=exemplo.com**: o cookie viaja para **todos os subdomínios** (app.exemplo.com, api.exemplo.com…), ampliando a superfície. Evite a menos que precise mesmo compartilhar sessão entre subdomínios.
 - **Path** delimita o **caminho** (ex.: Path=/conta limita às rotas que começam com /conta). Use para evitar que áreas não relacionadas recebam o cookie.
 **Armadilha comum**: cookies amplos (Domain muito permissivo) combinados a **subdomain takeover** expõem sessões para um host comprometido.
 
