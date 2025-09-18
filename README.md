@@ -68,27 +68,28 @@ Um estudo do **Cloudflare** mostrou que a adoção do HTTP/3 reduziu em até **2
 
 ### Vamos Refletir?
 
-**Por que o HTTP/1.1 ainda é tão utilizado mesmo com a existência do HTTP/2 e do HTTP/3?**
+1. **Por que o HTTP/1.1 ainda é tão utilizado mesmo com a existência do HTTP/2 e do HTTP/3?**
 
-O HTTP/1.1 continua amplamente presente por questões de **compatibilidade** e pela **lenta adoção de novas versões em ambientes corporativos e sistemas legados**. Migrar exige atualização de servidores, balanceadores e até ferramentas de segurança. Isso cria uma superfície de risco, pois protocolos antigos podem permitir ataques já conhecidos, como *Slowloris* ou exploração de cabeçalhos mal configurados.
+   O HTTP/1.1 continua amplamente presente por questões de **compatibilidade** e pela **lenta adoção de novas versões em ambientes corporativos e sistemas legados**. Migrar exige atualização de servidores, balanceadores e até ferramentas de segurança. Isso cria uma superfície de risco, pois protocolos antigos podem permitir ataques já conhecidos, como *Slowloris* ou exploração de cabeçalhos mal configurados.
 
-**2. De que forma a multiplexação do HTTP/2 melhora a performance, mas também pode ***criar** desafios de segurança?***
+2. **De que forma a multiplexação do HTTP/2 melhora a performance, mas também pode ***criar** desafios de segurança?***
 
-A multiplexação permite múltiplas requisições simultâneas em uma única conexão, evitando o bloqueio por ordem. No entanto, isso dificulta o trabalho de ferramentas de inspeção que analisam pacotes individualmente, podendo mascarar ataques de injeção de cabeçalhos, *request smuggling* ou *DoS* baseados em fluxos paralelos.
+   A multiplexação permite múltiplas requisições simultâneas em uma única conexão, evitando o bloqueio por ordem. No entanto, isso dificulta o trabalho de ferramentas de inspeção que analisam pacotes individualmente, podendo mascarar ataques de injeção de cabeçalhos, *request smuggling* ou *DoS* baseados em fluxos paralelos.
 
-**3. Como a compressão de cabeçalhos em HTTP/2 pode ser explorada por atacantes?**
+3. **Como a compressão de cabeçalhos em HTTP/2 pode ser explorada por atacantes?**
 
-Embora aumente a eficiência, a compressão HPACK pode ser explorada por ataques como **CRIME** e **BREACH**, onde o atacante força padrões repetitivos nos dados transmitidos para vazar informações sensíveis (como tokens de sessão). Isso mostra que melhorias de performance precisam ser avaliadas sob a ótica da segurança.
+   Embora aumente a eficiência, a compressão HPACK pode ser explorada por ataques como **CRIME** e **BREACH**, onde o atacante força padrões repetitivos nos dados transmitidos para vazar informações sensíveis (como tokens de sessão). Isso mostra que melhorias de performance precisam ser avaliadas sob a ótica da segurança.
 
-**4. O que muda em termos de criptografia no HTTP/3 em comparação às versões anteriores?**
+4. **O que muda em termos de criptografia no HTTP/3 em comparação às versões anteriores?**
 
-No HTTP/3, o **TLS 1.3 está embutido no próprio protocolo**, garantindo que conexões inseguras não sejam sequer estabelecidas. Isso reduz a exposição a ataques de downgrade e elimina versões antigas do TLS. Contudo, essa integração dificulta o uso de middleboxes e proxies que tradicionalmente inspecionavam o tráfego, exigindo novas abordagens para monitoramento seguro.
+   No HTTP/3, o **TLS 1.3 está embutido no próprio protocolo**, garantindo que conexões inseguras não sejam sequer estabelecidas. Isso reduz a exposição a ataques de downgrade e elimina versões antigas do TLS. Contudo, essa integração dificulta o uso de middleboxes e proxies que tradicionalmente inspecionavam o tráfego, exigindo novas abordagens para monitoramento seguro.
 
-**5. Qual é o impacto das diferenças de protocolo no comportamento do cache e como isso pode afetar a segurança?**
+5. **Qual é o impacto das diferenças de protocolo no comportamento do cache e como isso pode afetar a segurança?**
 
-- No **HTTP/1.1**, o cache era vital para mitigar múltiplas conexões, mas más configurações podiam expor dados sensíveis em proxies compartilhados.
-- No **HTTP/2**, o impacto do cache diminuiu, mas erros em cabeçalhos como Cache-Control ainda podem levar à exposição de informações privadas.
-- No **HTTP/3**, embora o cache continue relevante, o tráfego criptografado e o uso de QUIC tornam mais difícil para intermediários aplicarem políticas, exigindo atenção redobrada ao configurar os servidores.
+   - No **HTTP/1.1**, o cache era vital para mitigar múltiplas conexões, mas más configurações podiam expor dados sensíveis em proxies compartilhados.
+   - No **HTTP/2**, o impacto do cache diminuiu, mas erros em cabeçalhos como Cache-Control ainda podem levar à exposição de informações privadas.
+   - No **HTTP/3**, embora o cache continue relevante, o tráfego criptografado e o uso de QUIC tornam mais difícil para intermediários aplicarem políticas, exigindo atenção redobrada ao configurar os servidores.
+
 Em todos os casos, **má configuração de cache pode expor dados confidenciais**, como páginas autenticadas sendo armazenadas e reutilizadas indevidamente por outros usuários.
 
 ### Referências
@@ -286,34 +287,15 @@ O uso adequado de **cache** garante eficiência sem comprometer dados sensíveis
 
 ## Boas práticas acionáveis (segurança + confiabilidade)
 
-- **Aderência semântica**  
-  - `GET/HEAD` apenas leitura  
-  - Mutáveis → `POST/PUT/PATCH` + proteção CSRF (`SameSite`, tokens, validação de origem)
-
-- **Idempotência consciente**  
-  - `PUT/DELETE` → habilite retries seguros do cliente  
-  - `POST` → implemente `Idempotency-Key` e detecção de duplicata  
-
-- **Pré-condições**  
-  - Use `If-Match` com `ETag` em updates  
-  - Responda `412 Precondition Failed` se a versão for inesperada
-
-- **Redirecionamentos corretos**  
-  - `303 See Other` após `POST` (PRG)  
-  - `307/308` para preservar método/corpo  
-
-- **Rate limiting**  
-  - Padronize `429 Too Many Requests` + `Retry-After`  
-  - Exponha headers de quota  
-  - Recomende **exponential backoff + jitter**
-
-- **0-RTT (TLS 1.3 Early Data)**  
-  - Evite processar operações sensíveis recebidas como early data  
-  - Responda `425 Too Early` ou desabilite 0-RTT em endpoints críticos
-
-- **Cache consciente**  
-  - Use `ETag`/`Last-Modified` + `304 Not Modified` para eficiência  
-  - Invalide após mutações (`no-store`, `must-revalidate` quando necessário)
+| Tema | Boas práticas |
+|------|---------------|
+| **Aderência semântica** | - `GET`/`HEAD` apenas para leitura <br> - Operações mutáveis → `POST`/`PUT`/`PATCH` com proteção **CSRF** (`SameSite`, tokens, validação de origem) |
+| **Idempotência consciente** | - `PUT`/`DELETE`: habilite retries seguros do cliente <br> - `POST`: implemente **Idempotency-Key** e detecção de duplicata |
+| **Pré-condições** | - Use `If-Match` com `ETag` em updates <br> - Responda `412 Precondition Failed` se a versão for inesperada |
+| **Redirecionamentos corretos** | - `303 See Other` após `POST` (padrão **PRG**) <br> - `307`/`308` para preservar método e corpo |
+| **Rate limiting** | - Padronize `429 Too Many Requests` + `Retry-After` <br> - Exponha **headers de quota** <br> - Recomende **exponential backoff + jitter** |
+| **0-RTT (TLS 1.3 Early Data)** | - Evite processar operações sensíveis em early data <br> - Responda `425 Too Early` ou desabilite **0-RTT** em endpoints críticos |
+| **Cache consciente** | - Use `ETag`/`Last-Modified` + `304 Not Modified` para eficiência <br> - Invalide após mutações (`no-store`, `must-revalidate` quando necessário) |
 
 ### Casos Reais
 
@@ -592,24 +574,30 @@ O token **contém** claims/estado e pode ser validado sem consulta ao servidor e
 | **Session fixation** | Atacante força uso de ID de sessão conhecido. | Rotacionar sessão no login, rejeitar IDs não emitidos pelo servidor. |
 | **Exposição por cache** | Respostas autenticadas expostas em caches compartilhados. | `Cache-Control: no-store`. |
 otacione a sessão no login** e rejeite IDs não emitidos pelo servidor.
+
 - **Exposição por cache**: nunca permita que respostas autenticadas sejam **cacheadas** publicamente; use Cache-Control: no-store.
 
 ### Vamos Refletir?
 
-1. **Por que ***HttpOnly** não “resolve” XSS completamente?**
-Porque XSS pode **executar ações** em nome do usuário sem necessariamente **ler** o cookie. HttpOnly protege o **segredo** do cookie, mas você ainda precisa de **CSP**, validação de entrada e *output encoding*.
+1. **Por que `HttpOnly` não “resolve” XSS completamente?**
 
-2. **Quando ***SameSite=Strict** é demais?**
-Quando o fluxo exige **cross-site legítimo** (ex.: login federado, redirecionamentos entre domínios controlados). Nesses casos, use **Lax** ou **None; Secure**, mais **anti-CSRF** robusto.
+   Porque XSS pode executar ações em nome do usuário sem necessariamente **ler** o cookie. HttpOnly protege o **segredo** do cookie, mas você ainda precisa de **CSP**, validação de entrada e *output encoding*.
 
-3. **Por que evitar ***Domain=exemplo.com*** se meu app roda em ***app.exemplo.com***?**
-Porque isso libera o cookie para **todos os subdomínios**. Se algum for comprometido (ou puder ser criado por terceiros), a sessão **vaza**. Prefira **host-only** (sem Domain) quando possível.
+2. **Quando `SameSite=Strict` é demais?**
 
-4. **Cookies ou tokens no ***localStorage*** — o que é “mais seguro”?**
-Depende da **ameaça dominante**. Cookies HttpOnly protegem melhor contra **XSS de roubo de segredo**, mas exigem defesa contra **CSRF**. localStorage foge de CSRF, mas **expõe** o token a XSS. Combos modernos usam **access token em memória** + **refresh token em HttpOnly + SameSite**.
+   Quando o fluxo exige cross-site legítimo (ex.: login federado, redirecionamentos entre domínios controlados). Nesses casos, use **Lax** ou **None; Secure**, mais **anti-CSRF** robusto.
+
+3. **Por que evitar `Domain=exemplo.com` se meu app roda em app.exemplo.com?**
+
+   Porque isso libera o cookie para **todos os subdomínios**. Se algum for comprometido (ou puder ser criado por terceiros), a sessão **vaza**. Prefira **host-only** (sem Domain) quando possível.
+
+4. **Cookies ou tokens no `localStorage` — o que é “mais seguro”?**
+
+   Depende da *ameaça dominante. Cookies HttpOnly protegem melhor contra **XSS de roubo de segredo**, mas exigem defesa contra **CSRF**. localStorage foge de CSRF, mas expõe o token a XSS. Combos modernos usam **access token em memória** + **refresh token em HttpOnly + SameSite**.
 
 5. **Como mitigar session fixation?**
-**Gere um novo ID de sessão ao logar** (e ao elevar privilégios), invalide o ID antigo no servidor e recuse IDs não emitidos por você. *Set-Cookie* com Secure/HttpOnly/SameSite completa a defesa.
+
+   Gere um novo ID de sessão ao logar (e ao elevar privilégios), invalide o ID antigo no servidor e recuse IDs não emitidos por você. *Set-Cookie* com Secure/HttpOnly/SameSite completa a defesa.
 
 ### Casos Reais
 
@@ -680,20 +668,20 @@ Certificados não são todos iguais; eles possuem diferentes níveis de validaç
 
 ### Vamos Refletir?
 
-- **Por que não se utiliza apenas criptografia assimétrica em uma conexão HTTPS?**
-Porque ela é computacionalmente pesada e inviável para grandes volumes de dados. Por isso, usa-se assimétrica apenas no início da sessão para trocar a chave simétrica, que será responsável por proteger a comunicação contínua.
+1. **Por que não se utiliza apenas criptografia assimétrica em uma conexão HTTPS?**
+   Porque ela é computacionalmente pesada e inviável para grandes volumes de dados. Por isso, usa-se assimétrica apenas no início da sessão para trocar a chave simétrica, que será responsável por proteger a comunicação contínua.
 
-- **Qual a importância do Perfect Forward Secrecy no TLS 1.3?**
-Ele garante que a quebra de uma chave privada no futuro não comprometerá sessões passadas, pois cada sessão tem chaves efêmeras diferentes.
+2. **Qual a importância do Perfect Forward Secrecy no TLS 1.3?**
+   Ele garante que a quebra de uma chave privada no futuro não comprometerá sessões passadas, pois cada sessão tem chaves efêmeras diferentes.
 
-- **Como um navegador sabe se pode confiar em um certificado digital?**
-Ele valida a cadeia de confiança até chegar em uma CA raiz instalada localmente. Se essa cadeia for íntegra e o certificado não estiver revogado, a conexão é considerada confiável.
+3. **Como um navegador sabe se pode confiar em um certificado digital?**
+   Ele valida a cadeia de confiança até chegar em uma CA raiz instalada localmente. Se essa cadeia for íntegra e o certificado não estiver revogado, a conexão é considerada confiável.
 
-- **Qual o risco de usar um certificado wildcard em uma grande organização?**
-Se a chave privada for comprometida, todos os subdomínios estarão igualmente expostos a ataques de impersonação.
+4. **Qual o risco de usar um certificado wildcard em uma grande organização?**
+   Se a chave privada for comprometida, todos os subdomínios estarão igualmente expostos a ataques de impersonação.
 
-- **Por que o uso de SHA-1 foi abandonado em certificados digitais?**
-Porque colisões foram demonstradas na prática, permitindo que dois documentos diferentes tivessem o mesmo hash. Isso comprometia a segurança das assinaturas digitais.
+5. **Por que o uso de SHA-1 foi abandonado em certificados digitais?**
+   Porque colisões foram demonstradas na prática, permitindo que dois documentos diferentes tivessem o mesmo hash. Isso comprometia a segurança das assinaturas digitais.
 
 ### Casos Reais
 
@@ -777,25 +765,25 @@ Mapeamento de Problemas HTTP para o OWASP Top 10
 
 ### Vamos Refletir?
 
-- **Se um cookie de sessão não estiver marcado como ***HttpOnly***, que tipo de ataque pode explorá-lo?**
+1. **Se um cookie de sessão não estiver marcado como ***HttpOnly***, que tipo de ataque pode explorá-lo?**
 
-  Ele pode ser roubado via JavaScript injetado em um ataque XSS, permitindo que o invasor assuma a sessão do usuário.
+   Ele pode ser roubado via JavaScript injetado em um ataque XSS, permitindo que o invasor assuma a sessão do usuário.
 
-- **Qual a relação entre ***rate-limiting*** e ataques de força bruta em HTTP?**
+2. **Qual a relação entre ***rate-limiting*** e ataques de força bruta em HTTP?**
 
-  O rate-limiting limita requisições por IP/usuário, dificultando ataques automáticos de força bruta contra endpoints de login.
+   O rate-limiting limita requisições por IP/usuário, dificultando ataques automáticos de força bruta contra endpoints de login.
 
-- **Por que o uso de TLS 1.0 representa risco mesmo em aplicações internas?**
+3. **Por que o uso de TLS 1.0 representa risco mesmo em aplicações internas?**
 
-  Porque algoritmos antigos possuem vulnerabilidades conhecidas que permitem descriptografar tráfego, e redes internas não são ambientes totalmente confiáveis.
+   Porque algoritmos antigos possuem vulnerabilidades conhecidas que permitem descriptografar tráfego, e redes internas não são ambientes totalmente confiáveis.
 
-- **O que pode acontecer se o cabeçalho ***Content-Security-Policy*** não for configurado?**
+4. **O que pode acontecer se o cabeçalho ***Content-Security-Policy*** não for configurado?**
 
-  O navegador não terá instruções para restringir a origem de scripts, o que facilita exploração de XSS e injeções de conteúdo.
+   O navegador não terá instruções para restringir a origem de scripts, o que facilita exploração de XSS e injeções de conteúdo.
 
-- **Como as falhas de logging podem se transformar em violações de privacidade?**
+5. **Como as falhas de logging podem se transformar em violações de privacidade?**
 
-  Quando dados pessoais ou tokens sensíveis são armazenados em logs sem mascaramento, há risco de vazamento em auditorias, suporte técnico ou incidentes de exposição.
+   Quando dados pessoais ou tokens sensíveis são armazenados em logs sem mascaramento, há risco de vazamento em auditorias, suporte técnico ou incidentes de exposição.
 
 ### Casos Reais
 
