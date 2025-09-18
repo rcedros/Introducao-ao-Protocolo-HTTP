@@ -145,11 +145,10 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 - **Propriedade:** **não idempotente** (repetir pode duplicar efeitos).
 - **Exemplo intuitivo:** “entregar um formulário preenchido no balcão”.
 **Exemplo:**
+```bash
 
  curl -X POST https://api.loja.com/pedidos \
-
 -H "Content-Type: application/json" \
-
 -d '{"cliente_id": 42, "itens": [{"sku":"ABC","qtd":2}]}'
 
 - **Segurança:** por ser não idempotente, **retries** podem duplicar operações (cobranças, pedidos). Veremos como mitigar com **Idempotency-Key**.
@@ -160,7 +159,8 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 - **Propriedade:** **idempotente** (definir o mesmo estado N vezes produz o mesmo efeito).
 - **Exemplo intuitivo:** “trocar a ficha cadastral inteira por uma nova”.
 **Exemplo:**
-****
+
+```bash
  curl -X PUT https://api.loja.com/usuarios/42 \
 -H "Content-Type: application/json" \
 -d '{"nome":"Ana","email":"ana@ex.com","telefone":"+55..."}'
@@ -173,6 +173,8 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 - **Propriedade:** **pode não ser idempotente** (depende do patch aplicado).
 - **Exemplo intuitivo:** “corrigir somente o telefone, sem mexer no resto”.
 **Exemplo:**
+
+```bash
  curl -X PATCH https://api.loja.com/usuarios/42 \
 -H "Content-Type: application/json" \
 -d '{"telefone":"+55 11 99999-0000"}'
