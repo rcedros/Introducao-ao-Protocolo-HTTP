@@ -152,7 +152,6 @@ curl https://api.loja.com/produtos?categoria=monitores
 **Exemplo:**
 
 ```bash
-
  curl -X POST https://api.loja.com/pedidos \
 -H "Content-Type: application/json" \
 -d '{"cliente_id": 42, "itens": [{"sku":"ABC","qtd":2}]}'
@@ -194,6 +193,7 @@ curl https://api.loja.com/produtos?categoria=monitores
 ```bash
 curl -X DELETE https://api.loja.com/usuarios/42
 ```
+
 #### OPTIONS — “Quais métodos e políticas são aceitos aqui?”
 - **Intenção:** descobrir capacidades do servidor para um recurso.
 - **Exemplo intuitivo:** “perguntar ao balcão: o que posso fazer neste guichê?”.
@@ -201,8 +201,9 @@ curl -X DELETE https://api.loja.com/usuarios/42
 
 ```bash
  curl -X OPTIONS -i https://api.loja.com/pedidos
-- **Uso:** responde cabeçalho **Allow** (métodos suportados) e é base para **preflight CORS** em navegadores.
 ```
+
+- **Uso:** responde cabeçalho **Allow** (métodos suportados) e é base para **preflight CORS** em navegadores.
 
 #### TRACE — “Me retorne o que você recebeu”
 - **Intenção:** depuração (eco da requisição).
@@ -417,16 +418,13 @@ Combinados, esses mecanismos são peças essenciais para manter a comunicação 
 #### CORS (Cross-Origin Resource Sharing)
 
 Conjunto de headers que regula se um **site A** pode chamar a API do **site B** no navegador. Resposta típica segura:
-
+```html
 Access-Control-Allow-Origin: https://app.exemplo.com
-
 Vary: Origin
-
 Access-Control-Allow-Methods: GET, POST, PUT, DELETE
-
 Access-Control-Allow-Headers: Content-Type, Authorization
-
 Access-Control-Allow-Credentials: true
+```
 
 - Pontos críticos:
 - **Nunca** use Access-Control-Allow-Origin: * **junto** com Allow-Credentials: true (os navegadores bloqueiam por segurança).
