@@ -102,7 +102,7 @@ Em todos os casos, **má configuração de cache pode expor dados confidenciais*
 
 Quando um cliente “fala” com um servidor pela Web, ele não envia apenas dados: ele comunica **intenção**. Essa intenção é expressa pelos **métodos HTTP** (também chamados de “verbos”). Saber o que cada método *pretende* fazer — ler, criar, substituir, alterar parcialmente, apagar, negociar capacidades — é vital para projetar APIs confiáveis e, sobretudo, **seguras**.
 
-**Entender HTTP em profundidade**, boa parte do valor prático para segurança está nas **propriedades dos métodos**, em como **idempotência** e **segurança (safe)** influenciam *retries*, replays e mitigação de CSRF, e em **interpretar corretamente os códigos de status** — inclusive os “menos famosos”, como 429, 451 e 425. Este capítulo amarra esses pontos com um viés operacional.
+**Entender HTTP em profundidade**, boa parte do valor prático para segurança está nas **propriedades dos métodos**, em como **idempotência** e **segurança (safe)** influenciam *retries*, *replays* e mitigação de CSRF, e em **interpretar corretamente os códigos de status** — inclusive os “menos famosos”, como 429, 451 e 425. Este capítulo amarra esses pontos com um viés operacional.
 
 A seguir, apresento os métodos padronizados, com explicação e **um exemplo simples e intuitivo** de uso. Depois entramos em **idempotência** (o tema que amarra confiabilidade, retries e mitigação de fraudes/replays) e continuamos com as demais partes operacionais: **redirecionamentos corretos, códigos de status, condicionais, cache** e implicações de segurança.
 
@@ -211,7 +211,7 @@ curl -X DELETE https://api.loja.com/usuarios/42
 - **Intenção:** usado por proxies para criar um túnel TCP (ex.: HTTPS via proxy).
 - **Exemplo intuitivo:** “pedir ao porteiro para abrir um canal direto com a sala segura”.
 
-### Idempotência — a cola entre confiabilidade e segurança
+## Idempotência — a cola entre confiabilidade e segurança
 
 Uma operação é considerada **idempotente** quando repeti-la, usando os mesmos parâmetros, não altera o resultado além do primeiro efeito. No contexto de HTTP, os métodos **GET, HEAD, PUT e DELETE** são idempotentes por padrão, enquanto **POST** não é e o **PATCH** depende da implementação.
 
