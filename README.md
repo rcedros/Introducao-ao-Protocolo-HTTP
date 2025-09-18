@@ -315,27 +315,28 @@ O uso adequado de **cache** garante eficiência sem comprometer dados sensíveis
   - Use `ETag`/`Last-Modified` + `304 Not Modified` para eficiência  
   - Invalide após mutações (`no-store`, `must-revalidate` quando necessário)
 
-## Casos Reais
+### Casos Reais
+
+Alguns exemplos práticos mostram como detalhes do protocolo HTTP impactam diretamente a **segurança** e a **confiabilidade** das aplicações:
 
 - **Pagamentos e idempotência (Stripe)**  
-  - Retries de `POST` por perda de resposta causavam **cobranças duplicadas**.  
-  - Solução: `Idempotency-Key` → o primeiro resultado fica “fixado” e retries devolvem a mesma resposta (inclusive `5xx`), tipicamente por 24h.
+  Em cenários de rede instável, `POSTs` repetidos por perda de resposta acabavam gerando **cobranças duplicadas**.  
+  A solução adotada foi a introdução do cabeçalho `Idempotency-Key`: o servidor fixa o primeiro resultado e garante que tentativas subsequentes retornem sempre a mesma resposta (inclusive erros `5xx`), geralmente por até 24h.
 
-- **Redirecionar POST como GET**  
-  - Usar `302` após um `POST` pode fazer o cliente trocar o método (`POST → GET`).  
-  - Padrão seguro: **PRG (Post/Redirect/Get)** com `303 See Other`.  
-  - Use `307/308` quando quiser preservar o método.
+- **Redirecionamentos após POST**  
+  Um erro comum é usar `302` após um `POST`. Isso pode levar o cliente a **trocar o método** (`POST → GET`), alterando a semântica da requisição.  
+  O padrão correto é o **PRG (Post/Redirect/Get)** usando `303 See Other`. Quando é necessário preservar o método e o corpo, devem ser usados `307` ou `308`.
 
 - **Rate limiting em APIs públicas**  
-  - Plataformas como GitHub expõem headers de quota (`X-RateLimit-Remaining`, `X-RateLimit-Reset`) e usam `429 Too Many Requests` com `Retry-After`.  
-  - Clients devem respeitar esses sinais e aplicar **backoff**.
+  Serviços como o GitHub fornecem **cabeçalhos de quota** (`X-RateLimit-Remaining`, `X-RateLimit-Reset`) e retornam `429 Too Many Requests` com `Retry-After`.  
+  A expectativa é que os clientes respeitem esses sinais, implementando **estratégias de backoff** para evitar abusos e manter a disponibilidade do serviço.
 
-- **451 Unavailable For Legal Reasons**  
-  - Usado em bloqueios por geografia/ordens judiciais → mais transparente que `403`/`404`.
+- **Bloqueios legais e transparência**  
+  Ao invés de responder `403` ou `404`, algumas plataformas utilizam `451 Unavailable For Legal Reasons` para indicar que o acesso foi bloqueado por **ordem judicial ou restrições geográficas**, trazendo mais clareza e transparência.
 
 - **TLS 1.3 Early Data e 425 Too Early**  
-  - Requisições com `Early-Data: 1` podem ser **replayadas** em CDNs/reverse proxies.  
-  - Solução: responder `425 Too Early` para forçar o cliente a reenviar após o handshake.
+  Em ambientes com CDNs e *reverse proxies*, requisições enviadas com `Early-Data: 1` (0-RTT) podem ser **replayadas**.  
+  Para mitigar, o servidor responde com `425 Too Early`, obrigando o cliente a reenviar a requisição apenas após o **handshake completo**, garantindo segurança contra repetições indevidas.
 
 ### Vamos Refletir?
 
