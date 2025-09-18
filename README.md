@@ -563,9 +563,7 @@ O servidor guarda o estado (ex.: sessão em base ou cache) e envia um **ID curto
 | - Simples de invalidar/rotacionar.<br>- Pode usar `HttpOnly + SameSite` para proteger contra XSS/CSRF.<br>- TTL controlado pelo backend. | - Precisa de armazenamento de sessão (memória/cache/banco). |
 
 ### Token (stateless, ex.: JWT)
-O token **contém** claims/estado e pode ser validado sem consulta ao servidor.
-
-#### Onde armazenar?
+O token **contém** claims/estado e pode ser validado sem consulta ao servidor e onde armazenar?
 
 | Local | Vantagens | Riscos |
 |-------|-----------|--------|
@@ -579,8 +577,8 @@ O token **contém** claims/estado e pode ser validado sem consulta ao servidor.
 - Escopos mínimos de autorização.  
 
 ### Resumo prático
-- **Apps web tradicionais ou SPAs com backend próprio** → `Cookie HttpOnly + Secure + SameSite` + **token anti-CSRF** (padrão ouro).  
-- **APIs para CLI ou mobile nativo** → evite cookies; use `Authorization: Bearer` + **armazenamento seguro**, expiração curta e **reautenticação quando suspeito**.  
+- **Apps web tradicionais ou SPAs com backend próprio:** `Cookie HttpOnly + Secure + SameSite` + **token anti-CSRF** (padrão ouro).  
+- **APIs para CLI ou mobile nativo:** evite cookies; use `Authorization: Bearer` + **armazenamento seguro**, expiração curta e **reautenticação quando suspeito**.  
 
 
 ### Riscos e ataques típicos
