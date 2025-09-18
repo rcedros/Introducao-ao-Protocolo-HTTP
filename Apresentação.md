@@ -1,7 +1,5 @@
 # 📖 Introdução ao Protocolo HTTP – Estrutura de Slides
 
----
-
 ## 🔹 Slide 1 – Abertura  
 **Conteúdo:**  
 - O que é HTTP  
@@ -10,8 +8,6 @@
 
 **Visual:** 🌐 Rede + 🔒 Cadeado  
 **Lab:** —  
-
----
 
 ## 🔹 Slide 2 – Panorama HTTP/HTTPS  
 **Conteúdo:**  
@@ -22,8 +18,6 @@
 **Visual:** Diagrama cliente → servidor (com e sem 🔒)  
 **Lab:** Acessar um site em HTTP e HTTPS no navegador e inspecionar o cadeado 🔒  
 
----
-
 ## 🔹 Slide 3 – Evolução do Protocolo  
 **Conteúdo:**  
 - HTTP/1.1 → conexões persistentes, cache  
@@ -33,8 +27,6 @@
 **Visual:** Linha do tempo com ícones ⚡  
 **Lab:** Testar [tools.keycdn.com/http2-test](https://tools.keycdn.com/http2-test)  
 
----
-
 ## 🔹 Slide 4 – Métodos HTTP  
 **Conteúdo:**  
 - GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD  
@@ -43,8 +35,6 @@
 
 **Visual:** Tabela (Método | Uso | Idempotente)  
 **Lab:** Fazer requests via `curl` ou Postman comparando GET vs POST  
-
----
 
 ## 🔹 Slide 5 – Status Codes  
 **Conteúdo:**  
@@ -58,8 +48,6 @@
 **Visual:** 🚦 Semáforo (verde, amarelo, vermelho)  
 **Lab:** Rodar `curl -I` em sites diferentes e analisar status retornado  
 
----
-
 ## 🔹 Slide 6 – Headers  
 **Conteúdo:**  
 - Comuns: User-Agent, Accept, Content-Type, Cache-Control  
@@ -68,8 +56,6 @@
 
 **Visual:** Quadro dividido em **comuns** vs **segurança**  
 **Lab:** Rodar `curl -I https://exemplo.com` e analisar headers  
-
----
 
 ## 🔹 Slide 7 – Cookies  
 **Conteúdo:**  
@@ -81,8 +67,6 @@
 **Visual:** 🍪 Cookie com cadeado 🔒  
 **Lab:** Abrir DevTools → Application → Cookies e analisar atributos  
 
----
-
 ## 🔹 Slide 8 – Gerenciamento de Sessão  
 **Conteúdo:**  
 - Server-side vs Token (JWT)  
@@ -91,8 +75,6 @@
 
 **Visual:** Fluxograma sessão (usuário → servidor → token)  
 **Lab:** Criar JWT em [jwt.io](https://jwt.io) e testar decodificação no navegador  
-
----
 
 ## 🔹 Slide 9 – Criptografia e TLS  
 **Conteúdo:**  
@@ -104,8 +86,6 @@
 **Visual:** 🔑 Chaves + certificado digital  
 **Lab:** Rodar `openssl s_client -connect site.com:443` e inspecionar certificado  
 
----
-
 ## 🔹 Slide 10 – Ataques na Camada HTTP  
 **Conteúdo:**  
 - Request Smuggling / Desync  
@@ -116,8 +96,6 @@
 **Visual:** 🐞 Bug sobre um pacote HTTP  
 **Lab:** Simular CSRF simples em HTML e capturar no navegador  
 
----
-
 ## 🔹 Slide 11 – Logging e Privacidade  
 **Conteúdo:**  
 - O que logar × não logar (tokens, PII, senhas)  
@@ -126,8 +104,6 @@
 
 **Visual:** 📊 Logs com cadeado  
 **Lab:** Criar log JSON em Python com request + trace-id  
-
----
 
 ## 🔹 Slide 12 – HTTP e OWASP Top 10  
 **Conteúdo:**  
@@ -142,8 +118,6 @@
 
 **Visual:** OWASP logo + 🔟 Checklist  
 **Lab:** Rodar [securityheaders.com](https://securityheaders.com) em site conhecido  
-
----
 
 ## 🔹 Slide 13 – Conclusão  
 **Conteúdo:**  
