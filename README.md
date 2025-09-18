@@ -136,25 +136,28 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 - **Exemplo intuitivo:** “checar a etiqueta da caixa sem abri-la”.
 **Exemplo:**
 
+```bash
  curl -I https://site.com/arquivo.pdf
+```
 
 - **Uso típico:** verificar Content-Length, ETag, Last-Modified antes de baixar.
-#### POST — “Quero criar ou executar uma ação”
 
+#### POST — “Quero criar ou executar uma ação”
 - **Intenção:** criar um recurso, iniciar um processamento, enviar um formulário.
 - **Propriedade:** **não idempotente** (repetir pode duplicar efeitos).
 - **Exemplo intuitivo:** “entregar um formulário preenchido no balcão”.
 **Exemplo:**
+
 ```bash
 
  curl -X POST https://api.loja.com/pedidos \
 -H "Content-Type: application/json" \
 -d '{"cliente_id": 42, "itens": [{"sku":"ABC","qtd":2}]}'
+```
 
 - **Segurança:** por ser não idempotente, **retries** podem duplicar operações (cobranças, pedidos). Veremos como mitigar com **Idempotency-Key**.
 
 #### PUT — “Quero substituir”
-
 - **Intenção:** **substituir por completo** a representação de um recurso existente (ou criar se a rota permitir “upsert”).
 - **Propriedade:** **idempotente** (definir o mesmo estado N vezes produz o mesmo efeito).
 - **Exemplo intuitivo:** “trocar a ficha cadastral inteira por uma nova”.
@@ -164,11 +167,11 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
  curl -X PUT https://api.loja.com/usuarios/42 \
 -H "Content-Type: application/json" \
 -d '{"nome":"Ana","email":"ana@ex.com","telefone":"+55..."}'
+```
 
 - **Segurança:** combine com **pré-condições** (If-Match com ETag) para evitar *lost update* em concorrência.
 
 #### PATCH — “Quero alterar parcialmente”
-
 - **Intenção:** modificar **parte** da representação.
 - **Propriedade:** **pode não ser idempotente** (depende do patch aplicado).
 - **Exemplo intuitivo:** “corrigir somente o telefone, sem mexer no resto”.
@@ -178,29 +181,31 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
  curl -X PATCH https://api.loja.com/usuarios/42 \
 -H "Content-Type: application/json" \
 -d '{"telefone":"+55 11 99999-0000"}'
+```
 
 #### DELETE — “Quero remover”
-
 - **Intenção:** remover um recurso.
 **Propriedade:** **idempotente** (apagar de novo não muda o resultado).
 - **Exemplo intuitivo:** “jogar fora uma ficha; tentar jogar fora de novo não tem efeito”.
+
+```bash
 curl -X DELETE https://api.loja.com/usuarios/42
-
+```
 #### OPTIONS — “Quais métodos e políticas são aceitos aqui?”
-
 - **Intenção:** descobrir capacidades do servidor para um recurso.
 - **Exemplo intuitivo:** “perguntar ao balcão: o que posso fazer neste guichê?”.
 **Exemplo:**
+
+```bash
  curl -X OPTIONS -i https://api.loja.com/pedidos
 - **Uso:** responde cabeçalho **Allow** (métodos suportados) e é base para **preflight CORS** em navegadores.
+```
 
 #### TRACE — “Me retorne o que você recebeu”
-
 - **Intenção:** depuração (eco da requisição).
 - **Segurança:** frequentemente **desabilitado** em produção (pode auxiliar ataques de informação).
 
 #### CONNECT — “Abra um túnel”
-
 - **Intenção:** usado por proxies para criar um túnel TCP (ex.: HTTPS via proxy).
 - **Exemplo intuitivo:** “pedir ao porteiro para abrir um canal direto com a sala segura”.
 
