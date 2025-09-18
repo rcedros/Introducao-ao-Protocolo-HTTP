@@ -232,7 +232,7 @@ Alguns padrões práticos reforçam essa abordagem:
 
 Também é importante tratar redirecionamentos após um POST. Evite 301 ou 302, pois alguns clientes podem alterar o método para GET, causando inconsistências. O padrão mais seguro é o PRG (Post/Redirect/Get) com **303 See Other**, que processa o POST e redireciona para uma URL de leitura. Quando for necessário preservar método e corpo, utilize 307 Temporary Redirect ou 308 Permanent Redirect. Essa prática previne reenvios acidentais em “refresh/back”, reduz riscos de vazamento de dados em URLs e mantém a semântica correta do método.
 
-## 📬 Códigos de status — leitura tática para segurança
+# 📬 Códigos de status — leitura tática para segurança
 
 Um **Status Code HTTP** (código de estado) é um número de três dígitos que o servidor retorna ao cliente — como um navegador ou aplicação — em resposta a uma requisição. Esse código resume o resultado da solicitação, indicando se ela foi concluída com sucesso, se exige uma ação adicional ou se ocorreu algum erro no lado do cliente ou do servidor.
 HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modified, Vary, *revalidation*) — hoje consolidado no **RFC 9111**. Segurança se beneficia porque **revalidações condicionais** (**If-None-Match/If-Modified-Since**) reduzem a superfície de transferência e ajudam a **sincronizar o estado** sem regravar dados. **304 Not Modified** é sinal de *efeito esperado* de uma condicional; não um erro.
@@ -286,29 +286,7 @@ O uso adequado de **cache** garante eficiência sem comprometer dados sensíveis
   - `POST` normalmente **não** é armazenado por caches.  
   - `GET` pode ser → **não retorne dados sensíveis via GET** sem diretivas adequadas.
 
-## Casos Reais
-
-- **Pagamentos e idempotência (Stripe)**  
-  - Retries de `POST` por perda de resposta causavam **cobranças duplicadas**.  
-  - Solução: `Idempotency-Key` → o primeiro resultado fica “fixado” e retries devolvem a mesma resposta (inclusive `5xx`), tipicamente por 24h.
-
-- **Redirecionar POST como GET**  
-  - Usar `302` após um `POST` pode fazer o cliente trocar o método (`POST → GET`).  
-  - Padrão seguro: **PRG (Post/Redirect/Get)** com `303 See Other`.  
-  - Use `307/308` quando quiser preservar o método.
-
-- **Rate limiting em APIs públicas**  
-  - Plataformas como GitHub expõem headers de quota (`X-RateLimit-Remaining`, `X-RateLimit-Reset`) e usam `429 Too Many Requests` com `Retry-After`.  
-  - Clients devem respeitar esses sinais e aplicar **backoff**.
-
-- **451 Unavailable For Legal Reasons**  
-  - Usado em bloqueios por geografia/ordens judiciais → mais transparente que `403`/`404`.
-
-- **TLS 1.3 Early Data e 425 Too Early**  
-  - Requisições com `Early-Data: 1` podem ser **replayadas** em CDNs/reverse proxies.  
-  - Solução: responder `425 Too Early` para forçar o cliente a reenviar após o handshake.
-
-## 🛡 Boas práticas acionáveis (segurança + confiabilidade)
+## Boas práticas acionáveis (segurança + confiabilidade)
 
 - **Aderência semântica**  
   - `GET/HEAD` apenas leitura  
@@ -338,6 +316,28 @@ O uso adequado de **cache** garante eficiência sem comprometer dados sensíveis
 - **Cache consciente**  
   - Use `ETag`/`Last-Modified` + `304 Not Modified` para eficiência  
   - Invalide após mutações (`no-store`, `must-revalidate` quando necessário)
+
+## Casos Reais
+
+- **Pagamentos e idempotência (Stripe)**  
+  - Retries de `POST` por perda de resposta causavam **cobranças duplicadas**.  
+  - Solução: `Idempotency-Key` → o primeiro resultado fica “fixado” e retries devolvem a mesma resposta (inclusive `5xx`), tipicamente por 24h.
+
+- **Redirecionar POST como GET**  
+  - Usar `302` após um `POST` pode fazer o cliente trocar o método (`POST → GET`).  
+  - Padrão seguro: **PRG (Post/Redirect/Get)** com `303 See Other`.  
+  - Use `307/308` quando quiser preservar o método.
+
+- **Rate limiting em APIs públicas**  
+  - Plataformas como GitHub expõem headers de quota (`X-RateLimit-Remaining`, `X-RateLimit-Reset`) e usam `429 Too Many Requests` com `Retry-After`.  
+  - Clients devem respeitar esses sinais e aplicar **backoff**.
+
+- **451 Unavailable For Legal Reasons**  
+  - Usado em bloqueios por geografia/ordens judiciais → mais transparente que `403`/`404`.
+
+- **TLS 1.3 Early Data e 425 Too Early**  
+  - Requisições com `Early-Data: 1` podem ser **replayadas** em CDNs/reverse proxies.  
+  - Solução: responder `425 Too Early` para forçar o cliente a reenviar após o handshake.
 
 ### Vamos Refletir?
 
