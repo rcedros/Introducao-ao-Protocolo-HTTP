@@ -75,7 +75,8 @@ Um estudo do **Cloudflare** mostrou que a adoção do HTTP/3 reduziu em até **2
 
 O HTTP/1.1 continua amplamente presente por questões de **compatibilidade** e pela **lenta adoção de novas versões em ambientes corporativos e sistemas legados**. Migrar exige atualização de servidores, balanceadores e até ferramentas de segurança. Isso cria uma superfície de risco, pois protocolos antigos podem permitir ataques já conhecidos, como *Slowloris* ou exploração de cabeçalhos mal configurados.
 
-**2. De que forma a multiplexação do HTTP/2 melhora a performance, mas também pode ****criar** desafios de segurança?****
+**2. De que forma a multiplexação do HTTP/2 melhora a performance, mas também pode ***criar** desafios de segurança?***
+
 A multiplexação permite múltiplas requisições simultâneas em uma única conexão, evitando o bloqueio por ordem. No entanto, isso dificulta o trabalho de ferramentas de inspeção que analisam pacotes individualmente, podendo mascarar ataques de injeção de cabeçalhos, *request smuggling* ou *DoS* baseados em fluxos paralelos.
 
 **3. Como a compressão de cabeçalhos em HTTP/2 pode ser explorada por atacantes?**
@@ -126,7 +127,7 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 - **Intenção:** obter representação de um recurso (consulta).
 - **Propriedade:** *safe* (não deve mudar estado) e **idempotente**.
 - **Exemplo intuitivo:** “abrir um catálogo para ver os produtos”.
-**Exemplo prático (cURL):****
+**Exemplo prático (cURL):***
 
 ```bash
 curl https://api.loja.com/produtos?categoria=monitores
@@ -303,19 +304,24 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 
 ### Vamos Refletir?
 
-- **Por que ***retry*** automático de POST pode ser perigoso e como mitigá-lo?**
+1. **Por que ***retry*** automático de POST pode ser perigoso e como mitigá-lo?**
+
 Porque POST não é idempotente; repetir pode duplicar efeitos (ex.: cobrança). **Idempotency-Key** faz o servidor retornar a mesma resposta para a mesma operação, mesmo em *retries*.
 
-- **Qual a diferença operacional entre 401 e 403?**
+2. **Qual a diferença operacional entre 401 e 403?**
+
 **401**: faltam **credenciais válidas** — envie **WWW-Authenticate** e oriente novo *challenge*. **403**: requisição entendida, **recusada** (tipicamente autorização negada). Logs e playbooks distintos ajudam triagem.
  
-- **Quando prefiro 303 vs 307/308 após processar um POST?**
+3. **Quando prefiro 303 vs 307/308 após processar um POST?**
+
 **303** na estratégia **PRG** (cliente refaz a leitura com GET *safe*). **307/308** quando o redirecionamento **deve manter** o método/body (ex.: reencaminhar um POST para outro host mantendo semântica).
  
-- **Como os cabeçalhos condicionais ajudam a segurança de dados?**
+4. **Como os cabeçalhos condicionais ajudam a segurança de dados?**
+
 Com **ETag** + **If-Match/If-None-Match**, você evita *lost update* e sincroniza estado sem regravar conteúdo, respondendo **412** ou **304** conforme o caso.
 
-- **Em que cenário 425 “Too Early” é a melhor resposta?**
+5. **Em que cenário 425 “Too Early” é a melhor resposta?**
+
 Quando a requisição chegou como **Early Data (0-RTT)** e **pode ser replayada** (ex.: transação financeira). **425** obriga o cliente a reenviar após o handshake TLS, mitigando replay.
 
 ### Conclusão
@@ -534,7 +540,7 @@ Controla se o cookie **viaja em navegação entre sites** (cross-site).
 
 - **Strict**: **não** envia o cookie em nenhum contexto cross-site. É o mais protetivo contra **CSRF**, mas pode quebrar fluxos que dependam de redirecionar o usuário entre domínios.
 - **Lax**: envia o cookie **apenas** em **navegações de nível superior** (ex.: clicar em link) e **apenas para métodos “seguros”** (GET). Bom equilíbrio entre UX e mitigação de CSRF.
-- **None**: permite envio em **todos** os contextos cross-site, **mas exige ****Secure**. Use apenas quando estritamente necessário (ex.: integração real entre domínios controlados).
+- **None**: permite envio em **todos** os contextos cross-site, **mas exige ***Secure***. Use apenas quando estritamente necessário (ex.: integração real entre domínios controlados).
 **Padrão moderno**: na ausência de SameSite, navegadores costumam tratar como **Lax**. Ainda assim, **declare explicitamente**.
 
 Exemplo robusto de cookie de sessão:
@@ -543,7 +549,7 @@ Exemplo robusto de cookie de sessão:
 Set-Cookie: sessionid=abc123; Path=/; Secure; HttpOnly; SameSite=Strict
 ```
 
-Bônus de hardening: o **prefixo ****__Host-** obriga requisitos fortes (cookie **deve** ter Secure, **não** pode ter Domain, e **Path** deve ser /). Ex.: 
+Bônus de hardening: o **prefixo ***__Host-** obriga requisitos fortes (cookie **deve** ter Secure, **não** pode ter Domain, e **Path** deve ser /). Ex.: 
 
 ```bash
 Set-Cookie: __Host-sessionid=abc123; Path=/; Secure; HttpOnly; SameSite=Strict
@@ -553,24 +559,24 @@ Escopo: Domain e Path
 
 O **escopo decide onde o cookie “aparece”**.
 
-- **Sem ****Domain**: o cookie é **host-only** (ex.: vale para app.exemplo.com, **não** para api.exemplo.com). É mais restritivo e preferível para segurança.
-- **Com ****Domain=exemplo.com**: o cookie viaja para **todos os subdomínios** (app.exemplo.com, api.exemplo.com…), ampliando a superfície. Evite a menos que precise mesmo compartilhar sessão entre subdomínios.
+- **Sem ***Domain**: o cookie é **host-only** (ex.: vale para app.exemplo.com, **não** para api.exemplo.com). É mais restritivo e preferível para segurança.
+- **Com ***Domain=exemplo.com**: o cookie viaja para **todos os subdomínios** (app.exemplo.com, api.exemplo.com…), ampliando a superfície. Evite a menos que precise mesmo compartilhar sessão entre subdomínios.
 - **Path** delimita o **caminho** (ex.: Path=/conta limita às rotas que começam com /conta). Use para evitar que áreas não relacionadas recebam o cookie.
 **Armadilha comum**: cookies amplos (Domain muito permissivo) combinados a **subdomain takeover** expõem sessões para um host comprometido.
 
 Persistência: cookie vs token (e onde guardar)
 
-**Cookie de sessão tradicional (stateful):****
+**Cookie de sessão tradicional (stateful):***
  O servidor guarda o estado (ex.: sessão na base ou cache) e envia um identificador curto no cookie.
 
 - **Prós:** simples de invalidar/rotacionar; pode ser HttpOnly + SameSite para blindar XSS/CSRF; cabe a você controlar TTL no backend.
 - **Contras:** precisa de armazenamento de sessão (memória/cache/banco).
-**Token (stateless, ex.: JWT):****
+**Token (stateless, ex.: JWT):***
  O token **contém** o estado/claims e pode ser validado sem consulta ao servidor.
 
 - **Onde armazenar?**
 - **HttpOnly cookie**: melhora contra **XSS** (token inalcançável a JS), mas você deve **tratar CSRF** (SameSite + *anti-CSRF token*).
-- **localStorage****/memória**: evita **CSRF** (o navegador não envia sozinho), mas **expõe a XSS**; é crucial reduzir superfícies de injeção e rotacionar tokens.
+- **localStorage***/memória**: evita **CSRF** (o navegador não envia sozinho), mas **expõe a XSS**; é crucial reduzir superfícies de injeção e rotacionar tokens.
 - **Boas práticas com tokens:** expiração curta (**access token**) + **refresh token** em **HttpOnly + Secure + SameSite**; *rotation* e revogação; escopos mínimos.
 **Resumo prático**
 
@@ -586,19 +592,19 @@ Riscos e ataques típicos
 
 ### Vamos Refletir?
 
-- **Por que ****HttpOnly** não “resolve” XSS completamente?**
+1. **Por que ***HttpOnly** não “resolve” XSS completamente?**
 Porque XSS pode **executar ações** em nome do usuário sem necessariamente **ler** o cookie. HttpOnly protege o **segredo** do cookie, mas você ainda precisa de **CSP**, validação de entrada e *output encoding*.
 
-- **Quando ****SameSite=Strict** é demais?**
+2. **Quando ***SameSite=Strict** é demais?**
 Quando o fluxo exige **cross-site legítimo** (ex.: login federado, redirecionamentos entre domínios controlados). Nesses casos, use **Lax** ou **None; Secure**, mais **anti-CSRF** robusto.
 
-- **Por que evitar ****Domain=exemplo.com** se meu app roda em ****app.exemplo.com****?**
+3. **Por que evitar ***Domain=exemplo.com*** se meu app roda em ***app.exemplo.com***?**
 Porque isso libera o cookie para **todos os subdomínios**. Se algum for comprometido (ou puder ser criado por terceiros), a sessão **vaza**. Prefira **host-only** (sem Domain) quando possível.
 
-- **Cookies ou tokens no ****localStorage** — o que é “mais seguro”?**
+4. **Cookies ou tokens no ***localStorage*** — o que é “mais seguro”?**
 Depende da **ameaça dominante**. Cookies HttpOnly protegem melhor contra **XSS de roubo de segredo**, mas exigem defesa contra **CSRF**. localStorage foge de CSRF, mas **expõe** o token a XSS. Combos modernos usam **access token em memória** + **refresh token em HttpOnly + SameSite**.
 
-- **Como mitigar session fixation?**
+5. **Como mitigar session fixation?**
 **Gere um novo ID de sessão ao logar** (e ao elevar privilégios), invalide o ID antigo no servidor e recuse IDs não emitidos por você. *Set-Cookie* com Secure/HttpOnly/SameSite completa a defesa.
 
 ### Casos Reais
@@ -609,7 +615,7 @@ Depende da **ameaça dominante**. Cookies HttpOnly protegem melhor contra **XSS 
 
 ### Conclusão
 
-**C**ookies são uma ferramenta poderosa — e perigosa — quando mal configurados. Use **Secure** + ****HttpOnly** + ****SameSite**, **escopo mínimo** e **rotinas de rotação/invalidade**. O resultado é um *login* que continua simples para o usuário, mas **muito mais caro** para o atacante.
+**C**ookies são uma ferramenta poderosa — e perigosa — quando mal configurados. Use **Secure** + ***HttpOnly** + ***SameSite**, **escopo mínimo** e **rotinas de rotação/invalidade**. O resultado é um *login* que continua simples para o usuário, mas **muito mais caro** para o atacante.
 
 ### Referências
 
@@ -771,19 +777,24 @@ Controles Práticos em HTTP
 ### Vamos Refletir?
 
 - **Se um cookie de sessão não estiver marcado como ***HttpOnly***, que tipo de ataque pode explorá-lo?**
-- Ele pode ser roubado via JavaScript injetado em um ataque XSS, permitindo que o invasor assuma a sessão do usuário.
+
+Ele pode ser roubado via JavaScript injetado em um ataque XSS, permitindo que o invasor assuma a sessão do usuário.
 
 - **Qual a relação entre ***rate-limiting*** e ataques de força bruta em HTTP?**
-- O rate-limiting limita requisições por IP/usuário, dificultando ataques automáticos de força bruta contra endpoints de login.
+
+O rate-limiting limita requisições por IP/usuário, dificultando ataques automáticos de força bruta contra endpoints de login.
 
 - **Por que o uso de TLS 1.0 representa risco mesmo em aplicações internas?**
-- Porque algoritmos antigos possuem vulnerabilidades conhecidas que permitem descriptografar tráfego, e redes internas não são ambientes totalmente confiáveis.
+
+Porque algoritmos antigos possuem vulnerabilidades conhecidas que permitem descriptografar tráfego, e redes internas não são ambientes totalmente confiáveis.
 
 - **O que pode acontecer se o cabeçalho ***Content-Security-Policy*** não for configurado?**
-- O navegador não terá instruções para restringir a origem de scripts, o que facilita exploração de XSS e injeções de conteúdo.
+
+O navegador não terá instruções para restringir a origem de scripts, o que facilita exploração de XSS e injeções de conteúdo.
 
 - **Como as falhas de logging podem se transformar em violações de privacidade?**
-  Quando dados pessoais ou tokens sensíveis são armazenados em logs sem mascaramento, há risco de vazamento em auditorias, suporte técnico ou incidentes de exposição.
+
+Quando dados pessoais ou tokens sensíveis são armazenados em logs sem mascaramento, há risco de vazamento em auditorias, suporte técnico ou incidentes de exposição.
 
 ### Casos Reais
 
