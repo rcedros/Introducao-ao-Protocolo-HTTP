@@ -15,13 +15,14 @@ Para que serve e por que é essencial estudar além do que “funciona”
 
 Em teoria, basta que o HTTP "funcione" para que usuários consigam acessar páginas, APIs troquem dados e aplicações se comuniquem. Porém, limitar-se apenas ao aspecto funcional ignora dimensões críticas como **arquitetura, confiança e risco**:
 
-- **Impacto na Arquitetura******
+- **Impacto na Arquitetura**
 O design de aplicações modernas depende fortemente de recursos do HTTP/HTTPS: caching, cabeçalhos de controle, compressão, multiplexação (em HTTP/2 e HTTP/3). Um entendimento raso pode levar a escolhas equivocadas, como uso inadequado de métodos (por exemplo, usar GET para enviar dados sensíveis) ou más práticas no controle de cache que expõem informações confidenciais.
-- **Confiança******
+- **Confiança**
 O HTTPS é o pilar que sustenta a confiança dos usuários na Internet. Ao ver o cadeado no navegador, o usuário entende que há uma garantia mínima de segurança na comunicação. Se a configuração do protocolo for falha (ex.: certificados expirados, versões antigas do TLS, ausência de HSTS), essa confiança pode ser quebrada e abrir portas para ataques como *Man-in-the-Middle* (MITM).
-- **Risco******
+- **Risco**
 Do ponto de vista de segurança cibernética, cada detalhe mal compreendido pode se transformar em vetor de ataque. Casos reais incluem **injeção em cabeçalhos HTTP (CRLF Injection)**, **cookies sem flags de segurança**, **má gestão de sessões** ou **implementação incorreta de CORS**, todos explorados por atacantes para roubo de dados e comprometimento de sistemas.
-Vamos Refletir?
+
+### Vamos Refletir?
 
 Para um analista de segurança, estudar o HTTP/HTTPS em profundidade é mais do que conhecer um protocolo: é compreender **onde falhas arquiteturais podem virar brechas exploráveis**. Assim, o profissional deixa de ser apenas um executor de tarefas e passa a atuar como um **guarda de fronteira**, capaz de identificar pontos frágeis e sugerir melhorias antes que incidentes aconteçam.
 
@@ -166,6 +167,7 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 -d '{"nome":"Ana","email":"ana@ex.com","telefone":"+55..."}'
 
 - **Segurança:** combine com **pré-condições** (If-Match com ETag) para evitar *lost update* em concorrência.
+
 #### PATCH — “Quero alterar parcialmente”
 
 - **Intenção:** modificar **parte** da representação.
@@ -246,8 +248,8 @@ Um **Status Code HTTP** (código de estado) é um número de três dígitos que 
 3xx — redirecionamento
 
 - **303 See Other** (PRG) e **307/308** (mantêm método). Ver seção anterior.
-#### 4xx — erro do cliente
 
+#### 4xx — erro do cliente
 - **400 Bad Request**: entrada inválida.
 - **401 Unauthorized**: faltam **credenciais válidas**; **MUST** incluir **WWW-Authenticate** com o(s) *challenge(s)*. Diferencie de 403.
 - **403 Forbidden**: requisição entendida, **recusada**. Útil para autorização negada ou *hard block* pós-autenticação.
@@ -290,7 +292,8 @@ Casos reais & lições rápidas
 - **Rate limiting**: padronize **429** com **Retry-After** e exponha *headers* de quota; recomende *exponential backoff + jitter* aos consumidores.
 - **0-RTT**: evite processar operações sensíveis recebidas como *early data*; responda **425** ou desabilite 0-RTT nesses endpoints.[ ](https://datatracker.ietf.org/doc/html/rfc8470?utm_source=chatgpt.com)
 - **Cache consciente**: use ETag/Last-Modified e **304** para eficiência; invalide corretamente após mutações (e.g., no-store/must-revalidate quando preciso).
-Vamos Refletir?
+
+### Vamos Refletir?
 
 - **Por que *****retry***** automático de POST pode ser perigoso e como mitigá-lo?******
  Porque POST não é idempotente; repetir pode duplicar efeitos (ex.: cobrança). **Idempotency-Key** faz o servidor retornar a mesma resposta para a mesma operação, mesmo em *retries*.[ ](https://datatracker.ietf.org/doc/html/rfc9110)
@@ -302,7 +305,8 @@ Vamos Refletir?
  Com **ETag** + **If-Match/If-None-Match**, você evita *lost update* e sincroniza estado sem regravar conteúdo, respondendo **412** ou **304** conforme o caso.
 - **Em que cenário 425 “Too Early” é a melhor resposta?******
  Quando a requisição chegou como **Early Data (0-RTT)** e **pode ser replayada** (ex.: transação financeira). **425** obriga o cliente a reenviar após o handshake TLS, mitigando replay.
-Conclusão
+
+### Conclusão
 
 Projetar bem **métodos** e **idempotência** não é detalhe acadêmico: é um **controle de segurança** que conversa com redirecionamentos, códigos de status, condicionais e cache. Quando esses elementos trabalham em harmonia, sua API fica **performática, previsível e resiliente a falhas e abusos** — exatamente o que buscamos em um ambiente de segurança cibernética moderno.
 
@@ -334,32 +338,31 @@ Por exemplo, headers de cache (Cache-Control) ajudam a evitar que informações 
 Compreender e aplicar corretamente esses headers é essencial para reforçar a postura defensiva das aplicações web, transformando elementos básicos do protocolo em controles práticos de segurança.
 
 #### User-Agent
-
 Identifica o cliente (navegador, *bot*, app).
 
 Segurança: útil para **observabilidade** e **detecção de anomalias** (ex.: *fingerprints* suspeitos). Evite lógicas de segurança baseadas apenas nele (fácil de falsificar).
 
-Accept / Accept-Language / Accept-Encoding
+#### Accept / Accept-Language / Accept-Encoding
 
 Negociação de conteúdo (MIME), idioma e compressão.
 
 Segurança: negociar **formatos previsíveis** reduz superfície (ex.: responder somente application/json em APIs). Controle compressão para mitigar ataques de *side-channel* em cenários específicos (BREACH/CRIME).
 
-Content-Type
+#### Content-Type
 
 Declara o **tipo do corpo** enviado/recebido (ex.: application/json).
 
 Segurança: **valide sempre** o Content-Type esperado no servidor; rejeite uploads sem tipo coerente. Combine com **X-Content-Type-Options: nosniff** para o navegador **não adivinhar** tipos.
 
-Cache-Control / Expires / ETag / Last-Modified
+#### Cache-Control / Expires / ETag / Last-Modified
 
 Controlam cache e validação condicional.
 
 Segurança: em **conteúdo autenticado/sensível**, use Cache-Control: no-store; para estáticos públicos, ETag e *revalidation* bem configuradas evitam inconsistências e reduzem superfície em intermediários.
 
-Security headers (os “cintos de segurança” do navegador)
+### Security headers (os “cintos de segurança” do navegador)
 
-Strict-Transport-Security (HSTS)
+#### Strict-Transport-Security (HSTS)
 
 Força o navegador a **usar sempre HTTPS** para o domínio (e subdomínios, se configurado).
 
@@ -370,7 +373,7 @@ Content-Security-Policy (CSP) Define de onde conteúdos podem ser carregados (
 
 Ex.:
  
-Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-R4nd0m'; object-src 'none'; frame-ancestors 'none'
+#### Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-R4nd0m'; object-src 'none'; frame-ancestors 'none'
 
 - Benefício: **mitiga XSS** ao bloquear *inline scripts* sem nonce/hash, proíbe objetos perigosos e **substitui** o antigo controle de *framing* (veja frame-ancestors).
 X-Frame-Options (legado, ainda útil) Controle de framing antigo: 
@@ -404,7 +407,7 @@ Quando falamos em segurança na web, dois conceitos fundamentais emergem: fronte
 
 Combinados, esses mecanismos são peças essenciais para manter a comunicação segura entre clientes e servidores em um cenário cada vez mais distribuído e interconectado.
 
-CORS (Cross-Origin Resource Sharing)
+#### CORS (Cross-Origin Resource Sharing)
 
 Conjunto de headers que regula se um **site A** pode chamar a API do **site B** no navegador. Resposta típica segura:
 
@@ -427,15 +430,15 @@ Authorization / WWW-Authenticate
 Carregam credenciais e desafios de autenticação.
 
 - Exemplos:
-- Authorization: Bearer <JWT> (OAuth 2.0);
-- Authorization: Basic <base64> (evite sem TLS);
-- Responder **401** com WWW-Authenticate: Bearer (ou o esquema adotado).
-- Boas práticas:
-- **Não** coloque tokens em URL (vira log/referrer); use **header**.
-- Defina **expiração** curta + *refresh tokens*; *rotate* chaves.
-- Em APIs públicas, padronize respostas (401/403) e evite **leaks** em mensagens de erro.
+-- Authorization: Bearer <JWT> (OAuth 2.0);
+-- Authorization: Basic <base64> (evite sem TLS);
+-- Responder **401** com WWW-Authenticate: Bearer (ou o esquema adotado).
+-- Boas práticas:
+-- **Não** coloque tokens em URL (vira log/referrer); use **header**.
+-- Defina **expiração** curta + *refresh tokens*; *rotate* chaves.
+-- Em APIs públicas, padronize respostas (401/403) e evite **leaks** em mensagens de erro.
 
-CRLF Injection & Header Injection — quando o atacante “quebra a linha”
+#### CRLF Injection & Header Injection — quando o atacante “quebra a linha”
 
 **CRLF Injection** ocorre quando valores controlados por usuário entram em headers **sem sanitização**, permitindo inserir caracteres **Carriage Return + Line Feed** (\r\n).
 
