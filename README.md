@@ -215,7 +215,7 @@ curl -X DELETE https://api.loja.com/usuarios/42
 - **Intenção:** usado por proxies para criar um túnel TCP (ex.: HTTPS via proxy).
 - **Exemplo intuitivo:** “pedir ao porteiro para abrir um canal direto com a sala segura”.
 
-### Idempotência — a cola entre confiabilidade e segurança
+## Idempotência — a cola entre confiabilidade e segurança
 
 Uma operação é considerada **idempotente** quando repeti-la, usando os mesmos parâmetros, não altera o resultado além do primeiro efeito. No contexto de HTTP, os métodos **GET, HEAD, PUT e DELETE** são idempotentes por padrão, enquanto **POST** não é e o **PATCH** depende da implementação.
 
@@ -233,68 +233,50 @@ Alguns padrões práticos reforçam essa abordagem:
 
 Também é importante tratar redirecionamentos após um POST. Evite 301 ou 302, pois alguns clientes podem alterar o método para GET, causando inconsistências. O padrão mais seguro é o PRG (Post/Redirect/Get) com **303 See Other**, que processa o POST e redireciona para uma URL de leitura. Quando for necessário preservar método e corpo, utilize 307 Temporary Redirect ou 308 Permanent Redirect. Essa prática previne reenvios acidentais em “refresh/back”, reduz riscos de vazamento de dados em URLs e mantém a semântica correta do método.
 
-### 📬 Códigos de status — leitura tática para segurança
+## 📬 Códigos de status — leitura tática para segurança
 
 Um **Status Code HTTP** (código de estado) é um número de três dígitos que o servidor retorna ao cliente — como um navegador ou aplicação — em resposta a uma requisição. Esse código resume o resultado da solicitação, indicando se ela foi concluída com sucesso, se exige uma ação adicional ou se ocorreu algum erro no lado do cliente ou do servidor.
 HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modified, Vary, *revalidation*) — hoje consolidado no **RFC 9111**. Segurança se beneficia porque **revalidações condicionais** (**If-None-Match/If-Modified-Since**) reduzem a superfície de transferência e ajudam a **sincronizar o estado** sem regravar dados. **304 Not Modified** é sinal de *efeito esperado* de uma condicional; não um erro.
 
-### 📑 Os códigos são organizados em **cinco classes principais**
-## 📑 Códigos de Status HTTP
-
-## 📑 Códigos de Status HTTP
-
-### ℹ️ 1xx — Informational
-| Código | Classe             | Descrição  |
-|:------:|:------------------:|:-----------|
-| `100`  | ℹ️ Informational   | Continue   |
-
-### ✅ 2xx — Sucesso
-| Código | Classe       | Descrição |
-|:------:|:------------:|:----------|
-| `200`  | ✅ Sucesso   | Requisição bem sucedida |
-| `201`  | ✅ Sucesso   | Recurso criado |
-| `204`  | ✅ Sucesso   | Sem corpo de resposta |
-| `304`  | ✅ Sucesso   | Revalidação bem-sucedida com `ETag` / `Last-Modified` |
-
-### 🔀 3xx — Redirecionamento
 | Código | Classe              | Descrição |
 |:------:|:-------------------:|:----------|
+| `100`  | ℹ️ Informational    | Continue |
+| `200`  | ✅ Sucesso          | Requisição bem sucedida |
+| `201`  | ✅ Sucesso          | Recurso criado |
+| `204`  | ✅ Sucesso          | Sem corpo de resposta |
+| `304`  | ✅ Sucesso          | Revalidação bem-sucedida com `ETag` / `Last-Modified` |
 | `303`  | 🔀 Redirecionamento | Padrão PRG (*Post/Redirect/Get*) |
 | `307`  | 🔀 Redirecionamento | Redireciona mantendo método/corpo |
 | `308`  | 🔀 Redirecionamento | Redireciona permanentemente mantendo método/corpo |
-
-
-### ⚠️ 4xx — Erro do Cliente
-| Código | Classe              | Descrição |
-|:------:|:-------------------:|:----------|
-| `400`  | ⚠️ Erro do Cliente | Entrada inválida |
-| `401`  | ⚠️ Erro do Cliente | Falta de credenciais; requer `WWW-Authenticate` |
-| `403`  | ⚠️ Erro do Cliente | Requisição entendida, mas recusada |
-| `405`  | ⚠️ Erro do Cliente | Método não suportado; **MUST** enviar header `Allow` |
-| `409`  | ⚠️ Erro do Cliente | Conflito de versão/estado (ETag) |
-| `412`  | ⚠️ Erro do Cliente | Pré-condições não atendidas (ETag) |
-| `415`  | ⚠️ Erro do Cliente | Tipo de mídia inválido |
-| `422`  | ⚠️ Erro do Cliente | Payload semanticamente incorreto |
-| `421`  | ⚠️ Erro do Cliente | Requisição enviada para origem errada |
-| `425`  | ⚠️ Erro do Cliente | Mitigação de replay em 0-RTT (TLS 1.3) |
-| `429`  | ⚠️ Erro do Cliente | Rate limiting; pode incluir `Retry-After` |
-| `451`  | ⚠️ Erro do Cliente | Bloqueio legal/regulatório (censura, ordens judiciais) |
-
-### 💥 5xx — Erro do Servidor
-| Código | Classe              | Descrição |
-|:------:|:-------------------:|:----------|
+| `400`  | ⚠️ Erro do Cliente  | Entrada inválida |
+| `401`  | ⚠️ Erro do Cliente  | Falta de credenciais; requer `WWW-Authenticate` |
+| `403`  | ⚠️ Erro do Cliente  | Requisição entendida, mas recusada |
+| `405`  | ⚠️ Erro do Cliente  | Método não suportado; **MUST** enviar header `Allow` |
+| `409`  | ⚠️ Erro do Cliente  | Conflito de versão/estado (ETag) |
+| `412`  | ⚠️ Erro do Cliente  | Pré-condições não atendidas (ETag) |
+| `415`  | ⚠️ Erro do Cliente  | Tipo de mídia inválido |
+| `422`  | ⚠️ Erro do Cliente  | Payload semanticamente incorreto |
+| `421`  | ⚠️ Erro do Cliente  | Requisição enviada para origem errada |
+| `425`  | ⚠️ Erro do Cliente  | Mitigação de replay em 0-RTT (TLS 1.3) |
+| `429`  | ⚠️ Erro do Cliente  | *Rate limiting*; pode incluir `Retry-After` |
+| `451`  | ⚠️ Erro do Cliente  | Bloqueio legal/regulatório (censura, ordens judiciais) |
 | `500`  | 💥 Erro do Servidor | Erro interno no servidor |
 | `502`  | 💥 Erro do Servidor | Gateway/proxy recebeu resposta inválida |
 | `504`  | 💥 Erro do Servidor | Timeout entre servidores |
 | `503`  | 💥 Erro do Servidor | Sobrecarga ou manutenção; pode incluir `Retry-After` |
 
+---
+
 ### 🚀 Cache, Idempotência e Boas Práticas HTTP
+
+Ao projetar APIs e aplicações web, não basta apenas responder rápido: é preciso **equilibrar desempenho, consistência e segurança**.  
+O uso adequado de **cache** garante eficiência sem comprometer dados sensíveis; a aplicação correta de **idempotência** evita duplicidades em operações críticas; e seguir **boas práticas HTTP** ajuda a manter previsibilidade e resiliência em escala.  
 
 #### ⚡ Cache: desempenho sem vazar informação
 - **Recursos públicos/estáticos** →  
   Use `Cache-Control: public, max-age=...` + `ETag`.  
   Se a resposta variar por cabeçalho (ex.: `Accept-Encoding`), configure `Vary`.  
-  ❌ Nunca permita que respostas com `Authorization` sejam armazenadas em caches compartilhados.
+  Nunca permita que respostas com `Authorization` sejam armazenadas em caches compartilhados.
 
 - **Dados sensíveis/autenticados** →  
   Use `Cache-Control: no-store` para evitar persistência em disco/memória.  
