@@ -93,7 +93,7 @@ No HTTP/3, o **TLS 1.3 está embutido no próprio protocolo**, garantindo que co
 - No **HTTP/3**, embora o cache continue relevante, o tráfego criptografado e o uso de QUIC tornam mais difícil para intermediários aplicarem políticas, exigindo atenção redobrada ao configurar os servidores.
 Em todos os casos, **má configuração de cache pode expor dados confidenciais**, como páginas autenticadas sendo armazenadas e reutilizadas indevidamente por outros usuários.
 
-### 📚 Referências
+### Referências
 
 - Fielding, R. T., & Reschke, J. (2014). *Hypertext Transfer Protocol (HTTP/1.1)* – IETF RFC 7230.
 - Belshe, M., Peon, R., & Thomson, M. (2015). *Hypertext Transfer Protocol Version 2 (HTTP/2)* – IETF RFC 7540.
@@ -234,67 +234,172 @@ Também é importante tratar redirecionamentos após um POST. Evite 301 ou 302, 
 ### 📬 Códigos de status — leitura tática para segurança
 
 Um **Status Code HTTP** (código de estado) é um número de três dígitos que o servidor retorna ao cliente — como um navegador ou aplicação — em resposta a uma requisição. Esse código resume o resultado da solicitação, indicando se ela foi concluída com sucesso, se exige uma ação adicional ou se ocorreu algum erro no lado do cliente ou do servidor.
-
-### Os códigos são organizados em **cinco classes principais**:
-
-- **1xx** – Informativos
-- **2xx** – Sucesso
-- **3xx** – Redirecionamento
-- **4xx** – Erros do cliente
-- **5xx** – Erros do servidor
-
-#### 2xx — sucesso
-
-- **200 OK**, **201 Created**, **204 No Content**. Em *conditional requests* bem sucedidas, **304 Not Modified** evita retransmitir dados e **não é** um erro; é economia de banda com ETag/Last-Modified.
-3xx — redirecionamento
-
-- **303 See Other** (PRG) e **307/308** (mantêm método). Ver seção anterior.
-
-#### 4xx — erro do cliente
-- **400 Bad Request**: entrada inválida.
-- **401 Unauthorized**: faltam **credenciais válidas**; **MUST** incluir **WWW-Authenticate** com o(s) *challenge(s)*. Diferencie de 403.
-- **403 Forbidden**: requisição entendida, **recusada**. Útil para autorização negada ou *hard block* pós-autenticação.
-- **405 Method Not Allowed**: método conhecido, mas **não suportado** no recurso; **MUST** enviar **Allow** com os métodos permitidos — valioso para *hardening* e detecção de *verb tampering*.
-- **409 Conflict** e **412 Precondition Failed**: choques de versão/estado; fundamentais com ETags.
-- **415 Unsupported Media Type / 422 Unprocessable Content**: valide *Content-Type* e schema; 422 cobre conteúdo semanticamente inválido.
-- **421 Misdirected Request**: pedido foi para a origem errada (comuns em setups TLS/SNI/CDN); o cliente pode *retry* em conexão adequada.
-- **425 Too Early**: **mitigação de replay** com **0-RTT (TLS 1.3 Early Data)**; o servidor recusa processar e o cliente deve reenviar após o handshake. Em endpoints críticos, bloqueie early-data ou responda 425.
-- **429 Too Many Requests**: **rate limiting**; respostas **podem** trazer **Retry-After** (segundos/data) e cabeçalhos de *quota* (p. ex., X-RateLimit-* em vendors). Evita abuso e *noisy retries*.
-- **451 Unavailable For Legal Reasons**: bloqueio **por demanda legal** (censura, restrições regulatórias); mais explícito que 403/404 para esse caso.
-
-#### 5xx — erro do servidor
-
-- **500/502/504**: falhas internas, *bad gateway*, *timeout*.
-- **503 Service Unavailable**: sobrecarga/manutenção; pode incluir **Retry-After**. Excelente ponto para política de *backoff* no cliente.
-Cache, condicionais e 304: desempenho com segurança
-
 HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modified, Vary, *revalidation*) — hoje consolidado no **RFC 9111**. Segurança se beneficia porque **revalidações condicionais** (**If-None-Match/If-Modified-Since**) reduzem a superfície de transferência e ajudam a **sincronizar o estado** sem regravar dados. **304 Not Modified** é sinal de *efeito esperado* de uma condicional; não um erro.
 
-### Cache: desempenho sem vazar informação
+### 📑 Os códigos são organizados em **cinco classes principais**
+## 📑 Códigos de Status HTTP
 
-- **Recursos públicos/estáticos:** Cache-Control: public, max-age=... + **ETag**; use Vary quando a resposta muda por cabeçalho (ex.: Accept-Encoding, Authorization não deve ser armazenado em caches compartilhados).
-- **Dados sensíveis/autenticados:** Cache-Control: no-store para evitar persistência em disco/memória de intermediários; preferir **revalidação** controlada para equilibrar performance e sigilo.
-- **POST** normalmente **não** é armazenado por caches; **GET** pode ser. Logo, **jamais** retorne dados sensíveis em GET sem as devidas diretivas.
+| Código | Classe | Descrição |
+|--------|--------|------------|
+| `100` | ℹ️ Informational | Continue |
 
-### Casos Reais
+---
 
-- **Pagamentos e idempotência (Stripe).** Repetições de POST por perda de resposta geram **cobranças duplicadas**. A solução foi **Idempotency-Key** em todos os POSTs: o primeiro resultado fica “fixado” pela chave e *retries* devolvem a mesma resposta (inclusive erros 5xx), tipicamente por 24h.
-- **Redirecionar POST como GET.** Usar **302** após um POST pode levar *user agents* a **trocar o método** (POST→GET). O padrão **PRG** com **303 See Other** remove esse risco; **307/308** preservam o método quando é isso que se deseja.
-- **Rate limiting em APIs públicas.** Plataformas como o GitHub expõem *headers* de quota (p.ex. X-RateLimit-Remaining/Reset) e usam **429** (com Retry-After) para orientar backoff e proteger disponibilidade. *Playbooks* devem respeitar esses sinais.
-- **451 por razões legais.** Bloqueios por geografia/ordens judiciais são comunicados com **451** para transparência regulatória, em vez de 403/404.
-- **TLS 1.3 Early Data e 425.** Em CDNs e *reverse proxies* com **0-RTT**, requisições com Early-Data: 1 podem ser **replayadas**; responder **425 Too Early** força o cliente a reenviar **após** o handshake, evitando duplicidade em operações sensíveis.
+### ✅ 2xx — Sucesso
+| Código | Classe | Descrição |
+|--------|--------|------------|
+| `200` | ✅ Sucesso | Requisição bem sucedida |
+| `201` | ✅ Sucesso | Recurso criado |
+| `204` | ✅ Sucesso | Sucesso sem corpo de resposta |
+| `304` | ✅ Sucesso | Revalidação bem sucedida; não transmite dados (economia de banda com `ETag`/`Last-Modified`) |
 
-#### Boas práticas acionáveis (segurança + confiabilidade)
+---
 
-- **Aderência semântica**: GET/HEAD só para leitura; operações mutáveis em POST/PUT/PATCH com **proteção CSRF** (tokens, SameSite, validação de origem).
-- **Idempotência consciente**:
-- Em **PUT/DELETE**, habilite *retries* do cliente.
-- Em **POST**, implemente **Idempotency-Key** e **detecção de duplicata** no servidor.
-- **Pré-condições**: exija **If-Match** com **ETag** em updates; responda **412** em caso de versão inesperada.
-- **Redirecionamentos corretos**: use **303** (PRG) após POST; prefira **307/308** quando precisar preservar o método.
-- **Rate limiting**: padronize **429** com **Retry-After** e exponha *headers* de quota; recomende *exponential backoff + jitter* aos consumidores.
-- **0-RTT**: evite processar operações sensíveis recebidas como *early data*; responda **425** ou desabilite 0-RTT nesses endpoints.
-- **Cache consciente**: use ETag/Last-Modified e **304** para eficiência; invalide corretamente após mutações (e.g., no-store/must-revalidate quando preciso).
+### 🔀 3xx — Redirecionamento
+| Código | Classe | Descrição |
+|--------|--------|------------|
+| `303` | 🔀 Redirecionamento | Padrão PRG (*Post/Redirect/Get*) |
+| `307` | 🔀 Redirecionamento | Redireciona mantendo método/corpo |
+| `308` | 🔀 Redirecionamento | Redireciona permanentemente mantendo método/corpo |
+
+---
+
+### ⚠️ 4xx — Erro do Cliente
+| Código | Classe | Descrição |
+|--------|--------|------------|
+| `400` | ⚠️ Erro do Cliente | Entrada inválida |
+| `401` | ⚠️ Erro do Cliente | Falta de credenciais; requer `WWW-Authenticate` |
+| `403` | ⚠️ Erro do Cliente | Requisição entendida, mas recusada |
+| `405` | ⚠️ Erro do Cliente | Método não suportado; **MUST** enviar header `Allow` |
+| `409` | ⚠️ Erro do Cliente | Conflito de versão/estado (ETag) |
+| `412` | ⚠️ Erro do Cliente | Pré-condições não atendidas (ETag) |
+| `415` | ⚠️ Erro do Cliente | Tipo de mídia inválido |
+| `422` | ⚠️ Erro do Cliente | Payload semanticamente incorreto |
+| `421` | ⚠️ Erro do Cliente | Requisição enviada para origem errada |
+| `425` | ⚠️ Erro do Cliente | Mitigação de replay em 0-RTT (TLS 1.3) |
+| `429` | ⚠️ Erro do Cliente | Rate limiting; pode incluir `Retry-After` |
+| `451` | ⚠️ Erro do Cliente | Bloqueio legal/regulatório (censura, ordens judiciais) |
+
+---
+
+### 💥 5xx — Erro do Servidor
+| Código | Classe | Descrição |
+|--------|--------|------------|
+| `500` | 💥 Erro do Servidor | Erro interno no servidor |
+| `502` | 💥 Erro do Servidor | Gateway/proxy recebeu resposta inválida |
+| `504` | 💥 Erro do Servidor | Timeout entre servidores |
+| `503` | 💥 Erro do Servidor | Sobrecarga ou manutenção; pode incluir `Retry-After` |
+
+
+<table>
+  <tr>
+    <th style="width:80px;text-align:center;">Código</th>
+    <th style="width:160px;text-align:center;">Classe</th>
+    <th style="width:400px;text-align:left;">Descrição</th>
+  </tr>
+  <tr>
+    <td style="text-align:center;">200</td>
+    <td style="text-align:center;">✅ Sucesso</td>
+    <td>Requisição bem sucedida</td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">201</td>
+    <td style="text-align:center;">✅ Sucesso</td>
+    <td>Recurso criado</td>
+  </tr>
+</table>
+
+
+
+<table>
+  <tr>
+    <th style="width:80px;text-align:center;">Código</th>
+    <th style="width:160px;text-align:center;">Classe</th>
+    <th style="width:400px;text-align:left;">Descrição</th>
+  </tr>
+  <tr>
+    <td style="text-align:center;">200</td>
+    <td style="text-align:center;">✅ Sucesso</td>
+    <td>Requisição bem sucedida</td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">201</td>
+    <td style="text-align:center;">✅ Sucesso</td>
+    <td>Recurso criado</td>
+  </tr>
+</table>
+
+### 🚀 Cache, Idempotência e Boas Práticas HTTP
+
+#### ⚡ Cache: desempenho sem vazar informação
+- **Recursos públicos/estáticos** →  
+  Use `Cache-Control: public, max-age=...` + `ETag`.  
+  Se a resposta variar por cabeçalho (ex.: `Accept-Encoding`), configure `Vary`.  
+  ❌ Nunca permita que respostas com `Authorization` sejam armazenadas em caches compartilhados.
+
+- **Dados sensíveis/autenticados** →  
+  Use `Cache-Control: no-store` para evitar persistência em disco/memória.  
+  Prefira **revalidação controlada** (`ETag`, `Last-Modified`) para equilibrar **performance** e **sigilo**.
+
+- **Método importa** →  
+  - `POST` normalmente **não** é armazenado por caches.  
+  - `GET` pode ser → **não retorne dados sensíveis via GET** sem diretivas adequadas.
+
+### 📚 Casos Reais
+
+- **Pagamentos e idempotência (Stripe)**  
+  Retries de `POST` por perda de resposta causavam **cobranças duplicadas**.  
+  Solução: `Idempotency-Key` → o primeiro resultado fica “fixado” e retries devolvem a mesma resposta (inclusive `5xx`), tipicamente por 24h.
+
+- **Redirecionar POST como GET**  
+  Usar `302` após um `POST` pode fazer o cliente trocar o método (`POST → GET`).  
+  ✅ Padrão seguro: **PRG (Post/Redirect/Get)** com `303 See Other`.  
+  ✅ Use `307/308` quando quiser preservar o método.
+
+- **Rate limiting em APIs públicas**  
+  Plataformas como GitHub expõem headers de quota (`X-RateLimit-Remaining`, `X-RateLimit-Reset`)  
+  e usam `429 Too Many Requests` com `Retry-After`.  
+  👉 Clients devem respeitar esses sinais e aplicar **backoff**.
+
+- **451 Unavailable For Legal Reasons**  
+  Usado em bloqueios por geografia/ordens judiciais → mais transparente que `403`/`404`.
+
+- **TLS 1.3 Early Data e 425 Too Early**  
+  Requisições com `Early-Data: 1` podem ser **replayadas** em CDNs/reverse proxies.  
+  Solução: responder `425 Too Early` para forçar o cliente a reenviar após o handshake.
+
+### 🛡 Boas práticas acionáveis (segurança + confiabilidade)
+
+- **Aderência semântica**  
+  - `GET/HEAD` apenas leitura  
+  - Mutáveis → `POST/PUT/PATCH` + proteção CSRF (`SameSite`, tokens, validação de origem)
+
+- **Idempotência consciente**  
+  - `PUT/DELETE` → habilite retries seguros do cliente  
+  - `POST` → implemente `Idempotency-Key` e detecção de duplicata  
+
+- **Pré-condições**  
+  - Use `If-Match` com `ETag` em updates  
+  - Responda `412 Precondition Failed` se a versão for inesperada
+
+- **Redirecionamentos corretos**  
+  - `303 See Other` após `POST` (PRG)  
+  - `307/308` para preservar método/corpo  
+
+- **Rate limiting**  
+  - Padronize `429 Too Many Requests` + `Retry-After`  
+  - Exponha headers de quota  
+  - Recomende **exponential backoff + jitter**
+
+- **0-RTT (TLS 1.3 Early Data)**  
+  - Evite processar operações sensíveis recebidas como early data  
+  - Responda `425 Too Early` ou desabilite 0-RTT em endpoints críticos
+
+- **Cache consciente**  
+  - Use `ETag`/`Last-Modified` + `304 Not Modified` para eficiência  
+  - Invalide após mutações (`no-store`, `must-revalidate` quando necessário)
+
+---
 
 ### 🧠 Vamos Refletir?
 
@@ -322,7 +427,7 @@ Quando a requisição chegou como **Early Data (0-RTT)** e **pode ser replayada*
 
 Projetar bem **métodos** e **idempotência** não é detalhe acadêmico: é um **controle de segurança** que conversa com redirecionamentos, códigos de status, condicionais e cache. Quando esses elementos trabalham em harmonia, sua API fica **performática, previsível e resiliente a falhas e abusos** — exatamente o que buscamos em um ambiente de segurança cibernética moderno.
 
-### 📚 Referências
+### Referências
 
 - RFC 9111 — HTTP Caching
 - RFC 8470 — Using Early Data in HTTP
@@ -478,7 +583,7 @@ Cadeias de *supply chain* em JS comprometeram páginas de pagamento. **CSP com n
 
 Headers são **o contrato** que orienta como cada salto de rede e o próprio navegador devem tratar sua aplicação. Quando você domina **Security Headers + CORS + Authorization** — e evita **CRLF/Header Injection** — o front-end passa a **colaborar** ativamente com sua defesa, reduzindo XSS, clickjacking, vazamentos e abusos. E o melhor: muitos desses controles são **baratos de implementar** e **altamente efetivos**.
 
-### 📚 Referências
+### Referências
 
 - RFC 9110 — HTTP Semantics (headers, autenticação, status)
 - RFC 6797 — HTTP Strict Transport Security (HSTS)
@@ -610,7 +715,7 @@ Depende da **ameaça dominante**. Cookies HttpOnly protegem melhor contra **XSS 
 
 **C**ookies são uma ferramenta poderosa — e perigosa — quando mal configurados. Use **Secure** + ***HttpOnly** + ***SameSite**, **escopo mínimo** e **rotinas de rotação/invalidade**. O resultado é um *login* que continua simples para o usuário, mas **muito mais caro** para o atacante.
 
-### 📚 Referências
+### Referências
 
 - IETF RFC 6265 — HTTP State Management Mechanism
 - OWASP Cheat Sheets — *Session Management*, *Cross-Site Scripting Prevention*, *CSRF Prevention*
@@ -696,7 +801,7 @@ Neste capítulo vimos como a segurança do HTTP depende de uma combinação entr
 
 O entendimento desses conceitos é crucial para analistas de segurança: não basta saber que “HTTPS é seguro”. É necessário compreender as camadas internas, os riscos associados a escolhas incorretas (como certificados wildcard mal gerenciados) e a evolução dos algoritmos ao longo do tempo. Esse olhar crítico permitirá identificar falhas, avaliar riscos e aplicar medidas preventivas que mantêm a comunicação na web verdadeiramente segura.
 
-### 📚 Referências
+### Referências
 
 - RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3
 - NIST Special Publication 800-57: Recommendation for Key Management
@@ -799,7 +904,7 @@ Quando dados pessoais ou tokens sensíveis são armazenados em logs sem mascaram
 
 A análise da relação entre HTTP e o **OWASP Top 10** evidência como falhas aparentemente simples, como a ausência de um header de segurança ou a configuração incorreta de cookies, podem ser a porta de entrada para ataques graves. Cada camada do protocolo precisa ser tratada com rigor, garantindo **defesa em profundidade**: desde criptografia de transporte até validações, controles de sessão e logging seguro. Compreender esse mapeamento não é apenas uma questão de conformidade, mas de maturidade em segurança cibernética. Afinal, o HTTP é o fio condutor de toda comunicação web — e nele podem residir as maiores vulnerabilidades ou as melhores defesas.
 
-### 📚 Referências
+### Referências
 
 - OWASP Top 10 – 2021: https://owasp.org/Top10/
 - Mozilla Security Guidelines: https://infosec.mozilla.org/guidelines/web_securityNIST SP 800-53 – Security and Privacy Controls for Information Systems
