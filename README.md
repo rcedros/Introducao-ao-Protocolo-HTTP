@@ -241,86 +241,52 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 ### 📑 Os códigos são organizados em **cinco classes principais**
 ## 📑 Códigos de Status HTTP
 
-| Código | Classe | Descrição |
-|--------|--------|------------|
-| `100` | ℹ️ Informational | Continue |
+## 📑 Códigos de Status HTTP
+
+### ℹ️ 1xx — Informational
+| Código | Classe             | Descrição  |
+|:------:|:------------------:|:-----------|
+| `100`  | ℹ️ Informational   | Continue   |
 
 ### ✅ 2xx — Sucesso
-| Código | Classe | Descrição |
-|--------|--------|------------|
-| `200` | ✅ Sucesso | Requisição bem sucedida |
-| `201` | ✅ Sucesso | Recurso criado |
-| `204` | ✅ Sucesso | Sucesso sem corpo de resposta |
-| `304` | ✅ Sucesso | Revalidação bem sucedida; não transmite dados (economia de banda com `ETag`/`Last-Modified`) |
+| Código | Classe       | Descrição |
+|:------:|:------------:|:----------|
+| `200`  | ✅ Sucesso   | Requisição bem sucedida |
+| `201`  | ✅ Sucesso   | Recurso criado |
+| `204`  | ✅ Sucesso   | Sem corpo de resposta |
+| `304`  | ✅ Sucesso   | Revalidação bem-sucedida com `ETag` / `Last-Modified` |
 
 ### 🔀 3xx — Redirecionamento
-| Código | Classe | Descrição |
-|--------|--------|------------|
-| `303` | 🔀 Redirecionamento | Padrão PRG (*Post/Redirect/Get*) |
-| `307` | 🔀 Redirecionamento | Redireciona mantendo método/corpo |
-| `308` | 🔀 Redirecionamento | Redireciona permanentemente mantendo método/corpo |
+| Código | Classe              | Descrição |
+|:------:|:-------------------:|:----------|
+| `303`  | 🔀 Redirecionamento | Padrão PRG (*Post/Redirect/Get*) |
+| `307`  | 🔀 Redirecionamento | Redireciona mantendo método/corpo |
+| `308`  | 🔀 Redirecionamento | Redireciona permanentemente mantendo método/corpo |
+
 
 ### ⚠️ 4xx — Erro do Cliente
-| Código | Classe | Descrição |
-|--------|--------|------------|
-| `400` | ⚠️ Erro do Cliente | Entrada inválida |
-| `401` | ⚠️ Erro do Cliente | Falta de credenciais; requer `WWW-Authenticate` |
-| `403` | ⚠️ Erro do Cliente | Requisição entendida, mas recusada |
-| `405` | ⚠️ Erro do Cliente | Método não suportado; **MUST** enviar header `Allow` |
-| `409` | ⚠️ Erro do Cliente | Conflito de versão/estado (ETag) |
-| `412` | ⚠️ Erro do Cliente | Pré-condições não atendidas (ETag) |
-| `415` | ⚠️ Erro do Cliente | Tipo de mídia inválido |
-| `422` | ⚠️ Erro do Cliente | Payload semanticamente incorreto |
-| `421` | ⚠️ Erro do Cliente | Requisição enviada para origem errada |
-| `425` | ⚠️ Erro do Cliente | Mitigação de replay em 0-RTT (TLS 1.3) |
-| `429` | ⚠️ Erro do Cliente | Rate limiting; pode incluir `Retry-After` |
-| `451` | ⚠️ Erro do Cliente | Bloqueio legal/regulatório (censura, ordens judiciais) |
+| Código | Classe              | Descrição |
+|:------:|:-------------------:|:----------|
+| `400`  | ⚠️ Erro do Cliente | Entrada inválida |
+| `401`  | ⚠️ Erro do Cliente | Falta de credenciais; requer `WWW-Authenticate` |
+| `403`  | ⚠️ Erro do Cliente | Requisição entendida, mas recusada |
+| `405`  | ⚠️ Erro do Cliente | Método não suportado; **MUST** enviar header `Allow` |
+| `409`  | ⚠️ Erro do Cliente | Conflito de versão/estado (ETag) |
+| `412`  | ⚠️ Erro do Cliente | Pré-condições não atendidas (ETag) |
+| `415`  | ⚠️ Erro do Cliente | Tipo de mídia inválido |
+| `422`  | ⚠️ Erro do Cliente | Payload semanticamente incorreto |
+| `421`  | ⚠️ Erro do Cliente | Requisição enviada para origem errada |
+| `425`  | ⚠️ Erro do Cliente | Mitigação de replay em 0-RTT (TLS 1.3) |
+| `429`  | ⚠️ Erro do Cliente | Rate limiting; pode incluir `Retry-After` |
+| `451`  | ⚠️ Erro do Cliente | Bloqueio legal/regulatório (censura, ordens judiciais) |
 
 ### 💥 5xx — Erro do Servidor
-| Código | Classe | Descrição |
-|--------|--------|------------|
-| `500` | 💥 Erro do Servidor | Erro interno no servidor |
-| `502` | 💥 Erro do Servidor | Gateway/proxy recebeu resposta inválida |
-| `504` | 💥 Erro do Servidor | Timeout entre servidores |
-| `503` | 💥 Erro do Servidor | Sobrecarga ou manutenção; pode incluir `Retry-After` |
-
-<table>
-  <tr>
-    <th style="width:80px;text-align:center;">Código</th>
-    <th style="width:160px;text-align:center;">Classe</th>
-    <th style="width:400px;text-align:left;">Descrição</th>
-  </tr>
-  <tr>
-    <td style="text-align:center;">200</td>
-    <td style="text-align:center;">✅ Sucesso</td>
-    <td>Requisição bem sucedida</td>
-  </tr>
-  <tr>
-    <td style="text-align:center;">201</td>
-    <td style="text-align:center;">✅ Sucesso</td>
-    <td>Recurso criado</td>
-  </tr>
-</table>
-
-
-
-<table>
-  <tr>
-    <th style="width:80px;text-align:center;">Código</th>
-    <th style="width:160px;text-align:center;">Classe</th>
-    <th style="width:400px;text-align:left;">Descrição</th>
-  </tr>
-  <tr>
-    <td style="text-align:center;">200</td>
-    <td style="text-align:center;">✅ Sucesso</td>
-    <td>Requisição bem sucedida</td>
-  </tr>
-  <tr>
-    <td style="text-align:center;">201</td>
-    <td style="text-align:center;">✅ Sucesso</td>
-    <td>Recurso criado</td>
-  </tr>
-</table>
+| Código | Classe              | Descrição |
+|:------:|:-------------------:|:----------|
+| `500`  | 💥 Erro do Servidor | Erro interno no servidor |
+| `502`  | 💥 Erro do Servidor | Gateway/proxy recebeu resposta inválida |
+| `504`  | 💥 Erro do Servidor | Timeout entre servidores |
+| `503`  | 💥 Erro do Servidor | Sobrecarga ou manutenção; pode incluir `Retry-After` |
 
 ### 🚀 Cache, Idempotência e Boas Práticas HTTP
 
