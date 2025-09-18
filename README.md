@@ -303,16 +303,20 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 
 ### Vamos Refletir?
 
-- **Por que ***retry*** automático de POST pode ser perigoso e como mitigá-lo?****
- Porque POST não é idempotente; repetir pode duplicar efeitos (ex.: cobrança). **Idempotency-Key** faz o servidor retornar a mesma resposta para a mesma operação, mesmo em *retries*.
-- **Qual a diferença operacional entre 401 e 403?****
- **401**: faltam **credenciais válidas** — envie **WWW-Authenticate** e oriente novo *challenge*. **403**: requisição entendida, **recusada** (tipicamente autorização negada). Logs e playbooks distintos ajudam triagem.
-- **Quando prefiro 303 vs 307/308 após processar um POST?****
- **303** na estratégia **PRG** (cliente refaz a leitura com GET *safe*). **307/308** quando o redirecionamento **deve manter** o método/body (ex.: reencaminhar um POST para outro host mantendo semântica).
-- **Como os cabeçalhos condicionais ajudam a segurança de dados?****
- Com **ETag** + **If-Match/If-None-Match**, você evita *lost update* e sincroniza estado sem regravar conteúdo, respondendo **412** ou **304** conforme o caso.
-- **Em que cenário 425 “Too Early” é a melhor resposta?****
- Quando a requisição chegou como **Early Data (0-RTT)** e **pode ser replayada** (ex.: transação financeira). **425** obriga o cliente a reenviar após o handshake TLS, mitigando replay.
+- **Por que ***retry*** automático de POST pode ser perigoso e como mitigá-lo?**
+Porque POST não é idempotente; repetir pode duplicar efeitos (ex.: cobrança). **Idempotency-Key** faz o servidor retornar a mesma resposta para a mesma operação, mesmo em *retries*.
+
+- **Qual a diferença operacional entre 401 e 403?**
+**401**: faltam **credenciais válidas** — envie **WWW-Authenticate** e oriente novo *challenge*. **403**: requisição entendida, **recusada** (tipicamente autorização negada). Logs e playbooks distintos ajudam triagem.
+ 
+- **Quando prefiro 303 vs 307/308 após processar um POST?**
+**303** na estratégia **PRG** (cliente refaz a leitura com GET *safe*). **307/308** quando o redirecionamento **deve manter** o método/body (ex.: reencaminhar um POST para outro host mantendo semântica).
+ 
+- **Como os cabeçalhos condicionais ajudam a segurança de dados?**
+Com **ETag** + **If-Match/If-None-Match**, você evita *lost update* e sincroniza estado sem regravar conteúdo, respondendo **412** ou **304** conforme o caso.
+
+- **Em que cenário 425 “Too Early” é a melhor resposta?**
+Quando a requisição chegou como **Early Data (0-RTT)** e **pode ser replayada** (ex.: transação financeira). **425** obriga o cliente a reenviar após o handshake TLS, mitigando replay.
 
 ### Conclusão
 
