@@ -415,9 +415,9 @@ Access-Control-Allow-Credentials: true
 ```
 
 - Pontos críticos:
- - **Nunca** use Access-Control-Allow-Origin: * **junto** com Allow-Credentials: true (os navegadores bloqueiam por segurança).
+  - **Nunca** use Access-Control-Allow-Origin: * **junto** com Allow-Credentials: true (os navegadores bloqueiam por segurança).
   - Evite refletir o Origin arbitrariamente; **liste explicitamente** origens confiáveis.
- - *Preflights* (OPTIONS) fazem parte do fluxo; trate-os corretamente.
+  - *Preflights* (OPTIONS) fazem parte do fluxo; trate-os corretamente.
 
 ## Authorization / WWW-Authenticate
 
@@ -435,8 +435,9 @@ Carregam credenciais e desafios de autenticação.
 ## CRLF Injection & Header Injection — quando o atacante “quebra a linha”
 
 **CRLF Injection** ocorre quando valores controlados por usuário entram em headers **sem sanitização**, permitindo inserir caracteres **Carriage Return + Line Feed** (\r\n).
+
 - Impacto: **HTTP Response Splitting**, *web cache poisoning*, *XSS* indireto, **corrupção de resposta**.
-- Exemplos clássicos: refletir um parâmetro em Location: (redirect) sem validar, ou concatenar um nome de arquivo em Content-Disposition contendo \r\n.
+- Exemplos clássicos: refletir um parâmetro em Location: (redirect) sem validar, ou concatenar um nome de arquivo em Content-Disposition contendo **\r\n**.
 - Mitigações:
   - **Nunca** concatenar entrada do usuário em nomes/linhas de header;
   - Rejeitar/escapar `\r` e `\n`;
@@ -534,7 +535,7 @@ O **escopo decide onde o cookie “aparece”**.
 - Sem **Domain**: o cookie é **host-only** (ex.: vale para app.exemplo.com, **não** para api.exemplo.com). É mais restritivo e preferível para segurança.
 - Com **Domain=exemplo.com**: o cookie viaja para **todos os subdomínios** (app.exemplo.com, api.exemplo.com…), ampliando a superfície. Evite a menos que precise mesmo compartilhar sessão entre subdomínios.
 - **Path** delimita o **caminho** (ex.: Path=/conta limita às rotas que começam com /conta). Use para evitar que áreas não relacionadas recebam o cookie.
-**Armadilha comum**: cookies amplos (Domain muito permissivo) combinados a **subdomain takeover** expõem sessões para um host comprometido.
+- **Armadilha comum**: cookies amplos (Domain muito permissivo) combinados a **subdomain takeover** expõem sessões para um host comprometido.
 
 ## Persistência: cookie vs token (e onde guardar)
 
@@ -546,7 +547,7 @@ O servidor guarda o estado (ex.: sessão em base ou cache) e envia um **ID curto
 | - Simples de invalidar/rotacionar.<br>- Pode usar `HttpOnly` + `SameSite` para proteger contra XSS/CSRF.<br>- TTL controlado pelo backend. | - Precisa de armazenamento de sessão (memória/cache/banco). |
 
 ### Token (stateless, ex.: JWT)
-O token **contém** claims/estado e pode ser validado sem consulta ao servidor e onde armazenar?
+O token contém claims/estado e pode ser validado sem consulta ao servidor e onde armazenar?
 
 | Local | Vantagens | Riscos |
 |-------|-----------|--------|
@@ -555,7 +556,7 @@ O token **contém** claims/estado e pode ser validado sem consulta ao servidor e
 
 #### Boas práticas
 - Tokens curtos (**access tokens**) + expiração rápida.  
-- **Refresh tokens** em `HttpOnly + `Secure` + `SameSite`.  
+- **Refresh tokens** em `HttpOnly` + `Secure` + `SameSite`.  
 - Rotação e revogação de refresh tokens.  
 - Escopos mínimos de autorização.  
 
