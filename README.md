@@ -162,9 +162,7 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 **Exemplo:******
 ****
  curl -X PUT https://api.loja.com/usuarios/42 \
-
 -H "Content-Type: application/json" \
-
 -d '{"nome":"Ana","email":"ana@ex.com","telefone":"+55..."}'
 
 - **Segurança:** combine com **pré-condições** (If-Match com ETag) para evitar *lost update* em concorrência.
@@ -176,9 +174,7 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 - **Exemplo intuitivo:** “corrigir somente o telefone, sem mexer no resto”.
 **Exemplo:******
  curl -X PATCH https://api.loja.com/usuarios/42 \
-
 -H "Content-Type: application/json" \
-
 -d '{"telefone":"+55 11 99999-0000"}'
 
 #### DELETE — “Quero remover”
@@ -192,12 +188,10 @@ curl -X DELETE https://api.loja.com/usuarios/42
 
 - **Intenção:** descobrir capacidades do servidor para um recurso.
 - **Exemplo intuitivo:** “perguntar ao balcão: o que posso fazer neste guichê?”.
-**Exemplo:******
-****
+**Exemplo:**
  curl -X OPTIONS -i https://api.loja.com/pedidos
-
 - **Uso:** responde cabeçalho **Allow** (métodos suportados) e é base para **preflight CORS** em navegadores.
-- 
+
 #### TRACE — “Me retorne o que você recebeu”
 
 - **Intenção:** depuração (eco da requisição).
