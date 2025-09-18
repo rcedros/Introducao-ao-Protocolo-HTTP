@@ -36,7 +36,7 @@ Lançado em 1997, o HTTP/1.1 é até hoje amplamente utilizado.
 
 - **Conexões persistentes**: em vez de abrir uma nova conexão TCP a cada requisição, é possível reutilizar a mesma conexão para múltiplos objetos (HTML, CSS, imagens).
 - **Pipelining**: o cliente pode enviar múltiplas requisições em sequência sem esperar a resposta da anterior. Contudo, o recurso enfrentou problemas de implementação e raramente foi usado.
-- **Limitação do bloqueio (*****Head-of-Line Blocking*****)**: como as respostas precisam ser entregues na ordem das requisições, um único recurso lento pode atrasar todos os outros.
+- **Limitação do bloqueio (***Head-of-Line Blocking***)**: como as respostas precisam ser entregues na ordem das requisições, um único recurso lento pode atrasar todos os outros.
 - **Impacto no cache**: o HTTP/1.1 consolidou cabeçalhos como Cache-Control, ETag e If-Modified-Since, permitindo que navegadores e proxies reduzam a carga de rede.
 *Do ponto de vista de segurança*, o HTTP/1.1 é simples, mas sua fragmentação em múltiplas conexões aumenta a superfície para ataques de negação de serviço (ex.: Slowloris).
 
@@ -75,7 +75,7 @@ Um estudo do **Cloudflare** mostrou que a adoção do HTTP/3 reduziu em até **2
 
 O HTTP/1.1 continua amplamente presente por questões de **compatibilidade** e pela **lenta adoção de novas versões em ambientes corporativos e sistemas legados**. Migrar exige atualização de servidores, balanceadores e até ferramentas de segurança. Isso cria uma superfície de risco, pois protocolos antigos podem permitir ataques já conhecidos, como *Slowloris* ou exploração de cabeçalhos mal configurados.
 
-**2. De que forma a multiplexação do HTTP/2 melhora a performance, mas também pode ****criar** desafios de segurança?******
+**2. De que forma a multiplexação do HTTP/2 melhora a performance, mas também pode ****criar** desafios de segurança?****
 A multiplexação permite múltiplas requisições simultâneas em uma única conexão, evitando o bloqueio por ordem. No entanto, isso dificulta o trabalho de ferramentas de inspeção que analisam pacotes individualmente, podendo mascarar ataques de injeção de cabeçalhos, *request smuggling* ou *DoS* baseados em fluxos paralelos.
 
 **3. Como a compressão de cabeçalhos em HTTP/2 pode ser explorada por atacantes?**
@@ -126,7 +126,7 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 - **Intenção:** obter representação de um recurso (consulta).
 - **Propriedade:** *safe* (não deve mudar estado) e **idempotente**.
 - **Exemplo intuitivo:** “abrir um catálogo para ver os produtos”.
-**Exemplo prático (cURL):******
+**Exemplo prático (cURL):****
  curl https://api.loja.com/produtos?categoria=monitores
 
 - **Observação de segurança:** **não use GET para ações que mudam estado** (ex.: reset de senha). Isso viola a semântica e abre risco de CSRF e vazamento de dados via URL/logs.
@@ -298,15 +298,15 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 
 ### Vamos Refletir?
 
-- **Por que *****retry*** automático de POST pode ser perigoso e como mitigá-lo?******
+- **Por que ***retry*** automático de POST pode ser perigoso e como mitigá-lo?****
  Porque POST não é idempotente; repetir pode duplicar efeitos (ex.: cobrança). **Idempotency-Key** faz o servidor retornar a mesma resposta para a mesma operação, mesmo em *retries*.[ ](https://datatracker.ietf.org/doc/html/rfc9110)
-- **Qual a diferença operacional entre 401 e 403?******
+- **Qual a diferença operacional entre 401 e 403?****
  **401**: faltam **credenciais válidas** — envie **WWW-Authenticate** e oriente novo *challenge*. **403**: requisição entendida, **recusada** (tipicamente autorização negada). Logs e playbooks distintos ajudam triagem.[ ](https://datatracker.ietf.org/doc/html/rfc9110)
-- **Quando prefiro 303 vs 307/308 após processar um POST?******
+- **Quando prefiro 303 vs 307/308 após processar um POST?****
  **303** na estratégia **PRG** (cliente refaz a leitura com GET *safe*). **307/308** quando o redirecionamento **deve manter** o método/body (ex.: reencaminhar um POST para outro host mantendo semântica).
-- **Como os cabeçalhos condicionais ajudam a segurança de dados?******
+- **Como os cabeçalhos condicionais ajudam a segurança de dados?****
  Com **ETag** + **If-Match/If-None-Match**, você evita *lost update* e sincroniza estado sem regravar conteúdo, respondendo **412** ou **304** conforme o caso.
-- **Em que cenário 425 “Too Early” é a melhor resposta?******
+- **Em que cenário 425 “Too Early” é a melhor resposta?****
  Quando a requisição chegou como **Early Data (0-RTT)** e **pode ser replayada** (ex.: transação financeira). **425** obriga o cliente a reenviar após o handshake TLS, mitigando replay.
 
 ### Conclusão
@@ -460,7 +460,7 @@ Carregam credenciais e desafios de autenticação.
 - **sslstrip e o nascimento do HSTS**
 Ataques de *downgrade*/redirecionamento para HTTP levavam usuários a sessões sem TLS. **HSTS** com *preload* tornou isso muito mais difícil, exigindo HTTPS desde o primeiro pedido “conhecido”.
 
-- **Grandes portais com *****clickjacking***
+- **Grandes portais com ***clickjacking***
 Sem X-Frame-Options/frame-ancestors, botões sensíveis eram “sobrepostos” em iframes invisíveis. A *mitigação universal* virou política: **XFO + CSP (frame-ancestors)**.
 
 - **Web Cache Poisoning por Response Splitting**
@@ -545,12 +545,12 @@ O **escopo decide onde o cookie “aparece”**.
 
 Persistência: cookie vs token (e onde guardar)
 
-**Cookie de sessão tradicional (stateful):******
+**Cookie de sessão tradicional (stateful):****
  O servidor guarda o estado (ex.: sessão na base ou cache) e envia um identificador curto no cookie.
 
 - **Prós:** simples de invalidar/rotacionar; pode ser HttpOnly + SameSite para blindar XSS/CSRF; cabe a você controlar TTL no backend.
 - **Contras:** precisa de armazenamento de sessão (memória/cache/banco).
-**Token (stateless, ex.: JWT):******
+**Token (stateless, ex.: JWT):****
  O token **contém** o estado/claims e pode ser validado sem consulta ao servidor.
 
 - **Onde armazenar?**
@@ -756,7 +756,7 @@ Vamos Refletir?
 - **Se um cookie de sessão não estiver marcado como ****HttpOnly****, que tipo de ataque pode explorá-lo?**
 Ele pode ser roubado via JavaScript injetado em um ataque XSS, permitindo que o invasor assuma a sessão do usuário.
 
-- **Qual a relação entre *****rate-limiting*** e ataques de força bruta em HTTP?**
+- **Qual a relação entre ***rate-limiting*** e ataques de força bruta em HTTP?**
 O rate-limiting limita requisições por IP/usuário, dificultando ataques automáticos de força bruta contra endpoints de login.
 
 - **Por que o uso de TLS 1.0 representa risco mesmo em aplicações internas?**
