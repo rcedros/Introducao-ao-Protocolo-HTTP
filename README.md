@@ -121,6 +121,8 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 - **POST**: não idempotente; desenhe salvaguardas (ver “Idempotência prática”, abaixo).
 - **PATCH**: semântica parcial; **não é** idempotente por padrão (pode ser, se você definir assim). Baseie-se em pré-condições (ETag) se a atualização for concorrida.
 
+---
+
 #### GET — “Quero ler”
 
 - **Intenção:** obter representação de um recurso (consulta).
@@ -243,8 +245,6 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 |--------|--------|------------|
 | `100` | ℹ️ Informational | Continue |
 
----
-
 ### ✅ 2xx — Sucesso
 | Código | Classe | Descrição |
 |--------|--------|------------|
@@ -253,16 +253,12 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 | `204` | ✅ Sucesso | Sucesso sem corpo de resposta |
 | `304` | ✅ Sucesso | Revalidação bem sucedida; não transmite dados (economia de banda com `ETag`/`Last-Modified`) |
 
----
-
 ### 🔀 3xx — Redirecionamento
 | Código | Classe | Descrição |
 |--------|--------|------------|
 | `303` | 🔀 Redirecionamento | Padrão PRG (*Post/Redirect/Get*) |
 | `307` | 🔀 Redirecionamento | Redireciona mantendo método/corpo |
 | `308` | 🔀 Redirecionamento | Redireciona permanentemente mantendo método/corpo |
-
----
 
 ### ⚠️ 4xx — Erro do Cliente
 | Código | Classe | Descrição |
@@ -280,8 +276,6 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 | `429` | ⚠️ Erro do Cliente | Rate limiting; pode incluir `Retry-After` |
 | `451` | ⚠️ Erro do Cliente | Bloqueio legal/regulatório (censura, ordens judiciais) |
 
----
-
 ### 💥 5xx — Erro do Servidor
 | Código | Classe | Descrição |
 |--------|--------|------------|
@@ -289,7 +283,6 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 | `502` | 💥 Erro do Servidor | Gateway/proxy recebeu resposta inválida |
 | `504` | 💥 Erro do Servidor | Timeout entre servidores |
 | `503` | 💥 Erro do Servidor | Sobrecarga ou manutenção; pode incluir `Retry-After` |
-
 
 <table>
   <tr>
