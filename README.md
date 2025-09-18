@@ -75,7 +75,7 @@ Um estudo do **Cloudflare** mostrou que a adoção do HTTP/3 reduziu em até **2
 
 O HTTP/1.1 continua amplamente presente por questões de **compatibilidade** e pela **lenta adoção de novas versões em ambientes corporativos e sistemas legados**. Migrar exige atualização de servidores, balanceadores e até ferramentas de segurança. Isso cria uma superfície de risco, pois protocolos antigos podem permitir ataques já conhecidos, como *Slowloris* ou exploração de cabeçalhos mal configurados.
 
-**2. De que forma a multiplexação do HTTP/2 melhora a performance, mas também pode ****criar**** desafios de segurança?******
+**2. De que forma a multiplexação do HTTP/2 melhora a performance, mas também pode ****criar** desafios de segurança?******
 A multiplexação permite múltiplas requisições simultâneas em uma única conexão, evitando o bloqueio por ordem. No entanto, isso dificulta o trabalho de ferramentas de inspeção que analisam pacotes individualmente, podendo mascarar ataques de injeção de cabeçalhos, *request smuggling* ou *DoS* baseados em fluxos paralelos.
 
 **3. Como a compressão de cabeçalhos em HTTP/2 pode ser explorada por atacantes?**
@@ -298,7 +298,7 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 
 ### Vamos Refletir?
 
-- **Por que *****retry***** automático de POST pode ser perigoso e como mitigá-lo?******
+- **Por que *****retry*** automático de POST pode ser perigoso e como mitigá-lo?******
  Porque POST não é idempotente; repetir pode duplicar efeitos (ex.: cobrança). **Idempotency-Key** faz o servidor retornar a mesma resposta para a mesma operação, mesmo em *retries*.[ ](https://datatracker.ietf.org/doc/html/rfc9110)
 - **Qual a diferença operacional entre 401 e 403?******
  **401**: faltam **credenciais válidas** — envie **WWW-Authenticate** e oriente novo *challenge*. **403**: requisição entendida, **recusada** (tipicamente autorização negada). Logs e playbooks distintos ajudam triagem.[ ](https://datatracker.ietf.org/doc/html/rfc9110)
@@ -570,16 +570,16 @@ Riscos e ataques típicos
 - **Exposição por cache**: nunca permita que respostas autenticadas sejam **cacheadas** publicamente; use Cache-Control: no-store.
 Vamos Refletir?
 
-- **Por que ****HttpOnly**** não “resolve” XSS completamente?**
+- **Por que ****HttpOnly** não “resolve” XSS completamente?**
 Porque XSS pode **executar ações** em nome do usuário sem necessariamente **ler** o cookie. HttpOnly protege o **segredo** do cookie, mas você ainda precisa de **CSP**, validação de entrada e *output encoding*.
 
-- **Quando ****SameSite=Strict**** é demais?**
+- **Quando ****SameSite=Strict** é demais?**
 Quando o fluxo exige **cross-site legítimo** (ex.: login federado, redirecionamentos entre domínios controlados). Nesses casos, use **Lax** ou **None; Secure**, mais **anti-CSRF** robusto.
 
-- **Por que evitar ****Domain=exemplo.com**** se meu app roda em ****app.exemplo.com****?**
+- **Por que evitar ****Domain=exemplo.com** se meu app roda em ****app.exemplo.com****?**
 Porque isso libera o cookie para **todos os subdomínios**. Se algum for comprometido (ou puder ser criado por terceiros), a sessão **vaza**. Prefira **host-only** (sem Domain) quando possível.
 
-- **Cookies ou tokens no ****localStorage**** — o que é “mais seguro”?**
+- **Cookies ou tokens no ****localStorage** — o que é “mais seguro”?**
 Depende da **ameaça dominante**. Cookies HttpOnly protegem melhor contra **XSS de roubo de segredo**, mas exigem defesa contra **CSRF**. localStorage foge de CSRF, mas **expõe** o token a XSS. Combos modernos usam **access token em memória** + **refresh token em HttpOnly + SameSite**.
 
 - **Como mitigar session fixation?**
@@ -593,7 +593,7 @@ Depende da **ameaça dominante**. Cookies HttpOnly protegem melhor contra **XSS 
 
 ### Conclusão
 
-**C**ookies são uma ferramenta poderosa — e perigosa — quando mal configurados. Use **Secure**** + ****HttpOnly**** + ****SameSite**, **escopo mínimo** e **rotinas de rotação/invalidade**. O resultado é um *login* que continua simples para o usuário, mas **muito mais caro** para o atacante.
+**C**ookies são uma ferramenta poderosa — e perigosa — quando mal configurados. Use **Secure** + ****HttpOnly** + ****SameSite**, **escopo mínimo** e **rotinas de rotação/invalidade**. O resultado é um *login* que continua simples para o usuário, mas **muito mais caro** para o atacante.
 
 ### Referências
 
@@ -756,13 +756,13 @@ Vamos Refletir?
 - **Se um cookie de sessão não estiver marcado como ****HttpOnly****, que tipo de ataque pode explorá-lo?**
 Ele pode ser roubado via JavaScript injetado em um ataque XSS, permitindo que o invasor assuma a sessão do usuário.
 
-- **Qual a relação entre *****rate-limiting***** e ataques de força bruta em HTTP?**
+- **Qual a relação entre *****rate-limiting*** e ataques de força bruta em HTTP?**
 O rate-limiting limita requisições por IP/usuário, dificultando ataques automáticos de força bruta contra endpoints de login.
 
 - **Por que o uso de TLS 1.0 representa risco mesmo em aplicações internas?**
 Porque algoritmos antigos possuem vulnerabilidades conhecidas que permitem descriptografar tráfego, e redes internas não são ambientes totalmente confiáveis.
 
-- **O que pode acontecer se o cabeçalho ****Content-Security-Policy**** não for configurado?**
+- **O que pode acontecer se o cabeçalho ****Content-Security-Policy** não for configurado?**
 O navegador não terá instruções para restringir a origem de scripts, o que facilita exploração de XSS e injeções de conteúdo.
 
 - **Como as falhas de logging podem se transformar em violações de privacidade?**
