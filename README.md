@@ -770,20 +770,20 @@ Controles Práticos em HTTP
 
 ### Vamos Refletir?
 
-- **Se um cookie de sessão não estiver marcado como ****HttpOnly****, que tipo de ataque pode explorá-lo?**
-Ele pode ser roubado via JavaScript injetado em um ataque XSS, permitindo que o invasor assuma a sessão do usuário.
+- **Se um cookie de sessão não estiver marcado como ***HttpOnly***, que tipo de ataque pode explorá-lo?**
+- Ele pode ser roubado via JavaScript injetado em um ataque XSS, permitindo que o invasor assuma a sessão do usuário.
 
 - **Qual a relação entre ***rate-limiting*** e ataques de força bruta em HTTP?**
-O rate-limiting limita requisições por IP/usuário, dificultando ataques automáticos de força bruta contra endpoints de login.
+- O rate-limiting limita requisições por IP/usuário, dificultando ataques automáticos de força bruta contra endpoints de login.
 
 - **Por que o uso de TLS 1.0 representa risco mesmo em aplicações internas?**
-Porque algoritmos antigos possuem vulnerabilidades conhecidas que permitem descriptografar tráfego, e redes internas não são ambientes totalmente confiáveis.
+- Porque algoritmos antigos possuem vulnerabilidades conhecidas que permitem descriptografar tráfego, e redes internas não são ambientes totalmente confiáveis.
 
-- **O que pode acontecer se o cabeçalho ****Content-Security-Policy** não for configurado?**
-O navegador não terá instruções para restringir a origem de scripts, o que facilita exploração de XSS e injeções de conteúdo.
+- **O que pode acontecer se o cabeçalho ***Content-Security-Policy*** não for configurado?**
+- O navegador não terá instruções para restringir a origem de scripts, o que facilita exploração de XSS e injeções de conteúdo.
 
 - **Como as falhas de logging podem se transformar em violações de privacidade?**
-Quando dados pessoais ou tokens sensíveis são armazenados em logs sem mascaramento, há risco de vazamento em auditorias, suporte técnico ou incidentes de exposição.
+  Quando dados pessoais ou tokens sensíveis são armazenados em logs sem mascaramento, há risco de vazamento em auditorias, suporte técnico ou incidentes de exposição.
 
 ### Casos Reais
 
