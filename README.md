@@ -20,7 +20,7 @@ O HTTPS é o pilar que sustenta a confiança dos usuários na Internet. Ao ver o
 - **Risco**
 Do ponto de vista de segurança cibernética, cada detalhe mal compreendido pode se transformar em vetor de ataque. Casos reais incluem **injeção em cabeçalhos HTTP (CRLF Injection)**, **cookies sem flags de segurança**, **má gestão de sessões** ou **implementação incorreta de CORS**, todos explorados por atacantes para roubo de dados e comprometimento de sistemas.
 
-### 🧠 Vamos Refletir?
+### Vamos Refletir?
 
 Para um analista de segurança, estudar o HTTP/HTTPS em profundidade é mais do que conhecer um protocolo: é compreender **onde falhas arquiteturais podem virar brechas exploráveis**. Assim, o profissional deixa de ser apenas um executor de tarefas e passa a atuar como um **guarda de fronteira**, capaz de identificar pontos frágeis e sugerir melhorias antes que incidentes aconteçam.
 
@@ -68,7 +68,7 @@ A versão mais recente, padronizada em 2022, utiliza o protocolo **QUIC**, desen
 
 Um estudo do **Cloudflare** mostrou que a adoção do HTTP/3 reduziu em até **27% a latência de carregamento** em dispositivos móveis. Por outro lado, em empresas que dependiam de proxies intermediários, a migração trouxe falhas de compatibilidade, revelando como a segurança e a performance estão intimamente ligadas às escolhas arquiteturais.
 
-### 🧠 Vamos Refletir?
+### Vamos Refletir?
 
 **Por que o HTTP/1.1 ainda é tão utilizado mesmo com a existência do HTTP/2 e do HTTP/3?**
 
@@ -394,7 +394,7 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 
 ---
 
-### 🧠 Vamos Refletir?
+### Vamos Refletir?
 
 1. **Por que ***retry*** automático de POST pode ser perigoso e como mitigá-lo?**
 
@@ -681,7 +681,7 @@ Riscos e ataques típicos
 - **Session fixation**: o atacante força a vítima a usar um **ID de sessão já conhecido**; ao logar, a sessão “vira” do atacante. **Rotacione a sessão no login** e rejeite IDs não emitidos pelo servidor.
 - **Exposição por cache**: nunca permita que respostas autenticadas sejam **cacheadas** publicamente; use Cache-Control: no-store.
 
-### 🧠 Vamos Refletir?
+### Vamos Refletir?
 
 1. **Por que ***HttpOnly** não “resolve” XSS completamente?**
 Porque XSS pode **executar ações** em nome do usuário sem necessariamente **ler** o cookie. HttpOnly protege o **segredo** do cookie, mas você ainda precisa de **CSP**, validação de entrada e *output encoding*.
@@ -765,7 +765,7 @@ Certificados não são todos iguais; eles possuem diferentes níveis de validaç
 - **EV (Extended Validation)**: exige validações legais e corporativas mais rigorosas. Antigamente, navegadores exibiam a barra verde para EV, mas hoje essa diferenciação visual quase desapareceu.
 - **Wildcard**: cobre múltiplos subdomínios de um mesmo domínio (ex.: *.empresa.com). É prático, mas aumenta o risco: se a chave privada vaza, todos os subdomínios ficam comprometidos.
 
-### 🧠 Vamos Refletir?
+### Vamos Refletir?
 
 - **Por que não se utiliza apenas criptografia assimétrica em uma conexão HTTPS?**
 Porque ela é computacionalmente pesada e inviável para grandes volumes de dados. Por isso, usa-se assimétrica apenas no início da sessão para trocar a chave simétrica, que será responsável por proteger a comunicação contínua.
@@ -865,7 +865,7 @@ Controles Práticos em HTTP
 - **Output Encoding**: escapar respostas em HTML/JSON para evitar XSS refletido.
 - **Secure Defaults**: configurar servidores (Nginx, Apache, IIS) para não exporem informações de versão, ativar headers de segurança por padrão e aplicar *deny-all* em firewalls de aplicação, liberando apenas o necessário.
 
-### 🧠 Vamos Refletir?
+### Vamos Refletir?
 
 - **Se um cookie de sessão não estiver marcado como ***HttpOnly***, que tipo de ataque pode explorá-lo?**
 
