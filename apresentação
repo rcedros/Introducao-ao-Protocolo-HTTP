@@ -1,0 +1,155 @@
+# 📖 Introdução ao Protocolo HTTP – Estrutura de Slides  
+
+---
+
+## 🔹 Slide 1 – Abertura  
+**Conteúdo:**  
+- O que é HTTP  
+- Por que estudá-lo além do “funciona”  
+- Relevância em **segurança, arquitetura e confiabilidade**  
+
+**Visual:** 🌐 Rede + 🔒 Cadeado  
+**Lab:** —  
+
+---
+
+## 🔹 Slide 2 – Panorama HTTP/HTTPS  
+**Conteúdo:**  
+- HTTP = comunicação cliente-servidor  
+- HTTPS = camada TLS/SSL  
+- Impactos: confiança, risco e arquitetura  
+
+**Visual:** Diagrama cliente → servidor (com e sem 🔒)  
+**Lab:** Acessar um site em HTTP e HTTPS no navegador e inspecionar o cadeado 🔒  
+
+---
+
+## 🔹 Slide 3 – Evolução do Protocolo  
+**Conteúdo:**  
+- HTTP/1.1 → conexões persistentes, cache  
+- HTTP/2 → multiplexação, headers comprimidos  
+- HTTP/3 (QUIC) → baixa latência, segurança nativa  
+
+**Visual:** Linha do tempo com ícones ⚡  
+**Lab:** Testar [tools.keycdn.com/http2-test](https://tools.keycdn.com/http2-test)  
+
+---
+
+## 🔹 Slide 4 – Métodos HTTP  
+**Conteúdo:**  
+- GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD  
+- Diferença: leitura × alteração × exclusão  
+- Idempotência = confiabilidade + segurança  
+
+**Visual:** Tabela (Método | Uso | Idempotente)  
+**Lab:** Fazer requests via `curl` ou Postman comparando GET vs POST  
+
+---
+
+## 🔹 Slide 5 – Status Codes  
+**Conteúdo:**  
+- Classes: 1xx, 2xx, 3xx, 4xx, 5xx  
+- Exemplos importantes:  
+  - 200 OK  
+  - 301 Moved Permanently  
+  - 401 Unauthorized vs 403 Forbidden  
+  - 429 Too Many Requests  
+
+**Visual:** 🚦 Semáforo (verde, amarelo, vermelho)  
+**Lab:** Rodar `curl -I` em sites diferentes e analisar status retornado  
+
+---
+
+## 🔹 Slide 6 – Headers  
+**Conteúdo:**  
+- Comuns: User-Agent, Accept, Content-Type, Cache-Control  
+- Segurança: HSTS, CSP, X-Frame-Options, Referrer-Policy  
+- Identidade: Authorization + CORS  
+
+**Visual:** Quadro dividido em **comuns** vs **segurança**  
+**Lab:** Rodar `curl -I https://exemplo.com` e analisar headers  
+
+---
+
+## 🔹 Slide 7 – Cookies  
+**Conteúdo:**  
+- O que são e função  
+- Tipos: sessão, persistentes, terceiros  
+- Atributos de segurança: Secure, HttpOnly, SameSite  
+- Riscos: roubo, CSRF, XSS  
+
+**Visual:** 🍪 Cookie com cadeado 🔒  
+**Lab:** Abrir DevTools → Application → Cookies e analisar atributos  
+
+---
+
+## 🔹 Slide 8 – Gerenciamento de Sessão  
+**Conteúdo:**  
+- Server-side vs Token (JWT)  
+- Session fixation, rotação de sessão  
+- Logout seguro + invalidação  
+
+**Visual:** Fluxograma sessão (usuário → servidor → token)  
+**Lab:** Criar JWT em [jwt.io](https://jwt.io) e testar decodificação no navegador  
+
+---
+
+## 🔹 Slide 9 – Criptografia e TLS  
+**Conteúdo:**  
+- Simétrica (AES) × Assimétrica (RSA/ECC)  
+- Hashing + assinaturas digitais  
+- PKI e cadeia de confiança  
+- TLS handshake (1.2 vs 1.3) + PFS  
+
+**Visual:** 🔑 Chaves + certificado digital  
+**Lab:** Rodar `openssl s_client -connect site.com:443` e inspecionar certificado  
+
+---
+
+## 🔹 Slide 10 – Ataques na Camada HTTP  
+**Conteúdo:**  
+- Request Smuggling / Desync  
+- CSRF  
+- Host Header Injection  
+- Parameter Pollution  
+
+**Visual:** 🐞 Bug sobre um pacote HTTP  
+**Lab:** Simular CSRF simples em HTML e capturar no navegador  
+
+---
+
+## 🔹 Slide 11 – Logging e Privacidade  
+**Conteúdo:**  
+- O que logar × não logar (tokens, PII, senhas)  
+- Logs estruturados (JSON, trace-id)  
+- GDPR/LGPD e retenção  
+
+**Visual:** 📊 Logs com cadeado  
+**Lab:** Criar log JSON em Python com request + trace-id  
+
+---
+
+## 🔹 Slide 12 – HTTP e OWASP Top 10  
+**Conteúdo:**  
+- Mapeamento:  
+  - Broken Auth  
+  - Cryptographic Failures  
+  - Security Misconfiguration  
+- Controles práticos:  
+  - Rate limit  
+  - Input validation  
+  - Secure defaults  
+
+**Visual:** OWASP logo + 🔟 Checklist  
+**Lab:** Rodar [securityheaders.com](https://securityheaders.com) em site conhecido  
+
+---
+
+## 🔹 Slide 13 – Conclusão  
+**Conteúdo:**  
+- Revisão: protocolo, segurança e arquitetura  
+- Conexão com confiabilidade  
+- Próximos passos: labs avançados, OWASP  
+
+**Visual:** 🚀 Encerramento com call-to-action  
+**Lab Final:** “Analise seu próprio site com ferramentas como `curl`, DevTools e securityheaders.com”  
