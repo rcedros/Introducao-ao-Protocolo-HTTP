@@ -134,8 +134,8 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 
 - **Intenção:** igual ao GET, mas **sem** o corpo da resposta (só cabeçalhos).
 - **Exemplo intuitivo:** “checar a etiqueta da caixa sem abri-la”.
-**Exemplo:******
-****
+**Exemplo:**
+
  curl -I https://site.com/arquivo.pdf
 
 - **Uso típico:** verificar Content-Length, ETag, Last-Modified antes de baixar.
@@ -144,8 +144,8 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 - **Intenção:** criar um recurso, iniciar um processamento, enviar um formulário.
 - **Propriedade:** **não idempotente** (repetir pode duplicar efeitos).
 - **Exemplo intuitivo:** “entregar um formulário preenchido no balcão”.
-**Exemplo:******
-****
+**Exemplo:**
+
  curl -X POST https://api.loja.com/pedidos \
 
 -H "Content-Type: application/json" \
@@ -159,7 +159,7 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 - **Intenção:** **substituir por completo** a representação de um recurso existente (ou criar se a rota permitir “upsert”).
 - **Propriedade:** **idempotente** (definir o mesmo estado N vezes produz o mesmo efeito).
 - **Exemplo intuitivo:** “trocar a ficha cadastral inteira por uma nova”.
-**Exemplo:******
+**Exemplo:**
 ****
  curl -X PUT https://api.loja.com/usuarios/42 \
 -H "Content-Type: application/json" \
@@ -172,7 +172,7 @@ São rótulos semânticos que informam ao servidor **qual operação** o cliente
 - **Intenção:** modificar **parte** da representação.
 - **Propriedade:** **pode não ser idempotente** (depende do patch aplicado).
 - **Exemplo intuitivo:** “corrigir somente o telefone, sem mexer no resto”.
-**Exemplo:******
+**Exemplo:**
  curl -X PATCH https://api.loja.com/usuarios/42 \
 -H "Content-Type: application/json" \
 -d '{"telefone":"+55 11 99999-0000"}'
