@@ -401,6 +401,9 @@ Compreender e aplicar corretamente esses headers é essencial para reforçar a p
 
 ## Security headers (os “cintos de segurança” do navegador)
 
+Assim como cintos de segurança protegem motoristas e passageiros de riscos inesperados, os **security headers** oferecem uma camada extra de defesa no navegador.  
+Eles ajudam a **forçar HTTPS**, **restringir conteúdos perigosos**, **controlar framing** e **reduzir vazamento de informações**, tornando ataques como **XSS, CSRF e clickjacking** muito mais difíceis de explorar.
+
 | Header | Função | Exemplo | Benefício / Observação |
 |--------|--------|---------|-------------------------|
 | **Strict-Transport-Security (HSTS)** | Força o uso de **HTTPS** no domínio (e subdomínios). | `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload` | Dificulta *SSL stripping* e *downgrade*. Com **preload**, o domínio entra em lista embutida nos navegadores, mitigando o “primeiro acesso inseguro”. |
@@ -410,7 +413,7 @@ Compreender e aplicar corretamente esses headers é essencial para reforçar a p
 | **Referrer-Policy** | Controla quanto do *referer* (URL de origem) é enviado em navegações e requisições. | `Referrer-Policy: strict-origin-when-cross-origin` | Reduz **vazamento de dados sensíveis** em query strings para terceiros, mantendo equilíbrio entre privacidade e depuração. |
 | **Permissions-Policy** (ex-Feature-Policy) | Habilita ou desabilita **capacidades do navegador** (câmera, microfone, geolocalização, autoplay). | `Permissions-Policy: camera=(), microphone=(), geolocation=()` | Aplica o princípio do **menor privilégio** no front-end. |
 
-### CORS e Authorization headers — fronteira e identidade
+## CORS e Authorization headers — fronteira e identidade
 
 Quando falamos em segurança na web, dois conceitos fundamentais emergem: fronteira e identidade. A fronteira define até onde uma aplicação pode interagir com outra, evitando que conteúdos de diferentes origens acessem recursos de forma indevida. A identidade, por sua vez, garante que apenas quem possui credenciais válidas consiga atravessar essa fronteira e consumir os recursos protegidos.
 
@@ -418,7 +421,7 @@ Quando falamos em segurança na web, dois conceitos fundamentais emergem: fronte
 
 Combinados, esses mecanismos são peças essenciais para manter a comunicação segura entre clientes e servidores em um cenário cada vez mais distribuído e interconectado.
 
-### CORS (Cross-Origin Resource Sharing)
+## CORS (Cross-Origin Resource Sharing)
 
 Conjunto de headers que regula se um **site A** pode chamar a API do **site B** no navegador. Resposta típica segura:
 
@@ -435,7 +438,7 @@ Access-Control-Allow-Credentials: true
   - Evite refletir o Origin arbitrariamente; **liste explicitamente** origens confiáveis.
  - *Preflights* (OPTIONS) fazem parte do fluxo; trate-os corretamente.
 
-### Authorization / WWW-Authenticate
+## Authorization / WWW-Authenticate
 
 Carregam credenciais e desafios de autenticação.
 
@@ -448,7 +451,7 @@ Carregam credenciais e desafios de autenticação.
   - Defina **expiração** curta + *refresh tokens*; *rotate* chaves.
   - Em APIs públicas, padronize respostas (401/403) e evite **leaks** em mensagens de erro.
 
-### CRLF Injection & Header Injection — quando o atacante “quebra a linha”
+## CRLF Injection & Header Injection — quando o atacante “quebra a linha”
 
 **CRLF Injection** ocorre quando valores controlados por usuário entram em headers **sem sanitização**, permitindo inserir caracteres **Carriage Return + Line Feed** (\r\n).
 - Impacto: **HTTP Response Splitting**, *web cache poisoning*, *XSS* indireto, **corrupção de resposta**.
@@ -543,7 +546,7 @@ Bônus de hardening: o **prefixo ***__Host-** obriga requisitos fortes (cookie *
 Set-Cookie: __Host-sessionid=abc123; Path=/; Secure; HttpOnly; SameSite=Strict
 ```
 
-### Escopo: Domain e Path
+## Escopo: Domain e Path
 
 O **escopo decide onde o cookie “aparece”**.
 
