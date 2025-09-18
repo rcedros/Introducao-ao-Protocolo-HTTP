@@ -233,7 +233,7 @@ Também é importante tratar redirecionamentos após um POST. Evite 301 ou 302, 
 
 Um **Status Code HTTP** (código de estado) é um número de três dígitos que o servidor retorna ao cliente — como um navegador ou aplicação — em resposta a uma requisição. Esse código resume o resultado da solicitação, indicando se ela foi concluída com sucesso, se exige uma ação adicional ou se ocorreu algum erro no lado do cliente ou do servidor.
 
-HTTP define um **sistema de cache padronizado** (`Cache-Control`, `ETag`, `Last-Modified`, `Vary`, *`revalidation`*) — hoje consolidado no **RFC 9111**. Segurança se beneficia porque **revalidações condicionais** (**If-None-Match/If-Modified-Since**) reduzem a superfície de transferência e ajudam a **sincronizar o estado** sem regravar dados. **304 Not Modified** é sinal de *efeito esperado* de uma condicional; não um erro.
+HTTP define um **sistema de cache padronizado** (`Cache-Control`, `ETag`, `Last-Modified`, `Vary`, `Revalidation`) — hoje consolidado no **RFC 9111**. Segurança se beneficia porque **revalidações condicionais** (**If-None-Match/If-Modified-Since**) reduzem a superfície de transferência e ajudam a **sincronizar o estado** sem regravar dados. **304 Not Modified** é sinal de *efeito esperado* de uma condicional; não um erro.
 
 | Código | Classe              | Descrição |
 |:------:|-------------------|:----------|
