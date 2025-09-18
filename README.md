@@ -20,7 +20,7 @@ O design de aplicações modernas depende fortemente de recursos do HTTP/HTTPS: 
 - **Confiança**
 O HTTPS é o pilar que sustenta a confiança dos usuários na Internet. Ao ver o cadeado no navegador, o usuário entende que há uma garantia mínima de segurança na comunicação. Se a configuração do protocolo for falha (ex.: certificados expirados, versões antigas do TLS, ausência de HSTS), essa confiança pode ser quebrada e abrir portas para ataques como *Man-in-the-Middle* (MITM).
 - **Risco**
-Do ponto de vista de segurança cibernética, cada detalhe mal compreendido pode se transformar em vetor de ataque. Casos reais incluem **injeção em cabeçalhos HTTP (CRLF Injection)**, **cookies sem flags de segurança**, **má gestão de sessões** ou **implementação incorreta de CORS**, todos explorados por atacantes para roubo de dados e comprometimento de sistemas.
+Do ponto de vista de segurança cibernética, cada detalhe mal compreendido pode se transformar em vetor de ataque. Casos Reais incluem **injeção em cabeçalhos HTTP (CRLF Injection)**, **cookies sem flags de segurança**, **má gestão de sessões** ou **implementação incorreta de CORS**, todos explorados por atacantes para roubo de dados e comprometimento de sistemas.
 
 ### Vamos Refletir?
 
@@ -281,7 +281,7 @@ HTTP define um **sistema de cache padronizado** (Cache-Control, ETag, Last-Modif
 - **Dados sensíveis/autenticados:** Cache-Control: no-store para evitar persistência em disco/memória de intermediários; preferir **revalidação** controlada para equilibrar performance e sigilo.
 - **POST** normalmente **não** é armazenado por caches; **GET** pode ser. Logo, **jamais** retorne dados sensíveis em GET sem as devidas diretivas.
 
-### Casos reais
+### Casos Reais
 
 - **Pagamentos e idempotência (Stripe).** Repetições de POST por perda de resposta geram **cobranças duplicadas**. A solução foi **Idempotency-Key** em todos os POSTs: o primeiro resultado fica “fixado” pela chave e *retries* devolvem a mesma resposta (inclusive erros 5xx), tipicamente por 24h.
 - **Redirecionar POST como GET.** Usar **302** após um POST pode levar *user agents* a **trocar o método** (POST→GET). O padrão **PRG** com **303 See Other** remove esse risco; **307/308** preservam o método quando é isso que se deseja.
@@ -418,7 +418,8 @@ Combinados, esses mecanismos são peças essenciais para manter a comunicação 
 #### CORS (Cross-Origin Resource Sharing)
 
 Conjunto de headers que regula se um **site A** pode chamar a API do **site B** no navegador. Resposta típica segura:
-```html
+
+```bash
 Access-Control-Allow-Origin: https://app.exemplo.com
 Vary: Origin
 Access-Control-Allow-Methods: GET, POST, PUT, DELETE
@@ -430,7 +431,8 @@ Access-Control-Allow-Credentials: true
 - **Nunca** use Access-Control-Allow-Origin: * **junto** com Allow-Credentials: true (os navegadores bloqueiam por segurança).
 - Evite refletir o Origin arbitrariamente; **liste explicitamente** origens confiáveis.
 - *Preflights* (OPTIONS) fazem parte do fluxo; trate-os corretamente.
-Authorization / WWW-Authenticate
+
+#### Authorization / WWW-Authenticate
 
 Carregam credenciais e desafios de autenticação.
 
@@ -457,7 +459,7 @@ Carregam credenciais e desafios de autenticação.
 - Ativar **CSP/HSTS** e boas políticas de cache para reduzir impacto colateral.
 **Header Injection** (mais amplo) é qualquer manipulação de cabeçalho via entrada do usuário: além de CRLF, há **injeção de prefixos/sufixos** em Set-Cookie, Location, Host dependentes de upstream etc. A defesa é **não confiar** em valores externos, **normalizar** e **validar estritamente**.
 
-### Casos reais
+### Casos Reais
 
 - **sslstrip e o nascimento do HSTS**
 Ataques de *downgrade*/redirecionamento para HTTP levavam usuários a sessões sem TLS. **HSTS** com *preload* tornou isso muito mais difícil, exigindo HTTPS desde o primeiro pedido “conhecido”.
@@ -496,11 +498,13 @@ O que são e para que servem (na prática)
 
 Quando o servidor responde com Set-Cookie, o navegador grava aquele dado respeitando **escopo** (domínio e caminho), **atributos** (segurança, expiração, política *same-site*) e **persistência** (sessão ou longo prazo). A cada nova requisição cujo **host** e **path** combinem com o cookie, o navegador adiciona um cabeçalho:
 
+```bash
 Cookie: sessionid=abc123; theme=dark
+```
 
 Isso permite que o backend reconheça quem é o usuário e aplique lógica de autorização, personalização ou mitigação de abuso.
 
-Tipos de cookies
+### Tipos de cookies
 
 - **De sessão**: duram até o fechamento do navegador (não especificam Expires/Max-Age). Úteis para *login* sem persistir por longos períodos.
 - **Persistentes**: têm Expires ou Max-Age; sobrevivem a reinícios do navegador (ex.: “manter conectado por 30 dias”).
@@ -508,19 +512,19 @@ Tipos de cookies
 
 Atributos de segurança essenciais
 
-**Secure**
+#### Secure
 
 Garante que o cookie **só** será enviado em conexões **HTTPS**. (“Como criar e manipular cookies em JavaScript”) Sem Secure, um atacante na mesma rede pode capturá-lo (ex.: Wi-Fi público).
 
 Recomendações: todo cookie de sessão/autenticação deve ser Secure.
 
-**HttpOnly**
+#### HttpOnly
 
 Impede acesso via JavaScript (document.cookie). Isso **mitiga roubo por XSS** (o ataque até pode injetar script, mas não consegue “ler” o cookie marcado).
 
 Recomendação: marque **sempre** os cookies de autenticação como HttpOnly.
 
-**SameSite**
+#### SameSite
 
 Controla se o cookie **viaja em navegação entre sites** (cross-site).
 
@@ -531,10 +535,15 @@ Controla se o cookie **viaja em navegação entre sites** (cross-site).
 
 Exemplo robusto de cookie de sessão:
 
+```bash
 Set-Cookie: sessionid=abc123; Path=/; Secure; HttpOnly; SameSite=Strict
+```
 
 Bônus de hardening: o **prefixo ****__Host-** obriga requisitos fortes (cookie **deve** ter Secure, **não** pode ter Domain, e **Path** deve ser /). Ex.: 
+
+```bash
 Set-Cookie: __Host-sessionid=abc123; Path=/; Secure; HttpOnly; SameSite=Strict
+```
 
 Escopo: Domain e Path
 
@@ -570,7 +579,8 @@ Riscos e ataques típicos
 - **CSRF**: como o navegador envia cookies automaticamente, um site malicioso pode induzir o usuário a **acionar requisições válidas** contra seu domínio. SameSite ajuda, mas **mantenha sempre token anti-CSRF** (sincronizado, *double submit* ou cabeçalho custom com verificação de origem).
 - **Session fixation**: o atacante força a vítima a usar um **ID de sessão já conhecido**; ao logar, a sessão “vira” do atacante. **Rotacione a sessão no login** e rejeite IDs não emitidos pelo servidor.
 - **Exposição por cache**: nunca permita que respostas autenticadas sejam **cacheadas** publicamente; use Cache-Control: no-store.
-Vamos Refletir?
+
+### Vamos Refletir?
 
 - **Por que ****HttpOnly** não “resolve” XSS completamente?**
 Porque XSS pode **executar ações** em nome do usuário sem necessariamente **ler** o cookie. HttpOnly protege o **segredo** do cookie, mas você ainda precisa de **CSP**, validação de entrada e *output encoding*.
@@ -587,7 +597,7 @@ Depende da **ameaça dominante**. Cookies HttpOnly protegem melhor contra **XSS 
 - **Como mitigar session fixation?**
 **Gere um novo ID de sessão ao logar** (e ao elevar privilégios), invalide o ID antigo no servidor e recuse IDs não emitidos por você. *Set-Cookie* com Secure/HttpOnly/SameSite completa a defesa.
 
-### Casos reais
+### Casos Reais
 
 - **Firesheep (Wi-Fi aberto):** milhares de sessões de redes sociais eram sequestradas porque os sites serviam partes do tráfego em HTTP, e cookies sem Secure “vazavam”. A reação da indústria consolidou **HTTPS por padrão** + Secure.
 - **Subdomínio tomado, sessão perdida:** empresas com DNS amplo viram **subdomain takeover** permitir que invasores **capturassem cookies** de Domain=exemplo.com. Solução: **host-only cookies**, higiene de DNS e *asset inventory*.
@@ -654,7 +664,7 @@ Certificados não são todos iguais; eles possuem diferentes níveis de validaç
 - **EV (Extended Validation)**: exige validações legais e corporativas mais rigorosas. Antigamente, navegadores exibiam a barra verde para EV, mas hoje essa diferenciação visual quase desapareceu.
 - **Wildcard**: cobre múltiplos subdomínios de um mesmo domínio (ex.: *.empresa.com). É prático, mas aumenta o risco: se a chave privada vaza, todos os subdomínios ficam comprometidos.
 
-Vamos Refletir?
+### Vamos Refletir?
 
 - **Por que não se utiliza apenas criptografia assimétrica em uma conexão HTTPS?**
 Porque ela é computacionalmente pesada e inviável para grandes volumes de dados. Por isso, usa-se assimétrica apenas no início da sessão para trocar a chave simétrica, que será responsável por proteger a comunicação contínua.
@@ -671,7 +681,7 @@ Se a chave privada for comprometida, todos os subdomínios estarão igualmente e
 - **Por que o uso de SHA-1 foi abandonado em certificados digitais?**
 Porque colisões foram demonstradas na prática, permitindo que dois documentos diferentes tivessem o mesmo hash. Isso comprometia a segurança das assinaturas digitais.
 
-### Casos reais
+### Casos Reais
 
 - Em 2011, a CA holandesa **DigiNotar** foi comprometida, permitindo a emissão fraudulenta de certificados para domínios do Google. O impacto foi enorme: atacantes podiam realizar ataques MITM contra usuários iranianos. Esse caso reforçou a importância de mecanismos de revogação e auditoria em CAs.
 - Em 2017, o **ataque ROCA** mostrou que milhões de chaves RSA geradas por smartcards tinham fraquezas matemáticas, permitindo sua quebra. Isso acelerou a adoção de ECC e algoritmos mais modernos.
@@ -753,7 +763,8 @@ Controles Práticos em HTTP
 - **Input Validation**: validar dados ainda na borda da aplicação, rejeitando caracteres ou formatos inesperados.
 - **Output Encoding**: escapar respostas em HTML/JSON para evitar XSS refletido.
 - **Secure Defaults**: configurar servidores (Nginx, Apache, IIS) para não exporem informações de versão, ativar headers de segurança por padrão e aplicar *deny-all* em firewalls de aplicação, liberando apenas o necessário.
-Vamos Refletir?
+
+### Vamos Refletir?
 
 - **Se um cookie de sessão não estiver marcado como ****HttpOnly****, que tipo de ataque pode explorá-lo?**
 Ele pode ser roubado via JavaScript injetado em um ataque XSS, permitindo que o invasor assuma a sessão do usuário.
@@ -770,7 +781,7 @@ O navegador não terá instruções para restringir a origem de scripts, o que f
 - **Como as falhas de logging podem se transformar em violações de privacidade?**
 Quando dados pessoais ou tokens sensíveis são armazenados em logs sem mascaramento, há risco de vazamento em auditorias, suporte técnico ou incidentes de exposição.
 
-### Casos reais
+### Casos Reais
 
 - **Equifax (2017)**: falha em componente desatualizado (Apache Struts) explorado via requisições HTTP maliciosas, expondo dados de milhões de usuários.
 - **Yahoo (2013–2014)**: tokens de sessão roubados sem expiração adequada, permitindo acesso persistente a contas de usuários.
