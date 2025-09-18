@@ -31,7 +31,7 @@ Lançado em 1997, o HTTP/1.1 é até hoje amplamente utilizado.
 - **Conexões persistentes**: em vez de abrir uma nova conexão TCP a cada requisição, é possível reutilizar a mesma conexão para múltiplos objetos (HTML, CSS, imagens).
 - **Pipelining**: o cliente pode enviar múltiplas requisições em sequência sem esperar a resposta da anterior. Contudo, o recurso enfrentou problemas de implementação e raramente foi usado.
 - **Limitação do bloqueio (***Head-of-Line Blocking***)**: como as respostas precisam ser entregues na ordem das requisições, um único recurso lento pode atrasar todos os outros.
-- **Impacto no cache**: o HTTP/1.1 consolidou cabeçalhos como Cache-Control, ETag e If-Modified-Since, permitindo que navegadores e proxies reduzam a carga de rede.
+- **Impacto no cache**: o HTTP/1.1 consolidou cabeçalhos como `Cache-Control`, `ETag` e `If-Modified-Since`, permitindo que navegadores e proxies reduzam a carga de rede.
 *Do ponto de vista de segurança*, o HTTP/1.1 é simples, mas sua fragmentação em múltiplas conexões aumenta a superfície para ataques de negação de serviço (ex.: Slowloris).
 
 ### HTTP/2 – A busca pela eficiência
