@@ -1,4 +1,4 @@
-# introducao-ao-HTTP
+# Introdução ao Curso HTTP em Profundidade
 
 ## Introdução
 
@@ -29,7 +29,7 @@ Para um analista de segurança, estudar o HTTP/HTTPS em profundidade é mais do 
 
 O protocolo HTTP, apesar de parecer simples, passou por grandes transformações ao longo das últimas décadas. Cada nova versão foi criada para resolver limitações das anteriores e para acompanhar o crescimento da Web em termos de **desempenho, escalabilidade e segurança**. Entender essas diferenças é essencial para um analista de segurança, pois cada recurso introduzido pode trazer tanto benefícios quanto novas superfícies de ataque.
 
-HTTP/1.1 – O clássico que dominou a Web
+### HTTP/1.1 – O clássico que dominou a Web
 
 Lançado em 1997, o HTTP/1.1 é até hoje amplamente utilizado.
 
@@ -39,7 +39,7 @@ Lançado em 1997, o HTTP/1.1 é até hoje amplamente utilizado.
 - **Impacto no cache**: o HTTP/1.1 consolidou cabeçalhos como Cache-Control, ETag e If-Modified-Since, permitindo que navegadores e proxies reduzam a carga de rede.
 *Do ponto de vista de segurança*, o HTTP/1.1 é simples, mas sua fragmentação em múltiplas conexões aumenta a superfície para ataques de negação de serviço (ex.: Slowloris).
 
-HTTP/2 – A busca pela eficiência
+### HTTP/2 – A busca pela eficiência
 
 Publicado em 2015, o HTTP/2 surgiu para resolver gargalos de performance do HTTP/1.1.
 
@@ -49,7 +49,7 @@ Publicado em 2015, o HTTP/2 surgiu para resolver gargalos de performance do HTTP
 - **Uso predominante sobre TLS**: embora o protocolo não exija HTTPS, praticamente todos os navegadores impõem seu uso apenas em conexões seguras.
 *Em termos de segurança*, a multiplexação traz desafios de monitoramento, já que ataques como injeções em cabeçalhos podem estar embutidos em múltiplos fluxos. Além disso, vulnerabilidades em implementações do HPACK já foram exploradas em ataques de compressão (*CRIME*, *BREACH*).
 
-HTTP/3 – A era do QUIC
+### HTTP/3 – A era do QUIC
 
 A versão mais recente, padronizada em 2022, utiliza o protocolo **QUIC**, desenvolvido pelo Google. Diferente das anteriores, ele roda sobre **UDP**, não sobre TCP.
 
@@ -59,7 +59,7 @@ A versão mais recente, padronizada em 2022, utiliza o protocolo **QUIC**, desen
 - **Resiliência a mudanças de rede**: como a conexão é identificada por um ID único, ela pode sobreviver a trocas de IP (por exemplo, ao sair do Wi-Fi para o 4G).
 *Do ponto de vista de segurança*, o HTTP/3 representa avanço, mas também desafia ferramentas de inspeção. Muitos firewalls e IDS ainda têm dificuldade em analisar tráfego QUIC devido à criptografia nativa e ao uso de UDP, abrindo espaço para evasões de detecção.
 
-Impactos de performance e cache
+### Impactos de performance e cache
 
 - **HTTP/1.1**: dependia fortemente do cache para compensar múltiplas conexões.
 - **HTTP/2**: reduziu a necessidade de *hacks* como *domain sharding* e *sprite sheets*, mas exige atenção em ambientes corporativos que fazem *deep packet inspection*.
@@ -68,7 +68,7 @@ Caso Real
 
 Um estudo do **Cloudflare** mostrou que a adoção do HTTP/3 reduziu em até **27% a latência de carregamento** em dispositivos móveis. Por outro lado, em empresas que dependiam de proxies intermediários, a migração trouxe falhas de compatibilidade, revelando como a segurança e a performance estão intimamente ligadas às escolhas arquiteturais.
 
-Vamos Refletir?
+### Vamos Refletir?
 
 **Por que o HTTP/1.1 ainda é tão utilizado mesmo com a existência do HTTP/2 e do HTTP/3?**
 
@@ -92,7 +92,7 @@ No HTTP/3, o **TLS 1.3 está embutido no próprio protocolo**, garantindo que co
 - No **HTTP/3**, embora o cache continue relevante, o tráfego criptografado e o uso de QUIC tornam mais difícil para intermediários aplicarem políticas, exigindo atenção redobrada ao configurar os servidores.
 Em todos os casos, **má configuração de cache pode expor dados confidenciais**, como páginas autenticadas sendo armazenadas e reutilizadas indevidamente por outros usuários.
 
-Referências
+### Referências
 
 - Fielding, R. T., & Reschke, J. (2014). *Hypertext Transfer Protocol (HTTP/1.1)* – IETF RFC 7230.
 - Belshe, M., Peon, R., & Thomson, M. (2015). *Hypertext Transfer Protocol Version 2 (HTTP/2)* – IETF RFC 7540.
@@ -108,11 +108,11 @@ Quando um cliente “fala” com um servidor pela Web, ele não envia apenas dad
 
 A seguir, apresento os métodos padronizados, com explicação e **um exemplo simples e intuitivo** de uso. Depois entramos em **idempotência** (o tema que amarra confiabilidade, retries e mitigação de fraudes/replays) e continuamos com as demais partes operacionais: **redirecionamentos corretos, códigos de status, condicionais, cache** e implicações de segurança.
 
-O que são os métodos HTTP?
+### O que são os métodos HTTP?
 
 São rótulos semânticos que informam ao servidor **qual operação** o cliente deseja realizar sobre um recurso (por exemplo, /usuarios/42 ou /pedidos). Eles não tratam do “como” (isso é implementado pela aplicação), mas **guiam expectativas** de clientes, proxies, caches, navegadores e ferramentas de segurança.
 
-Um sumário útil para o dia a dia da segurança:
+### Um sumário útil para o dia a dia da segurança:
 
 - **GET / HEAD**: *safe* e idempotentes. **Jamais** faça ações mutáveis com GET; se fizer, trate como risco CSRF.
 - **PUT**: substitui representação; idempotente. Use com **If-Match** para evitar *lost update*.[ ](https://datatracker.ietf.org/doc/html/rfc9110)
@@ -120,7 +120,7 @@ Um sumário útil para o dia a dia da segurança:
 ](https://datatracker.ietf.org/doc/html/rfc9110)**POST**: não idempotente; desenhe salvaguardas (ver “Idempotência prática”, abaixo).[ ](https://datatracker.ietf.org/doc/html/rfc9110)
 - **PATCH**: semântica parcial; **não é** idempotente por padrão (pode ser, se você definir assim). Baseie-se em pré-condições (ETag) se a atualização for concorrida.
 
-GET — “Quero ler”
+#### GET — “Quero ler”
 
 - **Intenção:** obter representação de um recurso (consulta).
 - **Propriedade:** *safe* (não deve mudar estado) e **idempotente**.
@@ -129,7 +129,7 @@ GET — “Quero ler”
  curl https://api.loja.com/produtos?categoria=monitores
 
 - **Observação de segurança:** **não use GET para ações que mudam estado** (ex.: reset de senha). Isso viola a semântica e abre risco de CSRF e vazamento de dados via URL/logs.
-HEAD — “Quero ver apenas os metadados”
+#### HEAD — “Quero ver apenas os metadados”
 
 - **Intenção:** igual ao GET, mas **sem** o corpo da resposta (só cabeçalhos).
 - **Exemplo intuitivo:** “checar a etiqueta da caixa sem abri-la”.
@@ -138,7 +138,7 @@ HEAD — “Quero ver apenas os metadados”
  curl -I https://site.com/arquivo.pdf
 
 - **Uso típico:** verificar Content-Length, ETag, Last-Modified antes de baixar.
-POST — “Quero criar ou executar uma ação”
+#### POST — “Quero criar ou executar uma ação”
 
 - **Intenção:** criar um recurso, iniciar um processamento, enviar um formulário.
 - **Propriedade:** **não idempotente** (repetir pode duplicar efeitos).
@@ -152,7 +152,7 @@ POST — “Quero criar ou executar uma ação”
 -d '{"cliente_id": 42, "itens": [{"sku":"ABC","qtd":2}]}'
 
 - **Segurança:** por ser não idempotente, **retries** podem duplicar operações (cobranças, pedidos). Veremos como mitigar com **Idempotency-Key**.
-PUT — “Quero substituir”
+#### PUT — “Quero substituir”
 
 - **Intenção:** **substituir por completo** a representação de um recurso existente (ou criar se a rota permitir “upsert”).
 - **Propriedade:** **idempotente** (definir o mesmo estado N vezes produz o mesmo efeito).
@@ -166,7 +166,7 @@ PUT — “Quero substituir”
 -d '{"nome":"Ana","email":"ana@ex.com","telefone":"+55..."}'
 
 - **Segurança:** combine com **pré-condições** (If-Match com ETag) para evitar *lost update* em concorrência.
-PATCH — “Quero alterar parcialmente”
+#### PATCH — “Quero alterar parcialmente”
 
 - **Intenção:** modificar **parte** da representação.
 - **Propriedade:** **pode não ser idempotente** (depende do patch aplicado).
@@ -178,14 +178,14 @@ PATCH — “Quero alterar parcialmente”
 
 -d '{"telefone":"+55 11 99999-0000"}'
 
-DELETE — “Quero remover”
+#### DELETE — “Quero remover”
 
 - **Intenção:** remover um recurso.
 **Propriedade:** **idempotente** (apagar de novo não muda o resultado).
 - **Exemplo intuitivo:** “jogar fora uma ficha; tentar jogar fora de novo não tem efeito”.
 curl -X DELETE https://api.loja.com/usuarios/42
 
-OPTIONS — “Quais métodos e políticas são aceitos aqui?”
+#### OPTIONS — “Quais métodos e políticas são aceitos aqui?”
 
 - **Intenção:** descobrir capacidades do servidor para um recurso.
 - **Exemplo intuitivo:** “perguntar ao balcão: o que posso fazer neste guichê?”.
@@ -194,11 +194,13 @@ OPTIONS — “Quais métodos e políticas são aceitos aqui?”
  curl -X OPTIONS -i https://api.loja.com/pedidos
 
 - **Uso:** responde cabeçalho **Allow** (métodos suportados) e é base para **preflight CORS** em navegadores.
-TRACE — “Me retorne o que você recebeu”
+- 
+#### TRACE — “Me retorne o que você recebeu”
 
 - **Intenção:** depuração (eco da requisição).
 - **Segurança:** frequentemente **desabilitado** em produção (pode auxiliar ataques de informação).
-CONNECT — “Abra um túnel”
+
+#### CONNECT — “Abra um túnel”
 
 - **Intenção:** usado por proxies para criar um túnel TCP (ex.: HTTPS via proxy).
 - **Exemplo intuitivo:** “pedir ao porteiro para abrir um canal direto com a sala segura”.
@@ -226,24 +228,25 @@ Redirecionamentos sem armadilhas (303 vs 307/308)
 - Quando **precisar preservar método e corpo**, use **307 Temporary Redirect** ou **308 Permanent Redirect**.
 **Benefícios:** previne reenvio acidental em “refresh/back”, reduz risco de vazamento pela URL e mantém a semântica do método onde for necessário.
 
-Códigos de status — leitura tática para segurança
+### Códigos de status — leitura tática para segurança
 
 Um **Status Code HTTP** (código de estado) é um número de três dígitos que o servidor retorna ao cliente — como um navegador ou aplicação — em resposta a uma requisição. Esse código resume o resultado da solicitação, indicando se ela foi concluída com sucesso, se exige uma ação adicional ou se ocorreu algum erro no lado do cliente ou do servidor.
 
-Os códigos são organizados em **cinco classes principais**:
+### Os códigos são organizados em **cinco classes principais**:
 
 - **1xx** – Informativos
 - **2xx** – Sucesso
 - **3xx** – Redirecionamento
 - **4xx** – Erros do cliente
 - **5xx** – Erros do servidor
-2xx — sucesso
+
+#### 2xx — sucesso
 
 - **200 OK**, **201 Created**, **204 No Content**. Em *conditional requests* bem sucedidas, **304 Not Modified** evita retransmitir dados e **não é** um erro; é economia de banda com ETag/Last-Modified.[ ](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/304?utm_source=chatgpt.com)[MDN Web Docs+1](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/304?utm_source=chatgpt.com)
 3xx — redirecionamento
 
 - **303 See Other** (PRG) e **307/308** (mantêm método). Ver seção anterior.
-4xx — erro do cliente
+#### 4xx — erro do cliente
 
 - **400 Bad Request**: entrada inválida.
 - **401 Unauthorized**: faltam **credenciais válidas**; **MUST** incluir **WWW-Authenticate** com o(s) *challenge(s)*. Diferencie de 403.
@@ -255,7 +258,7 @@ Os códigos são organizados em **cinco classes principais**:
 - **425 Too Early**: **mitigação de replay** com **0-RTT (TLS 1.3 Early Data)**; o servidor recusa processar e o cliente deve reenviar após o handshake. Em endpoints críticos, bloqueie early-data ou responda 425.
 - **429 Too Many Requests**: **rate limiting**; respostas **podem** trazer **Retry-After** (segundos/data) e cabeçalhos de *quota* (p. ex., X-RateLimit-* em vendors). Evita abuso e *noisy retries*.[
 ](https://datatracker.ietf.org/doc/html/rfc6585?utm_source=chatgpt.com)**451 Unavailable For Legal Reasons**: bloqueio **por demanda legal** (censura, restrições regulatórias); mais explícito que 403/404 para esse caso.
-5xx — erro do servidor
+#### 5xx — erro do servidor
 
 - **500/502/504**: falhas internas, *bad gateway*, *timeout*.
 - **503 Service Unavailable**: sobrecarga/manutenção; pode incluir **Retry-After**. Excelente ponto para política de *backoff* no cliente.
@@ -275,7 +278,8 @@ Casos reais & lições rápidas
 - **Rate limiting em APIs públicas.** Plataformas como o GitHub expõem *headers* de quota (p.ex. X-RateLimit-Remaining/Reset) e usam **429** (com Retry-After) para orientar backoff e proteger disponibilidade. *Playbooks* devem respeitar esses sinais.[ ](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api?utm_source=chatgpt.com)
 - **451 por razões legais.** Bloqueios por geografia/ordens judiciais são comunicados com **451** para transparência regulatória, em vez de 403/404.[ ](https://datatracker.ietf.org/doc/html/rfc7725?utm_source=chatgpt.com)
 - **TLS 1.3 Early Data e 425.** Em CDNs e *reverse proxies* com **0-RTT**, requisições com Early-Data: 1 podem ser **replayadas**; responder **425 Too Early** força o cliente a reenviar **após** o handshake, evitando duplicidade em operações sensíveis.
-Boas práticas acionáveis (segurança + confiabilidade)
+
+#### Boas práticas acionáveis (segurança + confiabilidade)
 
 - **Aderência semântica**: GET/HEAD só para leitura; operações mutáveis em POST/PUT/PATCH com **proteção CSRF** (tokens, SameSite, validação de origem).
 - **Idempotência consciente**:
@@ -302,7 +306,7 @@ Conclusão
 
 Projetar bem **métodos** e **idempotência** não é detalhe acadêmico: é um **controle de segurança** que conversa com redirecionamentos, códigos de status, condicionais e cache. Quando esses elementos trabalham em harmonia, sua API fica **performática, previsível e resiliente a falhas e abusos** — exatamente o que buscamos em um ambiente de segurança cibernética moderno.
 
-Referências
+### Referências
 
 - RFC 9111 — HTTP Caching
 - RFC 8470 — Using Early Data in HTTP
@@ -329,7 +333,7 @@ Por exemplo, headers de cache (Cache-Control) ajudam a evitar que informações 
 
 Compreender e aplicar corretamente esses headers é essencial para reforçar a postura defensiva das aplicações web, transformando elementos básicos do protocolo em controles práticos de segurança.
 
-User-Agent
+#### User-Agent
 
 Identifica o cliente (navegador, *bot*, app).
 
