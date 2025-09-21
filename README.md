@@ -420,7 +420,7 @@ Access-Control-Allow-Credentials: true
 ```
 
 - Pontos críticos:
-  - **Nunca** use Access-Control-Allow-Origin: * **junto** com Allow-Credentials: true (os navegadores bloqueiam por segurança).
+  - **Nunca** use `Access-Control-Allow-Origin: *` **junto** com `Allow-Credentials: true` (os navegadores bloqueiam por segurança).
   - Evite refletir o Origin arbitrariamente; **liste explicitamente** origens confiáveis.
   - *Preflights* (OPTIONS) fazem parte do fluxo; trate-os corretamente.
 
