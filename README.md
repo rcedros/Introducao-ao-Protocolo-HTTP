@@ -104,8 +104,7 @@ Quando um cliente “fala” com um servidor pela Web, ele não envia apenas dad
 
 **Entender HTTP em profundidade**, boa parte do valor prático para segurança está nas **propriedades dos métodos**, em como **idempotência** e **segurança (safe)** influenciam *retries*, *replays* e mitigação de CSRF, e em **interpretar corretamente os códigos de status** — inclusive os “menos famosos”, como 429, 451 e 425. Este capítulo amarra esses pontos com um viés operacional.
 
-<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/acc058d5-181c-4d79-8763-fdfbb5856b06" />
-
+<img width="1536" height="1024" alt="ChatGPT Image Sep 20, 2025, 11_29_31 PM" src="https://github.com/user-attachments/assets/8a88242a-4885-46b6-b6fa-49d30b7b3e99" />
 
 A seguir, apresento os métodos padronizados, com explicação e **um exemplo simples e intuitivo** de uso. Depois entramos em **idempotência** (o tema que amarra confiabilidade, retries e mitigação de fraudes/replays) e continuamos com as demais partes operacionais: **redirecionamentos corretos, códigos de status, condicionais, cache** e implicações de segurança.
 
