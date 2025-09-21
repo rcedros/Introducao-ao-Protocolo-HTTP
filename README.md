@@ -370,6 +370,10 @@ Os headers HTTP são metadados enviados junto às requisições e respostas que 
 
 Por exemplo, headers de cache (Cache-Control) ajudam a evitar que informações sensíveis fiquem armazenadas de forma indevida; já headers de conteúdo (Content-Type) previnem que arquivos sejam interpretados de maneira incorreta, reduzindo riscos como MIME Sniffing. Até mesmo informações aparentemente simples, como o User-Agent, podem ter valor em auditorias de tráfego e detecção de anomalias.
 
+
+<img width="5360" height="3126" alt="headers-http-tamanho-pequeno" src="https://github.com/user-attachments/assets/79c6fe36-2ea7-4147-bdd9-c3994879a211" />
+
+
 Compreender e aplicar corretamente esses headers é essencial para reforçar a postura defensiva das aplicações web, transformando elementos básicos do protocolo em controles práticos de segurança.
 
 | Header | Função | Exemplo | Benefício / Observação |
