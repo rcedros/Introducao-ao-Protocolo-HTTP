@@ -482,6 +482,8 @@ Headers são **o contrato** que orienta como cada salto de rede e o próprio nav
 
 Cookies são pequenos pares nome=valor que o servidor instrui o navegador a armazenar e **reenviar automaticamente** em requisições futuras para o mesmo site. Eles existem para **manter estado em um protocolo sem estado**: autenticação de sessões, preferências de usuário, carrinho de compras, *anti-CSRF tokens*, limites de taxa por usuário, entre outros. Justamente por viajarem “sozinhos” (o navegador os envia sem o usuário perceber), são também um ponto sensível: um cookie mal configurado pode entregar sua sessão a um atacante.
 
+![cookiesgerencia](https://github.com/user-attachments/assets/89e2e6e4-1149-4dae-bed2-1be511388d0c)
+
 ## O que são e para que servem (na prática)
 
 Quando o servidor responde com Set-Cookie, o navegador grava aquele dado respeitando **escopo** (domínio e caminho), **atributos** (segurança, expiração, política *same-site*) e **persistência** (sessão ou longo prazo). A cada nova requisição cujo **host** e **path** combinem com o cookie, o navegador adiciona um cabeçalho:
