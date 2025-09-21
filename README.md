@@ -577,8 +577,8 @@ O token contém claims/estado e pode ser validado sem consulta ao servidor e ond
 | **CSRF** | Cookies são enviados automaticamente → outro site pode acionar requisições válidas. | `SameSite`, token anti-CSRF (sincronizado, *double submit*, cabeçalho custom). |
 | **Session fixation** | Atacante força uso de ID de sessão conhecido. | Rotacionar sessão no login, rejeitar IDs não emitidos pelo servidor. |
 | **Exposição por cache** | Respostas autenticadas expostas em caches compartilhados. | `Cache-Control: no-store`. |
-otacione a sessão no login** e rejeite IDs não emitidos pelo servidor.
 
+- **Rotacione a sessão no login** e rejeite IDs não emitidos pelo servidor.
 - **Exposição por cache**: nunca permita que respostas autenticadas sejam **cacheadas** publicamente; use Cache-Control: no-store.
 
 ### Vamos Refletir?
@@ -605,9 +605,9 @@ otacione a sessão no login** e rejeite IDs não emitidos pelo servidor.
 
 ### Casos Reais
 
-- **Firesheep (Wi-Fi aberto):** milhares de sessões de redes sociais eram sequestradas porque os sites serviam partes do tráfego em HTTP, e cookies sem Secure “vazavam”. A reação da indústria consolidou **HTTPS por padrão** + Secure.
+- **Firesheep (Wi-Fi aberto):** milhares de sessões de redes sociais eram sequestradas porque os sites serviam partes do tráfego em HTTP, e cookies sem Secure “vazavam”. A reação da indústria consolidou **HTTPS por padrão** + **Secure**.
 - **Subdomínio tomado, sessão perdida:** empresas com DNS amplo viram **subdomain takeover** permitir que invasores **capturassem cookies** de Domain=exemplo.com. Solução: **host-only cookies**, higiene de DNS e *asset inventory*.
-- **CSRF persistente em backoffice:** um painel administrativo aceitava POST sem token e com SameSite=None. Um site externo induzia cliques/auto-submits, causando **alterações indesejadas**. Correção: SameSite=Lax/Strict + **anti-CSRF token** e validação de origem.
+- **CSRF persistente em backoffice:** um painel administrativo aceitava POST sem token e com SameSite=None. Um site externo induzia cliques/auto-submits, causando **alterações indesejadas**. Correção: **SameSite=Lax/Strict** + **anti-CSRF token** e validação de origem.
 
 ### Conclusão
 
