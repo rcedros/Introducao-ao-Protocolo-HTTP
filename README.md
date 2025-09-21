@@ -812,7 +812,7 @@ A análise da relação entre HTTP e o **OWASP Top 10** evidência como falhas a
 - RFC 9110 – HTTP Semantics
 - RFC 8446 – TLS 1.3
 
-### Conclusão
+# Conclusão
 
 Ao longo dos capítulos, exploramos o protocolo HTTP em profundidade, analisando não apenas sua estrutura de funcionamento, mas também sua importância para a segurança cibernética e para o desenho de arquiteturas confiáveis. O HTTP, muitas vezes visto apenas como um meio de transporte de informações entre cliente e servidor, revelou-se um elemento estratégico para a proteção de sistemas modernos.
 
