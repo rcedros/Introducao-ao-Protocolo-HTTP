@@ -625,6 +625,56 @@ Cookies são uma ferramenta poderosa — e perigosa — quando mal configurados.
 - Google Web.dev — *SameSite cookies explained*
 - PortSwigger Web Security Academy — *Cross-site request forgery (CSRF)*, *Cross-site scripting (XSS)*
 
+
+# URL, URI, Query, Scheme, Domain e Parâmetros
+
+Quando acessamos um recurso na internet, utilizamos endereços que seguem uma estrutura bem definida. Esses endereços podem ser chamados de **URI (Uniform Resource Identifier)**, que é o identificador genérico de um recurso. Dentro das URIs, temos um tipo específico muito mais usado no dia a dia: a **URL (Uniform Resource Locator)**. A URL indica onde está o recurso e como ele pode ser acessado, já que inclui o protocolo, o domínio e outros elementos adicionais.
+
+Um outro tipo de **URI** é o **URN (Uniform Resource Name)**, que apenas identifica de forma única um recurso sem precisar indicar a localização, como no caso de urn:isbn:0451450523, usado para identificar livros pelo ISBN.
+
+Na prática, quando falamos em URL, quase sempre estamos nos referindo a uma URI de localização, já que ela é a forma mais comum de acessar conteúdos na web.
+
+## Scheme
+
+O primeiro elemento da URL é o scheme, que define o protocolo utilizado para a comunicação. No exemplo `https://api.loja.com/produtos/eletronicos/?cat=monit&size=55p`, o scheme é `https://`. Isso indica que será usado o protocolo HTTP seguro, que inclui criptografia TLS para proteger os dados transmitidos. Outros schemes possíveis incluem:
+
+- `http://`
+- `ftp://`
+- `mailto:`
+
+## Domain (Nome de Domínio)
+
+Após o scheme, temos o domain, que representa o endereço do servidor onde o recurso está hospedado. No exemplo, o domínio é `api.loja.com`. Ele pode ser dividido em partes: o subdomínio (api), o nome principal (loja) e a extensão (.com). Esse domínio será resolvido pelo sistema de DNS (Domain Name System) para um endereço IP real que permitirá a comunicação com o servidor.
+
+## Path (Caminho)
+
+Em seguida, aparece o path, que indica o caminho exato até o recurso dentro do servidor. No exemplo, temos `/produtos/eletronicos/`. Esse caminho funciona como diretórios e subdiretórios, guiando o servidor até a informação que deve ser entregue ao cliente.
+
+## Query
+
+Depois do caminho, temos a query, que sempre começa com o caractere **?**. No exemplo, ela é `?cat=monit&size=55p`. Essa parte da URL é usada para transmitir informações adicionais ao servidor, normalmente em requisições GET, permitindo que o cliente especifique filtros, parâmetros de pesquisa ou preferências de resposta.
+
+## Parâmetros
+
+Dentro da query, encontramos os parâmetros, que são pares chave-valor separados pelo símbolo &. No exemplo:
+
+- **cat=monit** → `chave: cat`, `valor: monit`
+- **size=55p** → `chave: size`, `valor: 55p`
+
+Esses parâmetros permitem que o servidor personalize a resposta, retornando apenas as informações que fazem sentido para o cliente. No caso da loja fictícia, isso pode significar retornar apenas os produtos da categoria “monitor” com tamanho “55 polegadas”.
+
+## Resumo aplicado ao exemplo
+
+- URI/URL completa: https://api.loja.com/produtos/eletronicos/?cat=monit&size=55p
+- Scheme: https://
+- Domain: api.loja.com
+- Path: /produtos/eletronicos/
+- Query: ?cat=monit&size=55p
+- Parâmetros: cat=monit, size=55p
+
+
+
+
 # 🔒 Criptografia e TLS
 
 A comunicação na web não pode ser considerada segura apenas pelo simples transporte de pacotes. É necessário garantir que os dados não sejam interceptados, modificados ou forjados. Nesse contexto, a criptografia e o protocolo TLS (Transport Layer Security) são a base da segurança do HTTP moderno, dando origem ao HTTPS.
