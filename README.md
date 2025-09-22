@@ -125,28 +125,27 @@ Um sumário útil para o dia a dia da segurança:
 - **Intenção:** obter representação de um recurso (consulta).
 - **Propriedade:** *safe* (não deve mudar estado) e **idempotente**.
 - **Exemplo intuitivo:** abrir um catálogo para ver os produtos.
+- **Observação de segurança:** não use **GET** para ações que mudam estado (ex.: reset de senha). Isso viola a semântica e abre risco de CSRF e vazamento de dados via URL/logs.
 
 ```bash
 curl https://api.loja.com/produtos?categoria=monitores
 ```
 
-- **Observação de segurança:** não use **GET** para ações que mudam estado (ex.: reset de senha). Isso viola a semântica e abre risco de CSRF e vazamento de dados via URL/logs.
-
 #### HEAD — “Quero ver apenas os metadados”
 
 - **Intenção:** igual ao GET, mas **sem** o corpo da resposta (só cabeçalhos).
 - **Exemplo intuitivo:** checar a etiqueta da caixa sem abri-la.
+- **Uso típico:** verificar Content-Length, ETag, Last-Modified antes de baixar.
 
 ```bash
  curl -I https://site.com/arquivo.pdf
 ```
 
-- **Uso típico:** verificar Content-Length, ETag, Last-Modified antes de baixar.
-
 #### POST — “Quero criar ou executar uma ação”
 - **Intenção:** criar um recurso, iniciar um processamento, enviar um formulário.
 - **Propriedade:** **não idempotente** (repetir pode duplicar efeitos).
 - **Exemplo intuitivo:** entregar um formulário preenchido no balcão.
+- **Segurança:** por ser não idempotente, **retries** podem duplicar operações (cobranças, pedidos). Veremos como mitigar com **Idempotency-Key**.
 
 ```bash
  curl -X POST https://api.loja.com/pedidos \
@@ -154,20 +153,17 @@ curl https://api.loja.com/produtos?categoria=monitores
 -d '{"cliente_id": 42, "itens": [{"sku":"ABC","qtd":2}]}'
 ```
 
-- **Segurança:** por ser não idempotente, **retries** podem duplicar operações (cobranças, pedidos). Veremos como mitigar com **Idempotency-Key**.
-
 #### PUT — “Quero substituir”
 - **Intenção:** **substituir por completo** a representação de um recurso existente (ou criar se a rota permitir “upsert”).
 - **Propriedade:** **idempotente** (definir o mesmo estado N vezes produz o mesmo efeito).
 - **Exemplo intuitivo:** trocar a ficha cadastral inteira por uma nova.
+- - **Segurança:** combine com **pré-condições** (If-Match com ETag) para evitar *lost update* em concorrência.
 
 ```bash
  curl -X PUT https://api.loja.com/usuarios/42 \
 -H "Content-Type: application/json" \
 -d '{"nome":"Ana","email":"ana@ex.com","telefone":"+55..."}'
 ```
-
-- **Segurança:** combine com **pré-condições** (If-Match com ETag) para evitar *lost update* em concorrência.
 
 #### PATCH — “Quero alterar parcialmente”
 - **Intenção:** modificar **parte** da representação.
@@ -191,13 +187,12 @@ curl -X DELETE https://api.loja.com/usuarios/42
 
 #### OPTIONS — “Quais métodos e políticas são aceitos aqui?”
 - **Intenção:** descobrir capacidades do servidor para um recurso.
-- **Exemplo intuitivo:** perguntar ao balcão: o que posso fazer neste guichê?.
+- **Exemplo intuitivo:** perguntar ao balcão: o que posso fazer neste guichê?
+- **Uso:** responde cabeçalho **Allow** (métodos suportados) e é base para **preflight CORS** em navegadores.
 
 ```bash
  curl -X OPTIONS -i https://api.loja.com/pedidos
 ```
-
-- **Uso:** responde cabeçalho **Allow** (métodos suportados) e é base para **preflight CORS** em navegadores.
 
 #### TRACE — “Me retorne o que você recebeu”
 - **Intenção:** depuração (eco da requisição).
