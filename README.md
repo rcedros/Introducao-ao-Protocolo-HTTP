@@ -633,12 +633,13 @@ Um outro tipo de **URI** é o **URN (Uniform Resource Name)**, que apenas identi
 
 <img width="3982" height="861" alt="url" src="https://github.com/user-attachments/assets/edaf4247-2e77-4b00-a160-ea500a77cf51" />
 
-
 Na prática, quando falamos em URL, quase sempre estamos nos referindo a uma URI de localização, já que ela é a forma mais comum de acessar conteúdos na web.
 
 ## Scheme
 
-O primeiro elemento da URL é o scheme, que define o protocolo utilizado para a comunicação. No exemplo `https://api.loja.com/produtos/eletronicos/?cat=monit&size=55p`, o scheme é `https://`. Isso indica que será usado o protocolo HTTP seguro, que inclui criptografia TLS para proteger os dados transmitidos. Outros schemes possíveis incluem:
+O primeiro elemento da URL é o scheme, que define o protocolo utilizado para a comunicação. No exemplo **https://api.loja.com/produtos/eletronicos/?cat=monit&size=55p**, o scheme é `https://`. Isso indica que será usado o protocolo HTTP seguro, que inclui criptografia TLS para proteger os dados transmitidos. 
+
+Outros schemes possíveis incluem:
 
 - `http://`
 - `ftp://`
@@ -647,6 +648,10 @@ O primeiro elemento da URL é o scheme, que define o protocolo utilizado para a 
 ## Domain (Nome de Domínio)
 
 Após o scheme, temos o domain, que representa o endereço do servidor onde o recurso está hospedado. No exemplo, o domínio é `api.loja.com`. Ele pode ser dividido em partes: o subdomínio (api), o nome principal (loja) e a extensão (.com). Esse domínio será resolvido pelo sistema de DNS (Domain Name System) para um endereço IP real que permitirá a comunicação com o servidor.
+
+- **subdomínio:** `api`
+- **domínio:** `.loja`
+- **extensão:** `.com`
 
 ## Path (Caminho)
 
