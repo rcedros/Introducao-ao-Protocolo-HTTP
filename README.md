@@ -625,12 +625,14 @@ Cookies são uma ferramenta poderosa — e perigosa — quando mal configurados.
 - Google Web.dev — *SameSite cookies explained*
 - PortSwigger Web Security Academy — *Cross-site request forgery (CSRF)*, *Cross-site scripting (XSS)*
 
-
 # URL, URI, Query, Scheme, Domain e Parâmetros
 
 Quando acessamos um recurso na internet, utilizamos endereços que seguem uma estrutura bem definida. Esses endereços podem ser chamados de **URI (Uniform Resource Identifier)**, que é o identificador genérico de um recurso. Dentro das URIs, temos um tipo específico muito mais usado no dia a dia: a **URL (Uniform Resource Locator)**. A URL indica onde está o recurso e como ele pode ser acessado, já que inclui o protocolo, o domínio e outros elementos adicionais.
 
 Um outro tipo de **URI** é o **URN (Uniform Resource Name)**, que apenas identifica de forma única um recurso sem precisar indicar a localização, como no caso de urn:isbn:0451450523, usado para identificar livros pelo ISBN.
+
+<img width="3982" height="861" alt="url" src="https://github.com/user-attachments/assets/edaf4247-2e77-4b00-a160-ea500a77cf51" />
+
 
 Na prática, quando falamos em URL, quase sempre estamos nos referindo a uma URI de localização, já que ela é a forma mais comum de acessar conteúdos na web.
 
