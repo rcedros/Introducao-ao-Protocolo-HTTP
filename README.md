@@ -661,15 +661,12 @@ Esses parâmetros permitem que o servidor personalize a resposta, retornando ape
 
 ## Resumo aplicado ao exemplo
 
-- URI/URL completa: https://api.loja.com/produtos/eletronicos/?cat=monit&size=55p
-- Scheme: https://
-- Domain: api.loja.com
-- Path: /produtos/eletronicos/
-- Query: ?cat=monit&size=55p
-- Parâmetros: cat=monit, size=55p
-
-
-
+- **URI/URL completa:** https://api.loja.com/produtos/eletronicos/?cat=monit&size=55p
+- **Scheme:** https://
+- **Domain:** api.loja.com
+- **Path:** /produtos/eletronicos/
+- **Query:** ?cat=monit&size=55p
+- **Parâmetros:** cat=monit, size=55p
 
 # 🔒 Criptografia e TLS
 
