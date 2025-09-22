@@ -124,8 +124,7 @@ Um sumário útil para o dia a dia da segurança:
 
 - **Intenção:** obter representação de um recurso (consulta).
 - **Propriedade:** *safe* (não deve mudar estado) e **idempotente**.
-- **Exemplo intuitivo:** “abrir um catálogo para ver os produtos”.
-**Exemplo prático (cURL):***
+- **Exemplo intuitivo:** abrir um catálogo para ver os produtos.
 
 ```bash
 curl https://api.loja.com/produtos?categoria=monitores
@@ -136,8 +135,7 @@ curl https://api.loja.com/produtos?categoria=monitores
 #### HEAD — “Quero ver apenas os metadados”
 
 - **Intenção:** igual ao GET, mas **sem** o corpo da resposta (só cabeçalhos).
-- **Exemplo intuitivo:** “checar a etiqueta da caixa sem abri-la”.
-**Exemplo:**
+- **Exemplo intuitivo:** checar a etiqueta da caixa sem abri-la.
 
 ```bash
  curl -I https://site.com/arquivo.pdf
@@ -148,8 +146,7 @@ curl https://api.loja.com/produtos?categoria=monitores
 #### POST — “Quero criar ou executar uma ação”
 - **Intenção:** criar um recurso, iniciar um processamento, enviar um formulário.
 - **Propriedade:** **não idempotente** (repetir pode duplicar efeitos).
-- **Exemplo intuitivo:** “entregar um formulário preenchido no balcão”.
-**Exemplo:**
+- **Exemplo intuitivo:** entregar um formulário preenchido no balcão.
 
 ```bash
  curl -X POST https://api.loja.com/pedidos \
@@ -162,8 +159,7 @@ curl https://api.loja.com/produtos?categoria=monitores
 #### PUT — “Quero substituir”
 - **Intenção:** **substituir por completo** a representação de um recurso existente (ou criar se a rota permitir “upsert”).
 - **Propriedade:** **idempotente** (definir o mesmo estado N vezes produz o mesmo efeito).
-- **Exemplo intuitivo:** “trocar a ficha cadastral inteira por uma nova”.
-**Exemplo:**
+- **Exemplo intuitivo:** trocar a ficha cadastral inteira por uma nova.
 
 ```bash
  curl -X PUT https://api.loja.com/usuarios/42 \
@@ -176,8 +172,7 @@ curl https://api.loja.com/produtos?categoria=monitores
 #### PATCH — “Quero alterar parcialmente”
 - **Intenção:** modificar **parte** da representação.
 - **Propriedade:** **pode não ser idempotente** (depende do patch aplicado).
-- **Exemplo intuitivo:** “corrigir somente o telefone, sem mexer no resto”.
-**Exemplo:**
+- **Exemplo intuitivo:** corrigir somente o telefone, sem mexer no resto.
 
 ```bash
  curl -X PATCH https://api.loja.com/usuarios/42 \
@@ -188,7 +183,7 @@ curl https://api.loja.com/produtos?categoria=monitores
 #### DELETE — “Quero remover”
 - **Intenção:** remover um recurso.
 **Propriedade:** **idempotente** (apagar de novo não muda o resultado).
-- **Exemplo intuitivo:** “jogar fora uma ficha; tentar jogar fora de novo não tem efeito”.
+- **Exemplo intuitivo:** jogar fora uma ficha; tentar jogar fora de novo não tem efeito.
 
 ```bash
 curl -X DELETE https://api.loja.com/usuarios/42
@@ -196,8 +191,7 @@ curl -X DELETE https://api.loja.com/usuarios/42
 
 #### OPTIONS — “Quais métodos e políticas são aceitos aqui?”
 - **Intenção:** descobrir capacidades do servidor para um recurso.
-- **Exemplo intuitivo:** “perguntar ao balcão: o que posso fazer neste guichê?”.
-**Exemplo:**
+- **Exemplo intuitivo:** perguntar ao balcão: o que posso fazer neste guichê?.
 
 ```bash
  curl -X OPTIONS -i https://api.loja.com/pedidos
@@ -211,7 +205,7 @@ curl -X DELETE https://api.loja.com/usuarios/42
 
 #### CONNECT — “Abra um túnel”
 - **Intenção:** usado por proxies para criar um túnel TCP (ex.: HTTPS via proxy).
-- **Exemplo intuitivo:** “pedir ao porteiro para abrir um canal direto com a sala segura”.
+- **Exemplo intuitivo:** pedir ao porteiro para abrir um canal direto com a sala segura.
 
 ## Idempotência — a cola entre confiabilidade e segurança
 
